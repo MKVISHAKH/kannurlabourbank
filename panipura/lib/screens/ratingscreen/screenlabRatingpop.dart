@@ -24,7 +24,8 @@ class ScreenLabRating extends StatefulWidget {
       required this.occupationid,
       required this.mobile,
       required this.wrkname,
-      required this.skillid});
+      required this.skillid,
+      required this.empid});
   final bool? isSearchnull;
   final int? userid;
   final int? skillid;
@@ -32,6 +33,7 @@ class ScreenLabRating extends StatefulWidget {
   final int? occupationid;
   final String? mobile;
   final String? wrkname;
+  final int? empid;
 
   @override
   State<ScreenLabRating> createState() => _ScreenLabRatingState();
@@ -45,6 +47,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
   String? nameval;
   int? occupationId;
   String? mobileno;
+  int? usrId;
   //String? wrkname;
   final _commentcontroller = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -60,6 +63,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
     wrkname = widget.wrkname!.toUpperCase();
     isSearchnullval = widget.isSearchnull;
     nameval = widget.name;
+    usrId=widget.userid;
+    print(usrId);
     occupationId = widget.occupationid;
     mobileno = widget.mobile;
     getskillrate();
@@ -284,6 +289,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
               final value = newList[index];
 
               final rating = value.rating;
+              int? usrid=value.employerId;
+              print(usrid);
               String? comment = value.comments;
               comment ??= '';
               String? empname = value.employerName;
@@ -360,16 +367,15 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                     )),
                               ]),
                             ),
-                            trailing: IconButton(
+                            
+                            trailing:usrid==widget.empid? IconButton(
                             onPressed: () async {
-                              // final deletereq =
-                                  //Deletereq.req(userId: userid, skillId: skillid);
 
                                   warningBox(context, rateId);
                               },
                               icon: const Icon(Icons.delete,
                                   size: 30, color: Color.fromARGB(255, 158, 89, 248)),
-                            ),
+                            ):const SizedBox.shrink(),
                           ),
                         ),
                       ],
@@ -539,6 +545,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
               mobile: mobileno,
               wrkname: wrkname,
               skillid: widget.skillid,
+              empid: widget.empid,
             ),
           ),
         );
@@ -577,6 +584,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                             mobile: mobileno,
                             wrkname: wrkname,
                             skillid: widget.skillid,
+                            empid: widget.empid,
                           ),
                         ),
                       );
@@ -600,6 +608,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                               mobile: mobileno,
                               wrkname: wrkname,
                               skillid: widget.skillid,
+                              empid: widget.empid,
                             ),
                           ),
                         ),
@@ -683,6 +692,7 @@ Future builddeleteskill(BuildContext context, int? value) async {
                               mobile: mobileno,
                               wrkname: wrkname,
                               skillid: widget.skillid,
+                              empid: widget.empid,
                             ),
                           ),
                         );
@@ -705,6 +715,7 @@ Future builddeleteskill(BuildContext context, int? value) async {
                               mobile: mobileno,
                               wrkname: wrkname,
                               skillid: widget.skillid,
+                              empid: widget.empid,
                             ),
                           ),
                         );
@@ -728,6 +739,7 @@ Future builddeleteskill(BuildContext context, int? value) async {
                               mobile: mobileno,
                               wrkname: wrkname,
                               skillid: widget.skillid,
+                              empid: widget.empid,
                             ),
                           ),
                         );

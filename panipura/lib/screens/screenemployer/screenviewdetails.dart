@@ -10,6 +10,7 @@ import 'package:panipura/provider/locale_provider.dart';
 import 'package:panipura/screens/ratingscreen/screenlabRatingpop.dart';
 import 'package:panipura/screens/screenemployer/screenfilteredlab.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:panipura/widgets/constants.dart';
 import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
 import '../../model/viewprofile/viewprofileinfo/viewprofileinfo.dart';
 import 'dart:developer';
@@ -50,6 +51,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
   String? ref2;
   String? mob1;
   String? mob2;
+  int? empid;
 
   @override
   void initState() {
@@ -512,7 +514,9 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                         ),
                       ),
                       TextButton(
-                          onPressed: () {
+                          onPressed: () async{
+                            final value = await Sharedata.instance.getdata();
+                            empid=value!.userid;
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ScreenLabRating(
@@ -523,6 +527,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                                   mobile: widget.mobile,
                                   wrkname: val.occupationname,
                                   skillid: val.skillId,
+                                  empid: empid,
                                 ),
                               ),
                             );

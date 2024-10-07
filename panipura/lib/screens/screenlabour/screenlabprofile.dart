@@ -12,6 +12,7 @@ import 'package:panipura/model/dropdownname/namemdl.dart';
 import 'package:panipura/provider/loadingprovider.dart';
 import 'package:panipura/provider/locale_provider.dart';
 import 'package:panipura/provider/profilepicprovider.dart';
+import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 import 'package:panipura/screens/screenlabour/screeneditskill.dart';
 import 'package:panipura/widgets/constants.dart';
 import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
@@ -731,6 +732,20 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
               height: 8,
             ),
             const Divider(),
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.deleteac, style: kscreenText),
+              subtitle: const Text('Delete your Account'),
+              onTap: (){
+                  Navigator.of(_scaffoldKey.currentContext!).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ScreenDeleteAccount(usrId: widget.usrId,token: widget.token,category: lab,)
+                      ),
+                    );
+              },
+            ),
+            const SizedBox(
+              height: 8,
+            ),
           ],
         ),
       ),

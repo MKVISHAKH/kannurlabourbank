@@ -1,10 +1,10 @@
 class Url {
-  // String baseUrl = 'http://192.168.150.200/thozhil/public';
+  String baseUrl = 'http://192.168.150.200/thozhil/public';
   //http://117.221.68.183:8000/api/districts
 
   // String baseUrl = 'http://117.221.68.183:8000/dits/thozhil/public';
 
-  String baseUrl = 'https://kannurlabourbank.com:549/thozhil/public';
+  // String baseUrl = 'https://kannurlabourbank.com:549/thozhil/public';
   
 
   String registerUrl = '/api/register';
@@ -51,4 +51,6 @@ class Url {
   String todolistEditUrl = '/api/todolist/edit';
 
   String contactlogUrl = '/api/contactlog/create';
+  String deleteuserUrl='/api/user';
+  String deleteEmpUrl='/api/employer';
 }

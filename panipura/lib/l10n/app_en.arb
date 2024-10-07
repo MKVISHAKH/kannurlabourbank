@@ -113,6 +113,7 @@
     "choosepropic":"Choose Profile Photo", 
     "uploadpic":"Profile picture uploaded successfully",
     "errorpic":"Image Format Not Supporting",
+    "deleteac":"Delete Account",
     "@comment":"**********************************************",
 
     "@comment":"***************addskillscreen*****************",
@@ -194,5 +195,13 @@
     "accept":"Accept",
     "decline":"Decline",
     "tandc":"Terms and Conditon",
+    "@comment":"**********************************************",
+
+    "@comment":"***************deleteaccountscreen*****************",
+    "dltaccount":"If you delete this account:",
+    "cautionone":"The account will be deleted from Labour Bank",
+    "cautiontwo":"Your Skills and profile will be erased",
+    "cautionthree":"Your images will be deleted",
+    "cautionfour":"You cant recover this account",
     "@comment":"**********************************************"
 }

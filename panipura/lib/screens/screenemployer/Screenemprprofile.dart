@@ -6,7 +6,10 @@ import 'package:panipura/l10n/l10n.dart';
 import 'package:panipura/model/dropdownname/namemdl.dart';
 import 'package:panipura/provider/locale_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 import 'dart:developer';
+
+import 'package:panipura/widgets/constants.dart';
 
 class ScreenEmpProfile extends StatefulWidget {
   const ScreenEmpProfile({super.key});
@@ -22,6 +25,8 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
   String? mob;
   String? dob;
   String? sex;
+  int? empid;
+  String? token;
   //String? edu;
   Locale? localecode;
   Future<bool?> popscreen(BuildContext context) async {
@@ -51,6 +56,8 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
     final plac = value.place;
     final mobi = value.mobile;
     final dbirth = value.dob;
+    empid=value.userid;
+    token=value.token;
     log('$dob');
     DateTime dobdt = DateFormat("yyyy-MM-dd").parse(dbirth!);
     DateFormat dateFormat1 = DateFormat.yMMMMd();
@@ -197,6 +204,18 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
                             'assets/background/788-7885571_timing-icon-calendar-right-time-icon.png'),
                       ),
                     ),
+                    const Divider(),
+            ListTile(
+              title: Text(AppLocalizations.of(context)!.deleteac, style: kscreenText),
+              subtitle: const Text('Delete your Account'),
+              onTap: (){
+                  Navigator.of(_scaffoldKey.currentContext!).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ScreenDeleteAccount(usrId: empid,token:token,category: emp,)
+                      ),
+                    );
+              },
+            ),
                   ],
                 ),
               ),

@@ -99,6 +99,9 @@ abstract class Apicalls {
   Future<Response?> contactlog(Contactlog value);
 
   // Future<Response?> dwnldimg(int? usrid);
+  Future<Response?> deleteuser(int? usrid);
+
+  Future<Response?> deleteEmp(int? usrid);
 }
 
 class Labourdata extends Apicalls {
@@ -823,6 +826,42 @@ class Labourdata extends Apicalls {
     try {
       final result = await dio.post(url.contactlogUrl,
           data: value.toJson(),
+          options: Options(responseType: ResponseType.plain, headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json"
+          }));
+      return result;
+    } on DioException catch (ex) {
+      return ex.response;
+    }
+  }
+  
+  @override
+  Future<Response?> deleteuser(int? usrid) async{
+     final userval = await Sharedata.instance.getdata();
+    final token = userval!.token;
+    try {
+      
+      final result = await dio.delete('${url.deleteuserUrl}/$usrid',
+          //data: value.toJson(),
+          options: Options(responseType: ResponseType.plain, headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json"
+          }));
+      return result;
+    } on DioException catch (ex) {
+      return ex.response;
+    }
+  }
+  
+  @override
+  Future<Response?> deleteEmp(int? usrid) async{
+    final userval = await Sharedata.instance.getdata();
+    final token = userval!.token;
+    try {
+      
+      final result = await dio.delete('${url.deleteEmpUrl}/$usrid',
+          //data: value.toJson(),
           options: Options(responseType: ResponseType.plain, headers: {
             "Authorization": "Bearer $token",
             "Accept": "application/json"

@@ -20,6 +20,7 @@ abstract class Labourfn {
   Future<List<Getrefskillresplist>> getskillfn(int? userId, String? langcode);
   Future getsearchdata(Searchlabourmdl value, BuildContext? ctx);
   Future viewprofile(int? value);
+  
   // Future rateskill(Getskillratereq value,bool? isSearchnullval,String? name,int? wrkId,String? mobile,String? wrkname,BuildContext? ctx);
   //Future deleteskill(Deletereq  value);
 }
@@ -338,5 +339,11 @@ class Labempfn implements Labourfn {
           fontSize: 16.0);
     }
     return [];
+  }
+  
+  @override
+  Future deleteAccount(int? userId)async {
+    // TODO: implement deleteAccount
+    throw UnimplementedError();
   }
 }
