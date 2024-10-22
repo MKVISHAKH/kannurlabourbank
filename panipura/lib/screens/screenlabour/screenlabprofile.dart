@@ -15,6 +15,7 @@ import 'package:panipura/provider/profilepicprovider.dart';
 import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 import 'package:panipura/screens/screenlabour/screeneditskill.dart';
 import 'package:panipura/widgets/constants.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
 import '../../model/upldimg/uploadimgresp/uploadimgresp.dart';
 import '../../utils/app_helper.dart';
@@ -344,11 +345,27 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
   }
 
   Future takePhoto(ImageSource source, int typeid, BuildContext context,ProfilepicProvider provider) async {
-    final pickedFile = await picker.pickImage(source: source);
+    try{
+      final pickedFile = await picker.pickImage(source: source);
     //final provider = Provider.of<ProfilepicProvider>(_scaffoldKey.currentContext!);
-    final loadingProvider = Provider.of<LoadingProvider>(_scaffoldKey.currentContext!,listen:false);
+    if (pickedFile == null) {
+      Fluttertoast.showToast(
+        msg: "Camera permission denied. Please enable it in settings.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0);
+         Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
+          ),
+        );
+      return;
+    }else{
+      final loadingProvider = Provider.of<LoadingProvider>(_scaffoldKey.currentContext!,listen:false);
     loadingProvider.toggelLoading();
-    if (pickedFile != null) {
+    
       var image = File(pickedFile.path.toString());
       final sizeInKbBefore = image.lengthSync() / 1024;
       log('Before Compress $sizeInKbBefore kb');
@@ -445,27 +462,22 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
           ),
         );
       }
-    }
-    //if(pickedFile!.mimeType=='image/jpeg'|| pickedFile.mimeType=='image/png')
-    // if(pickedFile != null){
-    //   File imgfile=File(pickedFile.path);
 
-    else{
-        Fluttertoast.showToast(
-            msg: AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
-          ),
-        );
-      }
+    }
+        
+    }catch(e){
+      showSnackBar(_scaffoldKey.currentContext!,
+            text: "something went wrong");
+    }
+    Fluttertoast.showToast(
+        msg: "Camera permission denied. Please enable it in settings.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0);
+        
+      return;
     
   }
 
@@ -971,6 +983,21 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
       );
     }
   }
+//   Future<bool> checkCameraPermission(BuildContext context) async {
+//   var status = await Permission.camera.status;
+
+//   if (status.isDenied) {
+//     // Request permission
+//     var result = await Permission.camera.request();
+//     return result.isGranted;
+//   } else if (status.isPermanentlyDenied) {
+//     // Prompt user to enable permission in settings
+//     openAppSettings();
+//     return false;
+//   }
+
+//   return status.isGranted;
+// }
 }
 
 // Future<String?> getskillname(int? wrkdid)async{

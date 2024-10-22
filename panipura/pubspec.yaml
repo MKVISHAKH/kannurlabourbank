@@ -72,6 +72,7 @@ dependencies:
   webview_flutter_android: ^3.16.4
   device_info_plus: ^10.1.0
   package_info_plus: ^8.0.0
+  permission_handler: ^11.1.0
   mime: ^1.0.4
   flutter_localizations:
     sdk: flutter
