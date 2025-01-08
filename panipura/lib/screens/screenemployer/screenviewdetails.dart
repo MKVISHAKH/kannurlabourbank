@@ -10,7 +10,6 @@ import 'package:panipura/provider/locale_provider.dart';
 import 'package:panipura/screens/ratingscreen/screenlabRatingpop.dart';
 import 'package:panipura/screens/screenemployer/screenfilteredlab.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/widgets/constants.dart';
 import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
 import '../../model/viewprofile/viewprofileinfo/viewprofileinfo.dart';
 import 'dart:developer';
@@ -178,7 +177,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
           body: SafeArea(
             child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 30.0),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 0.0),
                 child: Column(
                   children: [
                     Center(
@@ -260,45 +259,50 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                     buildRow([
                       AppLocalizations.of(context)!.nameemp,
                       ':',
-                      newList.single.name as String
+                      newList.single.name?? '' 
                     ]),
                     buildRow([
                       AppLocalizations.of(context)!.genderemp,
                       ':',
-                      newList.single.gendername as String
+                      newList.single.gendername??'' 
                     ]),
-                    buildRow([
-                      AppLocalizations.of(context)!.addressemp,
-                      ':',
-                      newList.single.address as String
-                    ]),
+                    // buildRow([
+                    //   AppLocalizations.of(context)!.addressemp,
+                    //   ':',
+                    //   newList.single.address as String
+                    // ]),
                     buildRow([
                       AppLocalizations.of(context)!.placeemp,
                       ':',
-                      newList.single.place as String
+                      newList.single.place??''
                     ]),
-                    buildRow([
-                      AppLocalizations.of(context)!.postemp,
-                      ':',
-                      newList.single.post as String
-                    ]),
+                    // buildRow([
+                    //   AppLocalizations.of(context)!.postemp,
+                    //   ':',
+                    //   newList.single.post as String
+                    // ]),
                     // buildRow(['Pin',':',newList.single.pin as String]),
                     // buildRow(['Date of Birth',':',newList.single.dob as String]),
                     // buildRow(['MobileNO',':',newList.single.mobile as String]),
-                    buildRow([
-                      AppLocalizations.of(context)!.educat,
-                      ':',
-                      newList.single.eduname as String
-                    ]),
+                    // buildRow([
+                    //   AppLocalizations.of(context)!.educat,
+                    //   ':',
+                    //   newList.single.eduname as String
+                    // ]),
                     buildRow([
                       AppLocalizations.of(context)!.districtemp,
                       ':',
-                      newList.single.disname as String
+                      newList.single.disname??''
+                    ]),
+                    buildRow([
+                      AppLocalizations.of(context)!.localtypename,
+                      ':',
+                      newList.single.localtypename??''
                     ]),
                     buildRow([
                       AppLocalizations.of(context)!.localnameemp,
                       ':',
-                      newList.single.localname as String
+                      newList.single.localname??''
                     ]),
                   ],
                 );
@@ -403,6 +407,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
             itemBuilder: (ctx, index) {
               final val = newList[index];
               final wages = val.wages;
+              final per=val.wPeriod;
 
               if (val.references.isEmpty) {
                 mob1 = '';
@@ -455,7 +460,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                           ),
                           child: Table(
                             columnWidths: const {
-                              0: FlexColumnWidth(5.5),
+                              0: FlexColumnWidth(5.3),
                               1: FlexColumnWidth(0.3),
                               2: FlexColumnWidth(4),
                             },
@@ -465,7 +470,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
 
                               buildRow1([
                                 AppLocalizations.of(context)!.skill,
-                                ' :',
+                                ':',
                                 val.occupationname!
                               ]),
                               buildRow1([
@@ -479,6 +484,11 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                                 '(₹) $wageval'
                               ]),
                               buildRow1([
+                                'Per (Hour/Day)',
+                                ':',
+                                '(₹) $per'
+                              ]),
+                              buildRow1([
                                 AppLocalizations.of(context)!.other,
                                 ':',
                                 demandinfo as String
@@ -486,37 +496,42 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                               val.references.isNotEmpty
                                   ? val.references.length == 2
                                       ? buildRow1(
-                                          ['Reference1', ':', ref1 as String])
+                                          [
+                                            AppLocalizations.of(context)!.reference1,
+                                             ':', ref1??''])
                                       : buildRow1(
-                                          ['Reference1', ':', ref1 as String])
+                                          [AppLocalizations.of(context)!.reference1, ':', ref1??''])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
                                       ? buildRow1(
-                                          ['Mobile No', ':', mob1 as String])
+                                          [AppLocalizations.of(context)!.mob, ':', mob1??''])
                                       : buildRow1(
-                                          ['Mobile No', ':', mob1 as String])
+                                          [AppLocalizations.of(context)!.mob, ':', mob1??''])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
                                       ? buildRow1(
-                                          ['Reference2', ':', ref2 as String])
+                                          [AppLocalizations.of(context)!.reference2, ':', ref2??''])
                                       : buildRow1([' ', ' ', ' '])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
                                       ? buildRow1(
-                                          ['Mobile No', ':', mob2 as String])
+                                          [AppLocalizations.of(context)!.mob, ':', mob2??''])
                                       : buildRow1([' ', ' ', ' '])
                                   : buildRow1([' ', ' ', ' ']),
                             ],
                           ),
                         ),
                       ),
+                      const SizedBox(height: 3,),
                       TextButton(
                           onPressed: () async{
                             final value = await Sharedata.instance.getdata();
                             empid=value!.userid;
+                            if (!context.mounted) return ;
+
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ScreenLabRating(

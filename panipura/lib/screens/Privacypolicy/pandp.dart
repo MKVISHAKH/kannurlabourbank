@@ -131,8 +131,9 @@ class _ScreenCommonPandPState extends State<ScreenCommonPandP> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: IconButton(
                       onPressed: () {
-                        Navigator.pushReplacement(_scaffoldKey.currentContext!,
-                            Approutes().homeScreen);
+                        Navigator.of(context).pop();
+                        // Navigator.pushReplacement(_scaffoldKey.currentContext!,
+                        //     Approutes().homeScreen);
                       },
                       icon: const Icon(
                         Icons.arrow_back,

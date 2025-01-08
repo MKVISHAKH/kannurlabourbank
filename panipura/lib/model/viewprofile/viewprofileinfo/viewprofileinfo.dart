@@ -13,7 +13,7 @@ class ViewprofileInfo {
   final int? districtid;
   final String? disname;
   final int? blockid;
-  final String? typename;
+  final String? localtypename;
   final int? localbodyid;
   final String? localname;
   final String? dob;
@@ -36,7 +36,7 @@ class ViewprofileInfo {
     this.districtid,
     this.disname,
     this.blockid,
-    this.typename,
+    this.localtypename,
     this.localbodyid,
     this.localname,
     this.dob,
@@ -64,7 +64,7 @@ class ViewprofileInfo {
         districtid: json['district_id'],
         disname: json['district_name'],
         blockid: json['block_id'],
-        //typename: json['district_id'],
+        localtypename: json['localbody_types_name'],
         localbodyid: json['localbody_id'],
         localname: json['localbody_name'],
         dob: json['dob'],

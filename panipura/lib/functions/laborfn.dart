@@ -254,8 +254,25 @@ class Labempfn implements Labourfn {
         viewProfileListNotifier.value.clear();
         viewProfileListNotifier.value.addAll(searchlab);
         viewProfileListNotifier.notifyListeners();
-      } else {}
+      } else {
+        Fluttertoast.showToast(
+          msg: "No Data Found",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      }
     } else if (createlabrespval.statusCode == 404) {
+      Fluttertoast.showToast(
+          msg: "No Data Found",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0);
     } else {
       Fluttertoast.showToast(
           msg: "Server not reached",
