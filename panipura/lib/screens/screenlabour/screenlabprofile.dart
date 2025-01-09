@@ -15,7 +15,6 @@ import 'package:panipura/provider/profilepicprovider.dart';
 import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 import 'package:panipura/screens/screenlabour/screeneditskill.dart';
 import 'package:panipura/widgets/constants.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
 import '../../model/upldimg/uploadimgresp/uploadimgresp.dart';
 import '../../utils/app_helper.dart';
@@ -171,21 +170,34 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final ImagePicker picker = ImagePicker();
-
+Future<bool?> popscreen(BuildContext context) async {
+    Navigator.push(context, Approutes().labhomeScreen);
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
       key: _scaffoldKey,
       children: [
         const Screensbackground(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              buildtop(),
-              buildContent(),
-            ],
+        PopScope(
+          canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (!didPop) {
+            if (didPop) return;
+            await popscreen(context);
+          }
+          log('BackButton pressed!');
+        },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                buildtop(),
+                buildContent(),
+              ],
+            ),
           ),
         ),
       ],

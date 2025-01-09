@@ -294,15 +294,15 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                       ':',
                       newList.single.disname??''
                     ]),
-                    buildRow([
-                      AppLocalizations.of(context)!.localtypename,
-                      ':',
-                      newList.single.localtypename??''
-                    ]),
+                    // buildRow([
+                    //   AppLocalizations.of(context)!.localtypename,
+                    //   ':',
+                    //   newList.single.localtypename??''
+                    // ]),
                     buildRow([
                       AppLocalizations.of(context)!.localnameemp,
                       ':',
-                      newList.single.localname??''
+                      '${newList.single.localname!.toUpperCase()} ${newList.single.localtypename??''}'
                     ]),
                   ],
                 );
@@ -453,7 +453,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                         padding: const EdgeInsets.all(5.0),
                         child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 275,
+                         // height: 275,
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -525,7 +525,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 3,),
+                      const SizedBox(height: 10,),
                       TextButton(
                           onPressed: () async{
                             final value = await Sharedata.instance.getdata();

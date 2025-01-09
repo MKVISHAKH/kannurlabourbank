@@ -194,12 +194,12 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     if (localecode == Locale('ml')) {
       return DropdownMenuItem<String>(
         value: map['name_ml'],
-        child: Text(map['name_ml'], overflow: TextOverflow.ellipsis),
+        child: Text(map['name_ml'],maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     } else {
       return DropdownMenuItem<String>(
         value: map['name'],
-        child: Text(map['name'], overflow: TextOverflow.ellipsis),
+        child: Text(map['name'],maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     }
   }
@@ -674,6 +674,16 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                   // onSaved: (newValue) =>block=newValue,
 
                   onChanged: (newvalue) async {
+                    if (dropdowndistvalue == null) {
+                    // Show SnackBar if district is not selected
+                    ScaffoldMessenger.of(context).showSnackBar(
+                     const SnackBar(
+                        content: Text('Please select district'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    //return;
+                    }
                     setState(() {
                       dropdownblockvalue = newvalue;
                       dropdownlocalvalue = null;
@@ -761,6 +771,16 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                   // }).toList(),
                   // onSaved: (newValue) =>localbody=newValue,
                   onChanged: (newvalue) async {
+                    // if (dropdowndistvalue == null && dropdownblockvalue==null ) {
+                    // // Show SnackBar if district is not selected
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //  const SnackBar(
+                    //     content: Text('Please select district and local body type'),
+                    //     backgroundColor: Colors.red,
+                    //   ),
+                    // );
+                    // return;
+                    // }
                     setState(() {
                       dropdownlocalvalue = newvalue;
                     });
@@ -862,72 +882,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
               ),
             ),
 
-            /* ************************** */
 
-            /* GENDER */
-            // SizedBox(
-            //   width:MediaQuery.of(context).size.width,
-            //   child: Padding(
-            //     padding: const EdgeInsets.symmetric(vertical:0.0,horizontal: 50.0),
-            //     child: DropdownButtonFormField(
-            //       //onSaved: (newValue) =>sex=newValue,
-            //        decoration:const InputDecoration(
-            //         contentPadding: EdgeInsets.symmetric(horizontal: 25),
-            //         enabledBorder: OutlineInputBorder( //<-- SEE HERE
-            //           borderRadius: BorderRadius.all(Radius.circular(25)),
-            //                       borderSide: BorderSide(
-            //                         color: Color.fromARGB(255, 158, 89, 248),
-            //                       ),
-            //         ),
-            //         focusedBorder: OutlineInputBorder( //<-- SEE HERE
-            //          borderRadius: BorderRadius.all(Radius.circular(25)),
-            //                       borderSide: BorderSide(
-            //                         color: Color.fromARGB(255, 158, 89, 248),
-            //                       ),
-            //         ),
-            //         labelText:  "Sex",
-            //                     labelStyle: TextStyle(color: Color.fromARGB(255, 101, 47, 248)),
-
-            //     ),
-            //     items: genderlist,
-            //     // xlist.map((e){
-            //     //   return DropdownMenuItem(
-            //     //    value: e,
-            //     //    child:Text(e));
-            //     // }).toList(),
-            //     onChanged: (newvalue)async{
-            //       setState(() {
-            //         dropdownxvalue=newvalue;
-
-            //       });
-            //        final genderIdval=await LabourDb.instance.getGenderId(dropdownxvalue);
-
-            //          for(var map in genderIdval){
-            //                     final gender=GenderIdmodel.fromMap(map);
-            //                     setState(() {
-            //                       genderId=gender.id;
-            //                       print(genderId);
-            //                     });
-
-            //          }
-            //       if(newvalue!.isNotEmpty){
-            //                     removeError(error: kSexNullError);
-            //                   }
-            //                   return ;
-
-            //     },
-            //      validator: (value){
-            //                   if(value==null){
-            //                     addError(error: kSexNullError);
-            //                     return "";
-            //                   }
-            //                   return null;
-            //                 },
-            //     value:dropdownxvalue,
-            //   ),
-            // ),
-            //  ),
-            /* ************* */
 
             /* Signup Button */
             Padding(
@@ -938,15 +893,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                     if (_formkey2.currentState!.validate()) {
                       await buildlabsearch();
                     }
-                    //   //goto otp screen
-                    //   final createlab=await buildcreatelabour();
-
-                    //   // Navigator.of(context).pushReplacement(
-                    //   //                           MaterialPageRoute(
-                    //   //                             builder: (ctx) =>  ScreenOtpverify(category: widget.category,),
-                    //   //                           ),
-                    //   //                         );
-                    // }
+                    
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 158, 89, 248),

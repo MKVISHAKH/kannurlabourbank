@@ -24,7 +24,7 @@ class L10n {
         return 16;
       case 'ml':
       default:
-        return 12;
+        return 14;
     }
   }
 

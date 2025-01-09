@@ -204,7 +204,7 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
 
     return Container(
         width: size.width,
-        margin: EdgeInsets.symmetric(horizontal: size.width * 0.035,vertical: size.height*0.025),
+        margin: EdgeInsets.symmetric(horizontal: size.width * 0.023,vertical: size.height*0.025),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -215,12 +215,12 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Appcolors.white,
-                    fixedSize: const Size(173, 40),
+                   // fixedSize: const Size(173, 40),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10))),
                 child: Text(
                   AppLocalizations.of(context)!.decline,
-                  style: const TextStyle(color: Appcolors.labelclr),
+                  style: const TextStyle(color: Appcolors.labelclr,fontSize: 16),
                 )),
             ElevatedButton(
                 onPressed: () {
@@ -229,11 +229,11 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Appcolors.labelclr,
-                    fixedSize: const Size(173, 40),
+                   // fixedSize: const Size(173, 40),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10))),
                 child: Text(AppLocalizations.of(context)!.accept,
-                    style: const TextStyle(color: Appcolors.white))),
+                    style: const TextStyle(color: Appcolors.white,fontSize: 16))),
           ],
         ));
   }

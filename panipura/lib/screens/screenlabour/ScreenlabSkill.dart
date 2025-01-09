@@ -84,14 +84,14 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
       return DropdownMenuItem<String>(
         value: map['name_ml'],
         child: Text(
-          map['name_ml'],
+          map['name_ml'],maxLines: 5,
           overflow: TextOverflow.ellipsis,
         ),
       );
     } else {
       return DropdownMenuItem<String>(
         value: map['name'],
-        child: Text(map['name'], overflow: TextOverflow.ellipsis),
+        child: Text(map['name'],maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     }
   }
@@ -152,7 +152,10 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
   ];
 
   final workaroundlist = ['PANCHAYATH WISE', 'KILOMETER WISE'];
-
+  Future<bool?> popscreen(BuildContext context) async {
+    Navigator.push(context, Approutes().labhomeScreen);
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
@@ -176,61 +179,71 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
       key: _scaffoldKey,
       children: [
         const Screensbackground(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(70),
-            child: AppBar(
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const Screenlabhome(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Color.fromARGB(255, 158, 89, 248),
-                    )),
+        PopScope(
+          canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (!didPop) {
+            if (didPop) return;
+            await popscreen(context);
+          }
+          log('BackButton pressed!');
+        },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(70),
+              child: AppBar(
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const Screenlabhome(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color.fromARGB(255, 158, 89, 248),
+                      )),
+                ),
+                centerTitle: true,
+                title: Text(
+                  AppLocalizations.of(context)!.skill,
+                  style: L10n.getappbarSize(locale.languageCode),
+                ),
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(30),
+                        bottomLeft: Radius.circular(50))),
               ),
-              centerTitle: true,
-              title: Text(
-                AppLocalizations.of(context)!.skill,
-                style: L10n.getappbarSize(locale.languageCode),
-              ),
-              backgroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(30),
-                      bottomLeft: Radius.circular(50))),
             ),
-          ),
-          extendBodyBehindAppBar: true,
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30.0),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: Text(
-                        AppLocalizations.of(context)!.skillset,
-                        style: L10n.getappbarSize(locale.languageCode),
+            extendBodyBehindAppBar: true,
+            body: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.skillset,
+                          style: L10n.getappbarSize(locale.languageCode),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                //SizedBox(height:SizeConfig.screenHeight*0.05),
-                Expanded(
-                  child: Scrollablewidget(child: skillSetForm()),
-                )
-              ],
+                  const SizedBox(height: 10),
+                  //SizedBox(height:SizeConfig.screenHeight*0.05),
+                  Expanded(
+                    child: Scrollablewidget(child: skillSetForm()),
+                  )
+                ],
+              ),
             ),
           ),
         ),

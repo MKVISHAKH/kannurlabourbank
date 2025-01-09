@@ -146,7 +146,7 @@ class LabourDb implements LabourDbFunction {
   Future addDistrict(Districtmodel newDistrict) async {
     await deleteDistrict();
     final db = await database;
-    final res = await db.insert('DISTRICTS', newDistrict.toJson());
+    final res = await db.insert('districts', newDistrict.toJson());
     log('inserted');
     return res;
   }
@@ -154,7 +154,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteDistrict() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM DISTRICTS');
+    final res = await db.rawDelete('DELETE FROM districts');
 
     return res;
   }
@@ -163,9 +163,9 @@ class LabourDb implements LabourDbFunction {
   Future<List<Map<String, dynamic>>> getDistrict(Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery('SELECT name_ml FROM DISTRICTS ORDER BY name_ml ASC');
+          .rawQuery('SELECT name_ml FROM districts ORDER BY name_ml ASC');
     } else {
-      return await _db.rawQuery('SELECT name FROM DISTRICTS ORDER BY name ASC');
+      return await _db.rawQuery('SELECT name FROM districts ORDER BY name ASC');
     }
   }
 
@@ -174,11 +174,11 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       final listid=await _db
-          .rawQuery("SELECT district_id FROM DISTRICTS WHERE name_ml='$name'");
+          .rawQuery("SELECT district_id FROM districts WHERE name_ml='$name'");
       return listid;
     } else {
       final listid=await _db
-          .rawQuery("SELECT district_id FROM DISTRICTS WHERE name='$name'");
+          .rawQuery("SELECT district_id FROM districts WHERE name='$name'");
       return listid;
     }
   }
@@ -188,10 +188,10 @@ class LabourDb implements LabourDbFunction {
       int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery("SELECT name_ml FROM DISTRICTS WHERE district_id='$id'");
+          .rawQuery("SELECT name_ml FROM districts WHERE district_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM DISTRICTS WHERE district_id='$id'");
+          .rawQuery("SELECT name FROM districts WHERE district_id='$id'");
     }
   }
   /* ********************************************* */
@@ -201,7 +201,7 @@ class LabourDb implements LabourDbFunction {
   Future addEducation(Educationmodel newEducation) async {
     await deleteEducation();
     final db = await database;
-    final res = await db.insert('EDUCATIONS', newEducation.toJson());
+    final res = await db.insert('educations', newEducation.toJson());
     log('inserted');
     return res;
   }
@@ -209,7 +209,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteEducation() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM EDUCATIONS');
+    final res = await db.rawDelete('DELETE FROM educations');
 
     return res;
   }
@@ -218,10 +218,10 @@ class LabourDb implements LabourDbFunction {
   Future<List<Map<String, dynamic>>> getEducation(Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery('SELECT name_ml FROM EDUCATIONS ORDER BY name_ml ASC');
+          .rawQuery('SELECT name_ml FROM educations ORDER BY name_ml ASC');
     } else {
       return await _db
-          .rawQuery('SELECT name FROM EDUCATIONS ORDER BY name ASC');
+          .rawQuery('SELECT name FROM educations ORDER BY name ASC');
     }
   }
 
@@ -230,10 +230,10 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT education_id FROM EDUCATIONS WHERE name_ml='$name'");
+          "SELECT education_id FROM educations WHERE name_ml='$name'");
     } else {
       return await _db
-          .rawQuery("SELECT education_id FROM EDUCATIONS WHERE name='$name'");
+          .rawQuery("SELECT education_id FROM educations WHERE name='$name'");
     }
   }
 
@@ -241,10 +241,10 @@ class LabourDb implements LabourDbFunction {
   Future<List<Map<String, Object?>>> getEduName(int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery("SELECT name_ml FROM EDUCATIONS WHERE education_id='$id'");
+          .rawQuery("SELECT name_ml FROM educations WHERE education_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM EDUCATIONS WHERE education_id='$id'");
+          .rawQuery("SELECT name FROM educations WHERE education_id='$id'");
     }
   }
   /* ********************************************* */
@@ -255,7 +255,7 @@ class LabourDb implements LabourDbFunction {
   Future addLocalbodyType(Localbdytypemodel newLocalbdyType) async {
     await deleteLocalbodyType();
     final db = await database;
-    final res = await db.insert('LOCALBODY_TYPES', newLocalbdyType.toJson());
+    final res = await db.insert('localbody_types', newLocalbdyType.toJson());
     log('inserted');
     return res;
   }
@@ -263,7 +263,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteLocalbodyType() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM LOCALBODY_TYPES');
+    final res = await db.rawDelete('DELETE FROM localbody_types');
 
     return res;
   }
@@ -272,10 +272,10 @@ class LabourDb implements LabourDbFunction {
   Future<List<Map<String, dynamic>>> getLocalbodyType(Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery('SELECT name_ml FROM LOCALBODY_TYPES ORDER BY name_ml ASC');
+          .rawQuery('SELECT name_ml FROM localbody_types ORDER BY name_ml ASC');
     } else {
       return await _db
-          .rawQuery('SELECT name FROM LOCALBODY_TYPES ORDER BY name ASC');
+          .rawQuery('SELECT name FROM localbody_types ORDER BY name ASC');
     }
   }
 
@@ -284,10 +284,10 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT lb_type_id FROM LOCALBODY_TYPES WHERE name_ml='$name'");
+          "SELECT lb_type_id FROM localbody_types WHERE name_ml='$name'");
     } else {
       return await _db.rawQuery(
-          "SELECT lb_type_id FROM LOCALBODY_TYPES WHERE name='$name'");
+          "SELECT lb_type_id FROM localbody_types WHERE name='$name'");
     }
   }
 
@@ -296,10 +296,10 @@ class LabourDb implements LabourDbFunction {
       int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT name_ml FROM LOCALBODY_TYPES WHERE lb_type_id='$id'");
+          "SELECT name_ml FROM localbody_types WHERE lb_type_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM LOCALBODY_TYPES WHERE lb_type_id='$id'");
+          .rawQuery("SELECT name FROM localbody_types WHERE lb_type_id='$id'");
     }
   }
   /* ********************************************* */
@@ -309,7 +309,7 @@ class LabourDb implements LabourDbFunction {
   Future addGenderType(Gendermodel newgenderType) async {
     await deleteGender();
     final db = await database;
-    final res = await db.insert('GENDERS', newgenderType.toJson());
+    final res = await db.insert('genders', newgenderType.toJson());
     log('inserted');
     return res;
   }
@@ -317,7 +317,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteGender() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM GENDERS');
+    final res = await db.rawDelete('DELETE FROM genders');
 
     return res;
   }
@@ -325,9 +325,9 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<List<Map<String, dynamic>>> getGender(Locale? locale) async {
     if (locale == Locale('ml')) {
-      return await _db.rawQuery('SELECT name_ml FROM GENDERS');
+      return await _db.rawQuery('SELECT name_ml FROM genders');
     } else {
-      return await _db.rawQuery('SELECT name FROM GENDERS');
+      return await _db.rawQuery('SELECT name FROM genders');
     }
   }
 
@@ -336,10 +336,10 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery("SELECT gender_id FROM GENDERS WHERE name_ml='$name'");
+          .rawQuery("SELECT gender_id FROM genders WHERE name_ml='$name'");
     } else {
       return await _db
-          .rawQuery("SELECT gender_id FROM GENDERS WHERE name='$name'");
+          .rawQuery("SELECT gender_id FROM genders WHERE name='$name'");
     }
   }
 
@@ -348,10 +348,10 @@ class LabourDb implements LabourDbFunction {
       int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery("SELECT name_ml FROM GENDERS WHERE gender_id='$id'");
+          .rawQuery("SELECT name_ml FROM genders WHERE gender_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM GENDERS WHERE gender_id='$id'");
+          .rawQuery("SELECT name FROM genders WHERE gender_id='$id'");
     }
   }
   /* ********************************************* */
@@ -361,7 +361,7 @@ class LabourDb implements LabourDbFunction {
   Future addLocalbodies(Localbodiesmodel localbodyname) async {
     await deleteLocalbodies();
     final db = await database;
-    final res = await db.insert('LOCALBODIES', localbodyname.toJson());
+    final res = await db.insert('localbodies', localbodyname.toJson());
     log('inserted');
     return res;
   }
@@ -369,7 +369,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteLocalbodies() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM LOCALBODIES');
+    final res = await db.rawDelete('DELETE FROM localbodies');
 
     return res;
   }
@@ -379,11 +379,11 @@ class LabourDb implements LabourDbFunction {
       int? distid, int? typeid, Locale? locale) async {
     if (locale == Locale('ml')) {
       final listbodies=await _db.rawQuery(
-          "SELECT name_ml FROM LOCALBODIES WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name_ml ASC");
+          "SELECT name_ml FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name_ml ASC");
       return listbodies;
     } else {
       final listbodies=await _db.rawQuery(
-          "SELECT name FROM LOCALBODIES WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name ASC");
+          "SELECT name FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name ASC");
       return listbodies;
     }
   }
@@ -393,10 +393,10 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT localbody_id FROM LOCALBODIES WHERE name_ml='$name'");
+          "SELECT localbody_id FROM localbodies WHERE name_ml='$name'");
     } else {
       return await _db
-          .rawQuery("SELECT localbody_id FROM LOCALBODIES WHERE name='$name'");
+          .rawQuery("SELECT localbody_id FROM localbodies WHERE name='$name'");
     }
   }
 
@@ -405,10 +405,10 @@ class LabourDb implements LabourDbFunction {
       int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery("SELECT name_ml FROM LOCALBODIES WHERE localbody_id='$id'");
+          .rawQuery("SELECT name_ml FROM localbodies WHERE localbody_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM LOCALBODIES WHERE localbody_id='$id'");
+          .rawQuery("SELECT name FROM localbodies WHERE localbody_id='$id'");
     }
   }
 
@@ -419,7 +419,7 @@ class LabourDb implements LabourDbFunction {
   Future addOccupations(Occupationmodel occupationname) async {
     await deleteOccupations();
     final db = await database;
-    final res = await db.insert('OCCUPATIONS', occupationname.toJson());
+    final res = await db.insert('occupations', occupationname.toJson());
     log('inserted');
     return res;
   }
@@ -427,7 +427,7 @@ class LabourDb implements LabourDbFunction {
   @override
   Future<int> deleteOccupations() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM OCCUPATIONS');
+    final res = await db.rawDelete('DELETE FROM occupations');
 
     return res;
   }
@@ -436,10 +436,10 @@ class LabourDb implements LabourDbFunction {
   Future<List<Map<String, dynamic>>> getOccupations(Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db
-          .rawQuery('SELECT name_ml FROM OCCUPATIONS ORDER BY name_ml ASC');
+          .rawQuery('SELECT name_ml FROM occupations ORDER BY name_ml ASC');
     } else {
       return await _db
-          .rawQuery('SELECT name FROM OCCUPATIONS ORDER BY name ASC');
+          .rawQuery('SELECT name FROM occupations ORDER BY name ASC');
     }
   }
 
@@ -448,10 +448,10 @@ class LabourDb implements LabourDbFunction {
       String? name, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT occupation_id FROM OCCUPATIONS WHERE name_ml='$name'");
+          "SELECT occupation_id FROM occupations WHERE name_ml='$name'");
     } else {
       return await _db
-          .rawQuery("SELECT occupation_id FROM OCCUPATIONS WHERE name='$name'");
+          .rawQuery("SELECT occupation_id FROM occupations WHERE name='$name'");
     }
   }
 
@@ -460,10 +460,10 @@ class LabourDb implements LabourDbFunction {
       int? id, Locale? locale) async {
     if (locale == Locale('ml')) {
       return await _db.rawQuery(
-          "SELECT name_ml FROM OCCUPATIONS WHERE occupation_id='$id'");
+          "SELECT name_ml FROM occupations WHERE occupation_id='$id'");
     } else {
       return await _db
-          .rawQuery("SELECT name FROM OCCUPATIONS WHERE occupation_id='$id'");
+          .rawQuery("SELECT name FROM occupations WHERE occupation_id='$id'");
     }
   }
 

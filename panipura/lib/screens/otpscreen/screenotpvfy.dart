@@ -308,7 +308,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
       controller: otpController,
       length: 6,
       width: size.width - 34,
-      fieldWidth: 55,
+      fieldWidth: 50,
       otpFieldStyle: OtpFieldStyle(
         backgroundColor: Colors.white,
         borderColor: Appcolors.magenta,
