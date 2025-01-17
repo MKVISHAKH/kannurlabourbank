@@ -8,8 +8,10 @@ part of 'contactlog.dart';
 
 Contactlog _$ContactlogFromJson(Map<String, dynamic> json) => Contactlog(
       contactTime: json['contact_time'] as String?,
-      employerId: json['employer_id'] as int?,
-      userId: json['user_id'] as int?,
+      employerId: (json['employer_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
+      empMob: json['employer_mobile'] as String?,
+      usrMob: json['user_mobile'] as String?,
     );
 
 Map<String, dynamic> _$ContactlogToJson(Contactlog instance) =>
@@ -17,4 +19,6 @@ Map<String, dynamic> _$ContactlogToJson(Contactlog instance) =>
       'contact_time': instance.contactTime,
       'employer_id': instance.employerId,
       'user_id': instance.userId,
+      'employer_mobile': instance.empMob,
+      'user_mobile': instance.usrMob,
     };

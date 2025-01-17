@@ -7,7 +7,7 @@ part of 'gettodolist.dart';
 // **************************************************************************
 
 Gettodolist _$GettodolistFromJson(Map<String, dynamic> json) => Gettodolist(
-      todolistId: json['todolist_id'] as int?,
+      todolistId: (json['todolist_id'] as num?)?.toInt(),
       title: json['title'] as String?,
       description: json['description'] as String?,
       frmDt: json['frm_dt'] as String?,

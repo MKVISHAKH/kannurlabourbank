@@ -1,25 +1,12 @@
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/database/labourdb.dart';
-import 'package:panipura/functions/laborfn.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/deleteskill/deletereq/deletereq/deletereq.dart';
-import 'package:panipura/model/dropdownId/occupationmodel.dart';
-import 'package:panipura/model/dropdownname/namemdl.dart';
-import 'package:panipura/provider/loadingprovider.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/provider/profilepicprovider.dart';
-import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
-import 'package:panipura/screens/screenlabour/screeneditskill.dart';
-import 'package:panipura/widgets/constants.dart';
-import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
-import '../../model/upldimg/uploadimgresp/uploadimgresp.dart';
-import '../../utils/app_helper.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
+
 class ScreenLabProfile extends StatefulWidget {
   final int? usrId;
   final String? token;
@@ -56,13 +43,20 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initializedata();
       profilepicload();
+      getSkills(context);
+      getUserdata(context);
+      // setState(() {
+      //   usrId = widget.usrId;
+      //   token = widget.token;
+      // });
     });
-    super.initState();
+
+   super.initState();
     usrId = widget.usrId;
     token = widget.token;
-    getSkills();
+    // getSkills();
 
-    getUserdata();
+    // getUserdata(context);
 
     // getProfilePic();
 
@@ -79,20 +73,18 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
     localecode = provider.locale;
   }
 
-  void profilepicload(){
-    final loadingProvider = Provider.of<LoadingProvider>(context,listen: false);
+  void profilepicload() {
+    final loadingProvider =
+        Provider.of<LoadingProvider>(context, listen: false);
     loadingProvider.toggelLoading();
-    final pro=Provider.of<ProfilepicProvider>(context,listen: false);
+    final pro = Provider.of<ProfilepicProvider>(context, listen: false);
     // var po = context.read<ProfilepicProvider>();
-      pro.updateProfilepic(usrId, token);
-      loadingProvider.toggelLoading();
-      setState(() {
-        
-      });
-      
+    pro.updateProfilepic(usrId, token);
+    loadingProvider.toggelLoading();
+    setState(() {});
   }
 
-  getSkills() async {
+  getSkills(BuildContext context) async {
     final value = await Sharedata.instance.getdata();
 
     usrId = value!.userid;
@@ -101,10 +93,12 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
     } else {
       langcode = langeng;
     }
-    await Labempfn.instance.refreshskillUI(usrId, langcode);
+        if (!context.mounted) return ;
+
+    await Labempfn.instance.refreshskillUI(usrId, langcode,context);
   }
 
-  void getUserdata() async {
+  Future getUserdata(BuildContext context) async {
     final value = await Sharedata.instance.getdata();
     final nam = value!.name;
     final plac = value.place;
@@ -116,38 +110,42 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
     String birthdt = dateFormat1.format(dobdt);
     log(birthdt);
     String? eduName;
+    if (!context.mounted) return;
+
     final eduNameval = await LabourDb.instance
-          .getEduName(value.educationId, localecode);
+        .getEduName(value.educationId, localecode, context);
 
-      for (var map in eduNameval) {
-        final edu = Namemodel.fromMap(map);
-        setState(() {
-          if (localecode == Locale('ml')) {
-            eduName = edu.nameml;
-            log('$eduName');
-          } else {
-            eduName = edu.name;
-            log('$eduName');
-          }
-        });
-      }
+    for (var map in eduNameval) {
+      final edu = Namemodel.fromMap(map);
+      setState(() {
+        if (localecode == Locale('ml')) {
+          eduName = edu.nameml;
+          log('$eduName');
+        } else {
+          eduName = edu.name;
+          log('$eduName');
+        }
+      });
+    }
 
-      String? genderName;
-      final genderNameval = await LabourDb.instance
-          .getGenderName(value.genderId, localecode);
+    String? genderName;
+    if (!context.mounted) return;
 
-      for (var map in genderNameval) {
-        final gender = Namemodel.fromMap(map);
-        setState(() {
-          if (localecode == Locale('ml')) {
-            genderName = gender.nameml;
-            log('$genderName');
-          } else {
-            genderName = gender.name;
-            log('$genderName');
-          }
-        });
-      }
+    final genderNameval = await LabourDb.instance
+        .getGenderName(value.genderId, localecode, context);
+
+    for (var map in genderNameval) {
+      final gender = Namemodel.fromMap(map);
+      setState(() {
+        if (localecode == Locale('ml')) {
+          genderName = gender.nameml;
+          log('$genderName');
+        } else {
+          genderName = gender.name;
+          log('$genderName');
+        }
+      });
+    }
     //final gender = value.gender;
     //final educat = value.education;
 
@@ -159,21 +157,22 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
       edu = eduName;
       dob = birthdt;
 
-      name = name!.toUpperCase();
-      sex = sex!.toUpperCase();
-      place = place!.toUpperCase();
-      mob = mob!.toUpperCase();
-      edu = edu!.toUpperCase();
+      name = name?.toUpperCase() ?? '';
+      sex = sex?.toUpperCase() ?? '';
+      place = place?.toUpperCase() ?? '';
+      mob = mob?.toUpperCase() ?? '';
+      edu = edu?.toUpperCase() ?? '';
     });
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final ImagePicker picker = ImagePicker();
-Future<bool?> popscreen(BuildContext context) async {
+  Future<bool?> popscreen(BuildContext context) async {
     Navigator.push(context, Approutes().labhomeScreen);
     return true;
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -182,13 +181,13 @@ Future<bool?> popscreen(BuildContext context) async {
         const Screensbackground(),
         PopScope(
           canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (!didPop) {
-            if (didPop) return;
-            await popscreen(context);
-          }
-          log('BackButton pressed!');
-        },
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
+          },
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: ListView(
@@ -275,17 +274,19 @@ Future<bool?> popscreen(BuildContext context) async {
     //var inputPro = context.read<ProfilepicProvider>();
     return Stack(children: [
       CircleAvatar(
-          radius: profileHeight / 1.8,
-          backgroundImage: imagepro,
-          backgroundColor: Colors.white,
-          child:Consumer<LoadingProvider>(builder: (context, loadingProvider, child) {
-            return loadingProvider.isLoading
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Color.fromARGB(255, 2, 128, 6)),
-                  )
-                : const SizedBox.shrink();
-          }),),
+        radius: profileHeight / 1.8,
+        backgroundImage: imagepro,
+        backgroundColor: Colors.white,
+        child: Consumer<LoadingProvider>(
+            builder: (context, loadingProvider, child) {
+          return loadingProvider.isLoading
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Color.fromARGB(255, 2, 128, 6)),
+                )
+              : const SizedBox.shrink();
+        }),
+      ),
       Positioned(
           bottom: 10.0,
           right: 10.0,
@@ -336,7 +337,7 @@ Future<bool?> popscreen(BuildContext context) async {
                     TextButton.icon(
                         onPressed: () {
                           var po = context.read<ProfilepicProvider>();
-                          takePhoto(ImageSource.camera, picid, context,po);
+                          takePhoto(ImageSource.camera, picid, context, po);
                         },
                         icon: const Icon(
                           Icons.camera,
@@ -346,7 +347,7 @@ Future<bool?> popscreen(BuildContext context) async {
                     TextButton.icon(
                         onPressed: () {
                           var po = context.read<ProfilepicProvider>();
-                          takePhoto(ImageSource.gallery, picid, context,po);
+                          takePhoto(ImageSource.gallery, picid, context, po);
                         },
                         icon: const Icon(Icons.image, size: 30),
                         label: const Text("Gallery"))
@@ -356,141 +357,128 @@ Future<bool?> popscreen(BuildContext context) async {
             ))));
   }
 
-  Future takePhoto(ImageSource source, int typeid, BuildContext context,ProfilepicProvider provider) async {
-    try{
+  Future takePhoto(ImageSource source, int typeid, BuildContext context,
+      ProfilepicProvider provider) async {
+    try {
       final pickedFile = await picker.pickImage(source: source);
-    //final provider = Provider.of<ProfilepicProvider>(_scaffoldKey.currentContext!);
-    if (pickedFile == null) {
-      Fluttertoast.showToast(
-        msg: "Camera permission denied. Please enable it in settings.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0);
-         Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+      //final provider = Provider.of<ProfilepicProvider>(_scaffoldKey.currentContext!);
+      if (pickedFile == null) {
+        
+            if (!context.mounted) return;
+            CommonFun.instance.showApierror(context, "Camera permission denied. Please enable it in settings.");
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
           ),
         );
-      return;
-    }else{
-      final loadingProvider = Provider.of<LoadingProvider>(_scaffoldKey.currentContext!,listen:false);
-    loadingProvider.toggelLoading();
-    
-      var image = File(pickedFile.path.toString());
-      final sizeInKbBefore = image.lengthSync() / 1024;
-      log('Before Compress $sizeInKbBefore kb');
-      final imagepath=image.absolute.path;
-      final mimeType = lookupMimeType(imagepath);
-      if(mimeType==null){
-       Fluttertoast.showToast(
-            msg: AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
-          ),
-        );
-      }
-      
-      else if(mimeType=='image/jpeg'){
-        log(mimeType);
-        var compressedImage = await AppHelper.compress(image: image);
-      final sizeInKbAfter = compressedImage!.lengthSync() / 1024;
-      log('After Compress $sizeInKbAfter kb');
-      var croppedImage = await AppHelper.cropImage(compressedImage);
-      if (croppedImage == null) {
         return;
-      }
-      setState(() {
-        final File imageFile = File(croppedImage.path);
-        fileImage = imageFile;
-      });
-      final imgresp = await Labourdata().uploadimg(fileImage, usrId, typeid);
-      loadingProvider.toggelLoading();
-    if (imgresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (imgresp.statusCode == 200) {
-      final resultAsjson = jsonDecode(imgresp.data);
-
-      final imgval =
-          Uploadimgresp.fromJson(resultAsjson as Map<String, dynamic>);
-      final status = imgval.success;
-      if (status == true) {
-        provider.updateProfilepic(usrId, token);
-
-        Fluttertoast.showToast(
-            msg: AppLocalizations.of(_scaffoldKey.currentContext!)!.uploadpic,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
-          ),
-        );
       } else {
-        showSnackBar(_scaffoldKey.currentContext!,
-            text: "something went wrong");
-      }
-    } else {
-      showSnackBar(_scaffoldKey.currentContext!, text: "Server not reached");
-    }
-    log('$imgresp');
+              if (!context.mounted) return;
+        final loadingProvider = Provider.of<LoadingProvider>(
+            context,
+            listen: false);
+        loadingProvider.toggelLoading();
 
-    setState(() {});
-      }
-      else{
-        Fluttertoast.showToast(
-            msg: AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
-          ),
-        );
-      }
+        var image = File(pickedFile.path.toString());
+        final sizeInKbBefore = image.lengthSync() / 1024;
+        log('Before Compress $sizeInKbBefore kb');
+        final imagepath = image.absolute.path;
+        final mimeType = lookupMimeType(imagepath);
+        if (mimeType == null) {
+              if (!context.mounted) return;
+                CommonFun.instance.showApierror(context,AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,);
+          //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) =>
+                  ScreenLabProfile(usrId: usrId, token: token),
+            ),
+          );
+        } else if (mimeType == 'image/jpeg') {
+          log(mimeType);
+          var compressedImage = await AppHelper.compress(image: image);
+          final sizeInKbAfter = compressedImage!.lengthSync() / 1024;
+          log('After Compress $sizeInKbAfter kb');
+          var croppedImage = await AppHelper.cropImage(compressedImage);
+          if (croppedImage == null) {
+            return;
+          }
+          setState(() {
+            final File imageFile = File(croppedImage.path);
+            fileImage = imageFile;
+          });
+          final imgresp =
+              await Labourdata().uploadimg(fileImage, usrId, typeid);
+          loadingProvider.toggelLoading();
+          if (imgresp == null) {
+            if (!context.mounted) return;
+            CommonFun.instance.showApierror(context, "Something went wrong");
+        }else if (imgresp.statusCode == 200) {
+            final resultAsjson = jsonDecode(imgresp.data);
 
+            final imgval =
+                Uploadimgresp.fromJson(resultAsjson as Map<String, dynamic>);
+            final status = imgval.success;
+            if (status == true) {
+              provider.updateProfilepic(usrId, token);
+
+              
+                  if (!context.mounted) return;
+                CommonFun.instance.showApierror(context, AppLocalizations.of(context)!.uploadpic,);
+              //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ScreenLabProfile(usrId: usrId, token: token),
+                ),
+              );
+            } else {
+               if (!context.mounted) return;
+
+              showSnackBar(context,
+                  text: "something went wrong");
+            }
+          } else if (imgresp.statusCode == 500) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (imgresp.statusCode == 408) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
+          log('$imgresp');
+
+          setState(() {});
+        } else {
+           if (!context.mounted) return;
+                CommonFun.instance.showApierror(context,AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,);
+         
+          //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) =>
+                  ScreenLabProfile(usrId: usrId, token: token),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+           if (!context.mounted) return;
+
+      showSnackBar(context, text: "something went wrong");
     }
-        
-    }catch(e){
-      showSnackBar(_scaffoldKey.currentContext!,
-            text: "something went wrong");
-    }
-    Fluttertoast.showToast(
-        msg: "Camera permission denied. Please enable it in settings.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        fontSize: 16.0);
-        
-      return;
-    
+ 
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Camera permission denied. Please enable it in settings.");
+
+    return;
   }
 
   getImageFrom({required ImageSource source}) async {
@@ -533,12 +521,12 @@ Future<bool?> popscreen(BuildContext context) async {
           const SizedBox(
             height: 16,
           ),
-          buildskils(),
+          buildskils(context),
           buildAbout(),
         ],
       );
 
-  Widget buildskils() {
+  Widget buildskils(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
     final locale = provider.locale;
     return Padding(
@@ -576,7 +564,8 @@ Future<bool?> popscreen(BuildContext context) async {
                     //     log('$districtId');
                     //   });
                     // }
-                    Navigator.of(_scaffoldKey.currentContext!).push(
+                 if (!context.mounted) return;
+                    Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (ctx) => ScreenLabSkill(
                             distId: value!.distId,
@@ -608,7 +597,8 @@ Future<bool?> popscreen(BuildContext context) async {
                   //     log('$districtId');
                   //   });
                   // }
-                  Navigator.of(_scaffoldKey.currentContext!).push(
+           if (!context.mounted) return;
+                  Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (ctx) => ScreenLabSkill(
                           distId: value!.distId,
@@ -757,14 +747,18 @@ Future<bool?> popscreen(BuildContext context) async {
             ),
             const Divider(),
             ListTile(
-              title: Text(AppLocalizations.of(context)!.deleteac, style: kscreenText),
+              title: Text(AppLocalizations.of(context)!.deleteac,
+                  style: kscreenText),
               subtitle: const Text('Delete your Account'),
-              onTap: (){
-                  Navigator.of(_scaffoldKey.currentContext!).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => ScreenDeleteAccount(usrId: widget.usrId,token: widget.token,category: lab,)
-                      ),
-                    );
+              onTap: () {
+                Navigator.of(_scaffoldKey.currentContext!).push(
+                  MaterialPageRoute(
+                      builder: (ctx) => ScreenDeleteAccount(
+                            usrId: widget.usrId,
+                            token: widget.token,
+                            category: lab,
+                          )),
+                );
               },
             ),
             const SizedBox(
@@ -828,8 +822,10 @@ Future<bool?> popscreen(BuildContext context) async {
                       //     log('$districtId');
                       //   });
                       // }
+                    if (!context.mounted) return;
+
                       final occupationId = await LabourDb.instance
-                          .getOccupationsId(wrkname, localecode);
+                          .getOccupationsId(wrkname, localecode,context);
 
                       for (var map in occupationId) {
                         final wrkval = WrkIdmodel.fromMap(map);
@@ -855,9 +851,8 @@ Future<bool?> popscreen(BuildContext context) async {
                           'districtId': value!.distId
                         }
                       ];
-
-                      Navigator.of(_scaffoldKey.currentContext!)
-                          .push(
+           if (!context.mounted) return;
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ScreenEditSkill(
                             skilldet: skilledit,
@@ -932,14 +927,8 @@ Future<bool?> popscreen(BuildContext context) async {
 
     log('$deleteresp');
     if (deleteresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
     } else if (deleteresp.statusCode == 200) {
       final resultAsjson = jsonDecode(deleteresp.data);
       final searchval =
@@ -947,122 +936,61 @@ Future<bool?> popscreen(BuildContext context) async {
       final message = searchval.message;
       final status = searchval.success;
       if (status == true) {
-        Fluttertoast.showToast(
-            msg: message!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+
+       if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
         Labempfn.instance.refreshskillUI;
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+        
+        //if (!context.mounted) return ;
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) =>
                 ScreenLabProfile(usrId: widget.usrId, token: widget.token),
           ),
         );
       } else {
-        Fluttertoast.showToast(
-            msg: message ?? "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) =>
                 ScreenLabProfile(usrId: widget.usrId, token: widget.token),
           ),
         );
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+    } else if (deleteresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+         Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
               ScreenLabProfile(usrId: widget.usrId, token: widget.token),
         ),
       );
-    }
+        // showLoginerror(context, 3);
+      } else if (deleteresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+        Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+              ScreenLabProfile(usrId: widget.usrId, token: widget.token),
+        ),
+      );
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+        Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+              ScreenLabProfile(usrId: widget.usrId, token: widget.token),
+        ),
+      );
+      }
   }
-//   Future<bool> checkCameraPermission(BuildContext context) async {
-//   var status = await Permission.camera.status;
 
-//   if (status.isDenied) {
-//     // Request permission
-//     var result = await Permission.camera.request();
-//     return result.isGranted;
-//   } else if (status.isPermanentlyDenied) {
-//     // Prompt user to enable permission in settings
-//     openAppSettings();
-//     return false;
-//   }
-
-//   return status.isGranted;
-// }
 }
 
-// Future<String?> getskillname(int? wrkdid)async{
-//    final skillNameval=await LabourDb.instance.getOccupationsName(wrkdid);
 
-//                    for(var map in skillNameval){
-//                               final skill=Namemodel.fromMap(map);
-//                               setState(() {
-//                                 skillname=skill.name;
-//                                 print(skillname);
-//                                 skillname=skillname!.toUpperCase();
-
-//                               });
-//                             return skillname;
-//                    }
-// }
-
-// Widget bottomsheet(int picid){
-//   return Container(
-//     height: 100.0,
-//     width: MediaQuery.of(context).size.width,
-//     margin:const EdgeInsets.symmetric(
-//       horizontal: 20,
-//       vertical: 20,
-//     ),
-//     child:Column(children: [
-//       const Text("Choose Profile Photo",
-//       style:TextStyle(
-//         fontSize: 20.0,
-//         color:Color.fromARGB(255, 101, 47, 248),
-//       ),
-
-//       ),
-//      const  SizedBox(height: 20,),
-//        Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//         children: [
-//           TextButton.icon(
-//             onPressed: (){
-//               takePhoto(ImageSource.camera,picid);
-//             },
-//              icon:const Icon(Icons.camera,size: 30,),
-//               label:const Text("Camera")
-//               ),
-//           TextButton.icon(
-//             onPressed: (){
-//               takePhoto(ImageSource.gallery,picid);
-//             },
-//              icon:const Icon(Icons.image,size:30),
-//               label:const Text("Gallery")
-//               )
-//        ],)
-//     ],)
-//   );
-
-// }

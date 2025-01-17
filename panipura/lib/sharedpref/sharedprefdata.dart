@@ -1,10 +1,6 @@
-import 'package:panipura/model/deviceinfo/deviceinfo.dart';
+import 'package:panipura/core/hooks/hook.dart';
 
-import '../main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
-import '../model/sharedmdl/sharedtokenmdl.dart';
-import '../widgets/constants.dart';
 
 class Sharedata {
   //---singleton-----
@@ -31,14 +27,14 @@ class Sharedata {
     await sharedprefes.setString('PLACE', value.place!);
     await sharedprefes.setString('POST', value.post!);
     await sharedprefes.setString('PIN', value.pin!);
-    await sharedprefes.setString('GENDER', value.gender!);
-    await sharedprefes.setInt('GENDERID', value.genderId!);
-    await sharedprefes.setString('DISTRICT', value.district!);
-    await sharedprefes.setInt('DISTRICTID', value.distId!);
-    await sharedprefes.setString('TYPE', value.block!);
-    await sharedprefes.setInt('TYPEID', value.blockId!);
-    await sharedprefes.setString('LOCALBODY', value.localbody!);
-    await sharedprefes.setInt('LOCALBODYID', value.localbodyId!);
+    await sharedprefes.setString('GENDER', value.gender ?? '');
+    await sharedprefes.setInt('GENDERID', value.genderId ?? 0);
+    await sharedprefes.setString('DISTRICT', value.district ?? '');
+    await sharedprefes.setInt('DISTRICTID', value.distId ?? 0);
+    await sharedprefes.setString('TYPE', value.block ?? '');
+    await sharedprefes.setInt('TYPEID', value.blockId ?? 0);
+    await sharedprefes.setString('LOCALBODY', value.localbody ?? '');
+    await sharedprefes.setInt('LOCALBODYID', value.localbodyId ?? 0);
     await sharedprefes.setString('DOB', value.dob!);
     // if(value.aadhaar==null){
     //   value.aadhaar=='';
@@ -46,8 +42,8 @@ class Sharedata {
     await sharedprefes.setString('AADHAAR', value.aadhaar!);
     await sharedprefes.setInt('CATEGORY', value.category!);
     if (value.category == lab) {
-      await sharedprefes.setString('EDUCATION', value.education!);
-      await sharedprefes.setInt('EDUCATIONID', value.educationId!);
+      await sharedprefes.setString('EDUCATION', value.education ?? '');
+      await sharedprefes.setInt('EDUCATIONID', value.educationId ?? 0);
     }
     await sharedprefes.setString('PASSWORD', value.password!);
     await sharedprefes.setInt('USERID', value.userid!);
@@ -173,7 +169,8 @@ class Sharedata {
     await sharedprefes.setBool(savedeviceinfo, true);
     await sharedprefes.setString('DEVICE', value.phone ?? '');
     await sharedprefes.setString('DEVICEOS', value.phoneos ?? '');
-    await sharedprefes.setString('SCREENRESOLUTION', value.screenresolution ?? '');
+    await sharedprefes.setString(
+        'SCREENRESOLUTION', value.screenresolution ?? '');
     await sharedprefes.setString('DEVICEVERSION', value.osversion ?? '');
     await sharedprefes.setString('PACKAGENAME', value.packagename ?? '');
     await sharedprefes.setString('APPVERSION', value.appversion ?? '');

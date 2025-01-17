@@ -18,7 +18,8 @@ class _LocalizationDemoState extends State<LocalizationDemo> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(AppLocalizations.of(context)!.language,
-                  style:const TextStyle(fontSize: 36, fontWeight: FontWeight.bold))
+                  style: const TextStyle(
+                      fontSize: 36, fontWeight: FontWeight.bold))
             ],
           ),
         ));

@@ -7,18 +7,18 @@ part of 'data.dart';
 // **************************************************************************
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
-      rating: json['rating'] as int?,
-      employerId: json['employer_id'] as int?,
-      skillId: json['skill_id'] as int?,
+      rating: (json['rating'] as num?)?.toInt(),
+      employerId: (json['employer_id'] as num?)?.toInt(),
+      skillId: (json['skill_id'] as num?)?.toInt(),
       comments: json['comments'] as String?,
-      userId: json['user_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
-      ratingId: json['rating_id'] as int?,
+      ratingId: (json['rating_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{

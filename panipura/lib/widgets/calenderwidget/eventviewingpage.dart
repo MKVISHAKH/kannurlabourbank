@@ -1,10 +1,7 @@
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/model/Eventmodel/event.dart';
-import 'package:panipura/model/todolist/addtodolistresp/addtodoresp.dart';
-import 'package:panipura/model/todolist/deletetodoreq/deletetodoreq.dart';
-import 'package:panipura/widgets/calenderwidget/eventeditingpage.dart';
-import 'package:panipura/widgets/calenderwidget/utils.dart';
+
 final scaffoldKeys = GlobalKey<ScaffoldState>();
+
 class EventViewingPage extends StatelessWidget {
   final Event event;
   const EventViewingPage({Key? key, required this.event}) : super(key: key);
@@ -13,7 +10,7 @@ class EventViewingPage extends StatelessWidget {
   Widget build(BuildContext context) => Stack(children: [
         const Screensbackground(),
         Scaffold(
-          key: scaffoldKeys,
+            key: scaffoldKeys,
             backgroundColor: Colors.transparent,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(70),
@@ -108,58 +105,48 @@ class EventViewingPage extends StatelessWidget {
               final todoid = event.todolistId;
               final deletereq =
                   Deletetodoreq(userId: usrId, todolistId: todoid);
-              builddeletetodo(deletereq);
+        if (!context.mounted) return ;
+              builddeletetodo(deletereq,context);
               provider.deleteEvent(event);
               Navigator.of(scaffoldKeys.currentContext!).pop();
             })
       ];
 
-  Future builddeletetodo(Deletetodoreq deleteval) async {
+  Future builddeletetodo(Deletetodoreq deleteval,BuildContext context) async {
     final addtodoresp = await Labourdata().deletetodolist(deleteval);
     if (addtodoresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (addtodoresp.statusCode == 200) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }  else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
           Addtodoresp.fromJson(resultAsjson as Map<String, dynamic>);
       final status = registerval.success;
       if (status == true) {
         final message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+
+            if (!context.mounted) return;
+        CommonFun.instance.showApierror(context,message);
       } else {
         final message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+
+            if (!context.mounted) return;
+        CommonFun.instance.showApierror(context,message);
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    } else if (addtodoresp.statusCode == 500) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (addtodoresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 }

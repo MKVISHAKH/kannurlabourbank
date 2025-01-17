@@ -7,7 +7,7 @@ class Skillsvw {
   Skillsvw({this.success, this.message, this.data = const []});
   factory Skillsvw.fromJson(Map<String, dynamic> json) {
     var list = json["data"] as List;
-   // print(list.runtimeType);
+    // print(list.runtimeType);
     List<Getrefskillresplist>? skilllist =
         list.map((e) => Getrefskillresplist.fromJson(e)).toList();
     return Skillsvw(

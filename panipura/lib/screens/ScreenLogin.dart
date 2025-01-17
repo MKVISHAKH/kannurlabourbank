@@ -1,16 +1,8 @@
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/loginmodel/loginreq/loginreq.dart';
-import 'package:panipura/model/loginmodel/loginresp/loginresp.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/screens/forgotpswrd/forgotpswrd.dart';
-import 'package:panipura/screens/otpscreen/screenotpvfy.dart';
-import '../database/labourdb.dart';
-import '../model/dropdownname/namemdl.dart';
-import '../widgets/constants.dart';
-import 'screenlabour/Screenregister.dart';
 import 'dart:developer';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:panipura/screens/forgotpswrd/forgotpswrd.dart';
 
 class ScreenLogin extends StatefulWidget {
   final int? category;
@@ -88,14 +80,13 @@ class _ScreenLoginState extends State<ScreenLogin> {
     final provider = Provider.of<LocaleProvider>(context);
     final locale = provider.locale;
     return PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            if (!didPop){
-              //if (didPop) return;
-               await popscreen(context);
-            
-            } 
-          },
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          //if (didPop) return;
+          await popscreen(context);
+        }
+      },
       child: Stack(
         children: [
           const Screensbackground(),
@@ -375,12 +366,8 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                 } else {
                                   final otpreq =
                                       Otprsndreq.req(mobile: mobileNo);
-                                  buildotp(otpreq);
-                                  // Navigator.of(context).push(
-                                  //          MaterialPageRoute(
-                                  //            builder: (context) => ScreenForgotpswrd(mobile: mobileNo)
-                                  //           ),
-                                  //         );
+                                  buildotp(otpreq,context);
+                                  
                                 }
 
                                 //Navigator.push(context,Approutes().forgotpswrdScreen);
@@ -479,71 +466,83 @@ class _ScreenLoginState extends State<ScreenLogin> {
     if (widget.category == 1) {
       final logresp = await Labourdata().login(logreq);
       if (logresp == null) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (logresp.statusCode == 200) {
         final resultAsjson = jsonDecode(logresp.data);
-        buildloginlab(resultAsjson);
+        if (!context.mounted) return;
+        buildloginlab(resultAsjson, context);
       } else if (logresp.statusCode == 404) {
         await showLoginerror(_scaffoldKey.currentContext);
         // await showDialoglogin(_scaffoldKey.currentContext);
+      }else if (logresp.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (logresp.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        await showLoginerror(_scaffoldKey.currentContext);
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     } else {
       final logresp = await Labourdata().emplogin(logreq);
       if (logresp == null) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else if (logresp.statusCode == 200) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }else if (logresp.statusCode == 200) {
         final resultAsjson = jsonDecode(logresp.data);
-        buildloginlab(resultAsjson);
+        if (!context.mounted) return;
+        buildloginlab(resultAsjson, context);
       } else if (logresp.statusCode == 404) {
-        await showLoginerror(_scaffoldKey.currentContext);
+        if (!context.mounted) return;
+
+        await showLoginerror(context);
         // await showDialoglogin(_scaffoldKey.currentContext);
+      } else if (logresp.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (logresp.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        await showLoginerror(_scaffoldKey.currentContext);
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     }
   }
 
-  Future buildloginlab(dynamic loginvalue) async {
+  Future buildloginlab(dynamic loginvalue, BuildContext context) async {
     final mobileNo = _mobilenocontroller.text;
     final passwrd = _passwordcontroller.text;
     final loginval = Loginresp.fromJson(loginvalue as Map<String, dynamic>);
-     if (loginval.data == null) {
-        Fluttertoast.showToast(
+    if (loginval.data == null) {
+      Fluttertoast.showToast(
           msg: "Login data is missing",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-        );
-        return;
-      }
+          fontSize: 16.0);
+      return;
+    }
     status = loginval.success;
     if (status == true) {
-      /*set data into shared preference */
-      // if (widget.category == 1) {
-      //   userId = loginval.data!.userId;
-      // } else {
-      //   userId = loginval.data!.employerId;
-      // }
-      final userId = widget.category == 1 ? loginval.data!.userId : loginval.data!.employerId;
+      
+      final userId = widget.category == 1
+          ? loginval.data!.userId
+          : loginval.data!.employerId;
       //final userId=loginval.data!.userId;
       final token = loginval.data!.token;
       final name = loginval.data!.name;
@@ -554,7 +553,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
       final pincode = loginval.data!.pin;
 
       final genderNameval = await LabourDb.instance
-          .getGenderName(loginval.data!.genderId, localecode);
+          .getGenderName(loginval.data!.genderId, localecode, context);
 
       for (var map in genderNameval) {
         final gender = Namemodel.fromMap(map);
@@ -568,8 +567,10 @@ class _ScreenLoginState extends State<ScreenLogin> {
           }
         });
       }
+      if (!context.mounted) return;
+
       final districtNameval = await LabourDb.instance
-          .getDistrictName(loginval.data!.districtId, localecode);
+          .getDistrictName(loginval.data!.districtId, localecode, context);
 
       for (var map in districtNameval) {
         final dist = Namemodel.fromMap(map);
@@ -583,8 +584,10 @@ class _ScreenLoginState extends State<ScreenLogin> {
           }
         });
       }
+      if (!context.mounted) return;
+
       final typeNameval = await LabourDb.instance
-          .getLocalbdytypeName(loginval.data!.blockId, localecode);
+          .getLocalbdytypeName(loginval.data!.blockId, localecode, context);
 
       for (var map in typeNameval) {
         final type = Namemodel.fromMap(map);
@@ -598,9 +601,14 @@ class _ScreenLoginState extends State<ScreenLogin> {
           }
         });
       }
+      if (!context.mounted) return;
 
-      final localbdyNameval = await LabourDb.instance
-          .getLocalbodyName(loginval.data!.localbodyId, localecode);
+      final localbdyNameval = await LabourDb.instance.getLocalbodyName(
+          loginval.data!.districtId,
+          loginval.data!.blockId,
+          loginval.data!.localbodyId,
+          localecode,
+          context);
 
       for (var map in localbdyNameval) {
         final lclbody = Namemodel.fromMap(map);
@@ -614,21 +622,25 @@ class _ScreenLoginState extends State<ScreenLogin> {
           }
         });
       }
+      if (loginval.data!.educationId == null) {
+        eduName = '';
+      } else {
+        if (!context.mounted) return;
+        final eduNameval = await LabourDb.instance
+            .getEduName(loginval.data!.educationId, localecode, context);
 
-      final eduNameval = await LabourDb.instance
-          .getEduName(loginval.data!.educationId, localecode);
-
-      for (var map in eduNameval) {
-        final edu = Namemodel.fromMap(map);
-        setState(() {
-          if (localecode == Locale('ml')) {
-            eduName = edu.nameml;
-            log('$eduName');
-          } else {
-            eduName = edu.name;
-            log('$eduName');
-          }
-        });
+        for (var map in eduNameval) {
+          final edu = Namemodel.fromMap(map);
+          setState(() {
+            if (localecode == Locale('ml')) {
+              eduName = edu.nameml;
+              log('$eduName');
+            } else {
+              eduName = edu.name;
+              log('$eduName');
+            }
+          });
+        }
       }
 
       final dob = loginval.data!.dob;
@@ -665,39 +677,36 @@ class _ScreenLoginState extends State<ScreenLogin> {
       message = loginval.message;
       if (category == widget.category) {
         if (category == 1) {
-          Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+          if (!context.mounted) return;
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) => const Screenlabhome(),
             ),
           );
-          Fluttertoast.showToast(
-              msg: "$message",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.white,
-              textColor: const Color.fromARGB(255, 22, 177, 28),
-              fontSize: 16.0);
+          
+        CommonFun.instance.showApierror(context, message);
+              
         } else {
-          Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+          if (!context.mounted) return;
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (ctx) => const ScreenEmployerHome(),
             ),
           );
-          Fluttertoast.showToast(
-              msg: "$message",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.white,
-              textColor: const Color.fromARGB(255, 22, 177, 28),
-              fontSize: 16.0);
+         
+              //if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
+              
         }
       } else {
         if (category == 1) {
-          await showDialogemployer(_scaffoldKey.currentContext);
+          if (!context.mounted) return;
+
+          await showDialogemployer(context);
         } else {
-          await showDialoglabour(_scaffoldKey.currentContext);
+          if (!context.mounted) return;
+
+          await showDialoglabour(context);
         }
       }
     } else {
@@ -705,16 +714,11 @@ class _ScreenLoginState extends State<ScreenLogin> {
       final error = loginval.data!.error;
       final catval = widget.category;
       if (pendingreg == 'N') {
-        await showOtppending(_scaffoldKey.currentContext, mobileNo, catval);
+        await showOtppending(context, mobileNo, catval);
       } else if (error == 'Unauthorised') {
-        Fluttertoast.showToast(
-            msg: "Username or Password incorrect",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Username or Password incorrect");
         // showSnackBar(context, text: "Username or Password incorrect");
       }
     }
@@ -749,7 +753,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
   Future showLoginerror(BuildContext? context) async => showDialog(
       context: context!,
       builder: (context) => AlertDialog(
-              title: const Text('Server Not reached',
+              title: const Text('No Data Found',
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -805,81 +809,56 @@ class _ScreenLoginState extends State<ScreenLogin> {
                     child: const Center(child: Text('OK'))),
               ]));
 
-  Future buildotp(Otprsndreq value) async {
+  Future buildotp(Otprsndreq value,BuildContext context) async {
     if (widget.category == 1) {
       final otpreq = await Labourdata().forgotpswrd(value);
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if(message==null){
-          Fluttertoast.showToast(
-            msg:"Enter Valid Mobile Number",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        }else{
-          Fluttertoast.showToast(
-            msg: message,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        Navigator.of(_scaffoldKey.currentContext!).push(
-          MaterialPageRoute(
-              builder: (context) => ScreenForgotpswrd(
-                    mobile: mobileNo,
-                    category: widget.category,
-                  )),
-        );
+        if (message == null) {
+              if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
+        } else {
+          if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
+          //if (!context.mounted) return;
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => ScreenForgotpswrd(
+                      mobile: mobileNo,
+                      category: widget.category,
+                    )),
+          );
         }
-        
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     } else {
       final otpreq = await Labourdata().empforgotpswrd(value);
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
@@ -887,226 +866,39 @@ class _ScreenLoginState extends State<ScreenLogin> {
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         //final error = otpresp.error;
-        if(message==null){
-          Fluttertoast.showToast(
-            msg:"Enter Valid Mobile Number",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        }else{
-          Fluttertoast.showToast(
-            msg: message,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        Navigator.of(_scaffoldKey.currentContext!).push(
-          MaterialPageRoute(
-              builder: (context) => ScreenForgotpswrd(
-                    mobile: mobileNo,
-                    category: widget.category,
-                  )),
-        );
+        if (message == null) {
+              if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
+        } else {
+          if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => ScreenForgotpswrd(
+                      mobile: mobileNo,
+                      category: widget.category,
+                    )),
+          );
         }
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     }
   }
 }
 
-// final logresp=await Labourdata().login(logreq);
-
-// if(logresp!.statusCode==200){
-//     final _resultAsjson = jsonDecode(logresp.data);
-
-//     final loginval= Loginresp.fromJson(_resultAsjson as Map<String, dynamic>);
-//     status=loginval.success;
-//     if(status==true){
-//       /*set data into shared preference */
-//       final userId=loginval.data!.userId;
-//       final token=loginval.data!.token;
-//       final name=loginval.data!.name;
-//       final mobile=loginval.data!.mobile;
-//       final address=loginval.data!.address;
-//       final place=loginval.data!.place;
-//       final post=loginval.data!.post;
-//       final pincode=loginval.data!.pin;
-
-//       final genderNameval=await LabourDb.instance.getGenderName(loginval.data!.genderId);
-
-//                  for(var map in genderNameval){
-//                             final gender=Namemodel.fromMap(map);
-//                             setState(() {
-//                               genderName=gender.name;
-//                               print(genderName);
-//                             });
-
-//                  }
-//       final districtNameval=await LabourDb.instance.getDistrictName(loginval.data!.districtId);
-
-//                  for(var map in districtNameval){
-//                             final dist=Namemodel.fromMap(map);
-//                             setState(() {
-//                               districtName=dist.name;
-//                               print(districtName);
-//                             });
-
-//                  }
-//       final typeNameval=await LabourDb.instance.getLocalbdytypeName(loginval.data!.blockId);
-
-//                  for(var map in typeNameval){
-//                             final type=Namemodel.fromMap(map);
-//                             setState(() {
-//                               localtypeName=type.name;
-//                               print(localtypeName);
-//                             });
-
-//                  }
-
-//       final localbdyNameval=await LabourDb.instance.getLocalbodyName(loginval.data!.localbodyId);
-
-//                  for(var map in localbdyNameval){
-//                             final lclbody=Namemodel.fromMap(map);
-//                             setState(() {
-//                               localbodyName=lclbody.name;
-//                               print(localbodyName);
-//                             });
-
-//                  }
-
-//       final eduNameval=await LabourDb.instance.getEduName(loginval.data!.educationId);
-
-//                  for(var map in eduNameval){
-//                             final edu=Namemodel.fromMap(map);
-//                             setState(() {
-//                               eduName=edu.name;
-//                               print(eduName);
-//                             });
-
-//                  }
-
-//       final dob=loginval.data!.dob;
-//       final adhaarno=loginval.data!.aadhaar;
-//       final category=loginval.data!.category;
-
-//       final sharedval=SharedtokenM.values(
-//              userid: userId,
-//               token: token,
-//                name: name,
-//                mobile:mobile,
-//                address:address,
-//                 place:place,
-//                 post:post,
-//                 pin:pincode,
-//                 gender:genderName,
-//                 district:districtName,
-//                 block:localtypeName,
-//                 localbody:localbodyName,
-//                 dob:dob,
-//                 aadhaar:adhaarno,
-//                 education:eduName,
-//                 category:category,
-//                 password:passwrd
-//                );
-
-//                await Sharedata.instance.setdata(sharedval);
-//              /* ************************************* */
-
-//               message=loginval.message;
-//               if(category==widget.category){
-//                  if(category==1){
-//                   // Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-//                   //                         MaterialPageRoute(
-//                   //                           builder: (ctx) =>  ScreenOtpverify(mobileNo: mobileNo,category: widget.category,),
-//                   //                         ),
-//                   //                       );
-//                 Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-//                                           MaterialPageRoute(
-//                                             builder: (ctx) => const Screenlabhome(),
-//                                           ),
-//                                         );
-//                 Fluttertoast.showToast(
-//                 msg: "$message",
-//                 toastLength: Toast.LENGTH_SHORT,
-//                 gravity: ToastGravity.CENTER,
-//                 timeInSecForIosWeb: 1,
-//                 backgroundColor: Colors.white,
-//                 textColor:const Color.fromARGB(255, 22, 177, 28),
-//                 fontSize: 16.0);
-//               }else{
-//                 //  Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-//                 //                           MaterialPageRoute(
-//                 //                             builder: (ctx) =>  ScreenOtpverify(mobileNo: mobileNo,category: widget.category,),
-//                 //                           ),
-//                 //                         );
-
-//                 Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-//                                           MaterialPageRoute(
-//                                             builder: (ctx) => const ScreenEmployerHome(),
-//                                           ),
-//                                         );
-//                 Fluttertoast.showToast(
-//                 msg: "$message",
-//                 toastLength: Toast.LENGTH_SHORT,
-//                 gravity: ToastGravity.CENTER,
-//                 timeInSecForIosWeb: 1,
-//                 backgroundColor: Colors.white,
-//                 textColor:const Color.fromARGB(255, 22, 177, 28),
-//                 fontSize: 16.0);
-//               }
-//               }else{
-//                 if(category==1){
-//                   await showDialogemployer(_scaffoldKey.currentContext);
-
-//                 }else{
-//                   await showDialoglabour(_scaffoldKey.currentContext);
-//                 }
-//               }
-
-//     }else{
-//       Fluttertoast.showToast(
-//         msg: "Username or Password incorrect",
-//         toastLength: Toast.LENGTH_SHORT,
-//         gravity: ToastGravity.CENTER,
-//         timeInSecForIosWeb: 1,
-//         backgroundColor: Colors.red,
-//         textColor: Colors.white,
-//         fontSize: 16.0);
-//     }
-// }else if(logresp.statusCode==404){
-
-//   Fluttertoast.showToast(
-//         msg: "Server not reached",
-//         toastLength: Toast.LENGTH_SHORT,
-//         gravity: ToastGravity.CENTER,
-//         timeInSecForIosWeb: 1,
-//         backgroundColor: Colors.red,
-//         textColor: Colors.white,
-//         fontSize: 16.0
-//         );
-//  // await showDialoglogin(_scaffoldKey.currentContext);
-// }else{
-//   await showDialoglogin(_scaffoldKey.currentContext);
-// }

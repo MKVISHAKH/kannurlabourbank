@@ -7,8 +7,8 @@ part of 'deletereq.dart';
 // **************************************************************************
 
 Deletereq _$DeletereqFromJson(Map<String, dynamic> json) => Deletereq(
-      userId: json['user_id'] as int?,
-      skillId: json['skill_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
+      skillId: (json['skill_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$DeletereqToJson(Deletereq instance) => <String, dynamic>{

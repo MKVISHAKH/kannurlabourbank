@@ -1,11 +1,6 @@
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/model/deviceinfo/deviceinfo.dart';
-import 'package:panipura/widgets/appInfo.dart';
-import 'package:panipura/widgets/background/backgroundsplash.dart';
-import 'package:panipura/widgets/deviceInfo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:developer';
-import '../../main.dart';
 
 class ScreensplashThree extends StatefulWidget {
   const ScreensplashThree({super.key});
@@ -85,7 +80,7 @@ class _ScreensplashThreeState extends State<ScreensplashThree> {
           MaterialPageRoute(
             builder: (ctx1) => const Screenlabhome(),
           ),
-        );      
+        );
       } else if (value.category == 2) {
         await Future.delayed(
           const Duration(seconds: 3),
@@ -96,7 +91,7 @@ class _ScreensplashThreeState extends State<ScreensplashThree> {
           ),
         );
       } else {
-         gotoLogin();
+        gotoLogin();
       }
     }
   }

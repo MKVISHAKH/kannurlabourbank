@@ -3,11 +3,8 @@ import 'package:panipura/core/hooks/hook.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 // import 'package:panipura/popup/edithmtwnpopup/edithmtwnpop.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/model/Eventmodel/event.dart';
-import 'package:panipura/model/todolist/addtodolistresp/addtodoresp.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import '../screens/screenlabour/screenlabTodolist.dart';
-import '../screens/screenlabour/screenrating.dart';
+
+
 class Gridlabview extends StatefulWidget {
   const Gridlabview({
     super.key,
@@ -163,7 +160,7 @@ class _GridlabviewState extends State<Gridlabview> {
           splashColor: const Color.fromARGB(255, 158, 89, 248),
           highlightColor: const Color.fromARGB(255, 47, 3, 100),
           onTap: () {
-            buildEvents();
+            buildEvents(context);
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const ScreenLabTodoList(),
@@ -243,20 +240,14 @@ class _GridlabviewState extends State<Gridlabview> {
     );
   }
 
-  Future buildEvents() async {
+  Future buildEvents(BuildContext context) async {
     final value = await Sharedata.instance.getdata();
     final usrId = value!.userid;
     final addtodoresp = await Labourdata().gettodolist(usrId);
     if (addtodoresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (addtodoresp.statusCode == 200) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
           Addtodoresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -266,14 +257,8 @@ class _GridlabviewState extends State<Gridlabview> {
         message = registerval.message;
         final data = registerval.data;
         if (data == []) {
-          Fluttertoast.showToast(
-              msg: "No Events Found",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              fontSize: 16.0);
+              if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Events Found");
         } else {
           provider.removeallEvent();
           for (var model in data!) {
@@ -295,52 +280,29 @@ class _GridlabviewState extends State<Gridlabview> {
                 todolistId: model.todolistId);
             provider.addEvent(event);
           }
-
-          // final event=Event.val(
-          // title: data!.single.title,
-          //  description: data.single.description,
-          //   from: from,
-          //    to: to,
-          //     todolistId: todolistId);
         }
-
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+            if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       } else {
         message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+       if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    }else if (addtodoresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (addtodoresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 }
 
-// class Choice{
-//   const Choice({required this.title,required this.image});
-//   final String title;
-//   final IconData image;
-// }
-// const List<Choice> choices=const<Choice>[
-//   const Choice(title: 'View/ \nEdit \nProfile', image: image)
-// ]

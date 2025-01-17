@@ -7,7 +7,7 @@ part of 'getskillreq.dart';
 // **************************************************************************
 
 Getskillreq _$GetskillreqFromJson(Map<String, dynamic> json) => Getskillreq(
-      userId: json['user_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
       token: json['token'] as String?,
       locale: json['locale'] as String?,
     );

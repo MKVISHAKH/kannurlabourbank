@@ -1,4 +1,3 @@
-
 class LocaltypeIdmodel {
   final int? id;
 

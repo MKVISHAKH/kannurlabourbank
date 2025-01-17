@@ -1,22 +1,11 @@
 import 'dart:developer';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:panipura/database/labourdb.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/dropdownId/districtIdmodel.dart';
-import 'package:panipura/model/dropdownId/genderIdmodel.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/screens/otpscreen/screenotpvfy.dart';
-import 'package:panipura/widgets/constants.dart';
+
 
 import '../../core/hooks/hook.dart';
-import '../../model/createlabour/createlabreq/createlabreq.dart';
-import '../../model/createlabour/createlabresp/createlabresp.dart';
-import '../../model/dropdownId/eduIdmodel.dart';
-import '../../model/dropdownId/localbdyIdmodel.dart';
-import '../../model/dropdownId/localtypeIdmodel.dart';
-import '../../widgets/scrollabelwidget.dart';
+
 
 class ScreenRegister extends StatefulWidget {
   final int? category;
@@ -241,7 +230,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     distlist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getDistrict(localecode).then((listMap) {
+        LabourDb.instance.getDistrict(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getDistDropDownWidget(map);
@@ -258,7 +247,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     edulist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getEducation(localecode).then((listMap) {
+        LabourDb.instance.getEducation(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getEduDropDownWidget(map);
@@ -275,7 +264,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     locltypelist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getLocalbodyType(localecode).then((listMap) {
+        LabourDb.instance.getLocalbodyType(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getTypeDropDownWidget(map);
@@ -292,7 +281,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     genderlist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getGender(localecode).then((listMap) {
+        LabourDb.instance.getGender(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getGenderDropDownWidget(map);
@@ -310,7 +299,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
         LabourDb.instance
-            .getLocalbodies(districtId, localtypeId, localecode)
+            .getLocalbodies(districtId, localtypeId, localecode, context)
             .then((listMap) {
           listMap.map((map) {
             log(map.toString());
@@ -347,11 +336,10 @@ class _ScreenRegisterState extends State<ScreenRegister> {
         PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
-            if (!didPop){
+            if (!didPop) {
               if (didPop) return;
-               await popscreen(context);
-            
-            } 
+              await popscreen(context);
+            }
           },
           child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -765,7 +753,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     dropdownxvalue = newvalue;
                   });
                   final genderIdval = await LabourDb.instance
-                      .getGenderId(dropdownxvalue, localecode);
+                      .getGenderId(dropdownxvalue, localecode, context);
 
                   for (var map in genderIdval) {
                     final gender = GenderIdmodel.fromMap(map);
@@ -848,7 +836,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                   });
 
                   final districtIdval = await LabourDb.instance
-                      .getDistrictId(dropdowndistvalue, localecode);
+                      .getDistrictId(dropdowndistvalue, localecode, context);
 
                   for (var map in districtIdval) {
                     final distval = DistricIdmodel.fromMap(map);
@@ -1017,8 +1005,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     dropdownlocalvalue = null;
                   });
 
-                  final typeIdval = await LabourDb.instance
-                      .getLocalbdytypeId(dropdownblockvalue, localecode);
+                  final typeIdval = await LabourDb.instance.getLocalbdytypeId(
+                      dropdownblockvalue, localecode, context);
 
                   for (var map in typeIdval) {
                     final typeval = LocaltypeIdmodel.fromMap(map);
@@ -1101,14 +1089,18 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     dropdownlocalvalue = newvalue;
                   });
 
-                  final localbdyIdval = await LabourDb.instance
-                      .getLocalbodyId(dropdownlocalvalue, localecode);
+                  final localbdyIdval = await LabourDb.instance.getLocalbodyId(
+                      districtId,
+                      localtypeId,
+                      dropdownlocalvalue,
+                      localecode,
+                      context);
 
                   for (var map in localbdyIdval) {
                     final bdynameval = LocalbdyIdmodel.fromMap(map);
                     setState(() {
                       localbdynameId = bdynameval.id;
-                      log('$localbdynameId');
+                      log('loclbodyId:$localbdynameId');
                     });
                   }
 
@@ -1514,7 +1506,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
 
           /* ************* */
 
-          buildTandC(),
+          buildTandC(context),
 
           /* Signup Button */
           Padding(
@@ -1527,9 +1519,11 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     final value = pro.isAccepted;
                     //goto otp screen
                     if (value == true) {
-                      await buildcreatelabour();
+                      await buildcreatelabour(context);
                     } else {
-                      await showDialogcheckbox(_scaffoldKey.currentContext);
+                    if (!context.mounted) return;
+
+                      await showDialogcheckbox(context);
                     }
                     // Navigator.of(context).pushReplacement(
                     //                           MaterialPageRoute(
@@ -1674,8 +1668,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
             setState(() {
               dropdownEduvalue = newvalue;
             });
-            final eduIdval =
-                await LabourDb.instance.getEduId(dropdownEduvalue, localecode);
+            final eduIdval = await LabourDb.instance
+                .getEduId(dropdownEduvalue, localecode, context);
 
             for (var map in eduIdval) {
               final eduval = EduIdmodel.fromMap(map);
@@ -1734,7 +1728,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
   /* ************* */
 
   /* register category function */
-  Future buildcreatelabour() async {
+  Future buildcreatelabour(BuildContext context) async {
     final name = _namecontroller.text;
     final address = _addresscontroller.text;
     final place = _placecontroller.text;
@@ -1775,94 +1769,70 @@ class _ScreenRegisterState extends State<ScreenRegister> {
 
     if (widget.category == 1) {
       final createlabrespval = await Labourdata().createlabour(createreq);
-
-      if (createlabrespval!.statusCode == 200) {
+      if (createlabrespval == null) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } 
+      else if (createlabrespval.statusCode == 200) {
         final resultAsjson = jsonDecode(createlabrespval.data);
-
-        buildlabour(resultAsjson);
+        if (!context.mounted) return ;
+        buildlabour(resultAsjson,context);
       } else if (createlabrespval.statusCode == 404) {
-        await showDialogError(_scaffoldKey.currentContext);
-      } else {
-        await showDialogError(_scaffoldKey.currentContext);
+        if (!context.mounted) return;
+
+        await showDialogError(context);
+      }else if (createlabrespval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (createlabrespval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      }else {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     } else {
       final createlabrespval = await Labourdata().createemp(createreq);
-      if (createlabrespval!.statusCode == 200) {
+      if (createlabrespval == null) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } 
+      else if (createlabrespval.statusCode == 200) {
         final resultAsjson = jsonDecode(createlabrespval.data);
+        if (!context.mounted) return ;
 
-        buildlabour(resultAsjson);
+        buildlabour(resultAsjson,context);
       } else if (createlabrespval.statusCode == 404) {
-        await showDialogError(_scaffoldKey.currentContext);
-      } else {
-        await showDialogError(_scaffoldKey.currentContext);
+        if (!context.mounted) return;
+
+        await showDialogError(context);
+      }else if (createlabrespval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (createlabrespval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      }else {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
     }
 
-    // final createlabrespval= await Labourdata().createlabour(createreq);
-    // print(createlabrespval);
-    // if(createlabrespval!.statusCode==200){
-    //   final _resultAsjson = jsonDecode(createlabrespval.data);
-
-    // final registerval= Createlabresp.fromJson(_resultAsjson as Map<String, dynamic>);
-    //   status=registerval.success;
-
-    //  if(status==true){
-    //      final token=registerval.data!.token;
-    //      final name=registerval.data!.name;
-    //       mobileNo=registerval.data!.mobile;
-    //      final userId=registerval.data!.userId;
-    //       catval=widget.category;
-    //      final sharedval=SharedtokenM.values(
-    //       userid: userId,
-    //       token: token,
-    //        name: name,
-    //        mobile:mobileNo,
-    //        address:address,
-    //         place:place,
-    //         post:post,
-    //         pin:pincode,
-    //         gender:gender,
-    //         district:district,
-    //         block:localtype,
-    //         localbody:localbody,
-    //         dob:dob,
-    //         aadhaar:adhaarno,
-    //         education:education,
-    //         category:catval,
-    //         password:cnfrmpswrd
-    //        );
-    //     //set data into shared preference
-    //     await Sharedata.instance.setdata(sharedval);
-    //     /* ************* */
-
-    //     message=registerval.message;
-
-    //     await showDialogsuccess(_scaffoldKey.currentContext,mobileNo,catval);
-    //   }else {
-    //     await showDialogfail(_scaffoldKey.currentContext);
-    //   }
-    // }else if(createlabrespval.statusCode==404){
-
-    // //   final _resultAsjson = jsonDecode(createlabrespval.data);
-
-    // // final registerval= Createlabresp.fromJson(_resultAsjson as Map<String, dynamic>);
-    // //   //status=registerval.success;
-    // //   setState(() {
-    // //     message=registerval.message;
-    // //   });
-    //   await showDialogfail(_scaffoldKey.currentContext);
-
-    // }else{
-    //   // setState(() {
-    //   //   message=registerval.message;
-    //   // });
-    //     await showDialogError(_scaffoldKey.currentContext);
-    // }
   }
 
   /* ************************************* */
 
-  Future buildlabour(dynamic createusrvalue) async {
+  Future buildlabour(dynamic createusrvalue,BuildContext context) async {
     final address = _addresscontroller.text;
     final place = _placecontroller.text;
     final post = _postcontroller.text;
@@ -1922,17 +1892,19 @@ class _ScreenRegisterState extends State<ScreenRegister> {
       /* ************* */
 
       message = registerval.message;
+        if (!context.mounted) return ;
 
-      await showDialogsuccess(_scaffoldKey.currentContext, mobileNo, catval);
+      await showDialogsuccess(context, mobileNo, catval);
     } else {
-      await showDialogfail(_scaffoldKey.currentContext, message);
+        if (!context.mounted) return ;
+      await showDialogfail(context, message);
     }
   }
 
   Future showDialogsuccess(
           BuildContext? context, String? mobile, int? catrslt) async =>
       showDialog(
-        barrierDismissible: false,
+          barrierDismissible: false,
           context: context!,
           builder: (context) => AlertDialog(
                   title: Text(AppLocalizations.of(context)!.vrfyotp,
@@ -1957,7 +1929,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                   ]));
 
   Future showDialogfail(BuildContext? context, String? message) async => showDialog(
-    barrierDismissible: false,
+      barrierDismissible: false,
       context: context!,
       builder: (context) => AlertDialog(
               title: Text(message!),
@@ -1982,10 +1954,10 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               ]));
 
   Future showDialogError(BuildContext? context) async => showDialog(
-    barrierDismissible: false,
+      barrierDismissible: false,
       context: context!,
       builder: (context) => AlertDialog(
-              title: const Text('Server Not reached',
+              title: const Text('No Data Found',
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -2003,18 +1975,20 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     child: const Center(child: Text('OK'))),
               ]));
 
-  Widget buildTandC() {
+  Widget buildTandC(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 50.0),
           child: GestureDetector(
             onTap: () {
-              Navigator.of(_scaffoldKey.currentContext!).push(
-            MaterialPageRoute(
-              builder: (ctx) => ScreenEmpTandC(category:widget.category,),
-            ),
-          );
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => ScreenEmpTandC(
+                    category: widget.category,
+                  ),
+                ),
+              );
             },
             child: Row(
               children: <Widget>[
@@ -2032,7 +2006,9 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                           check.setAccepted(value!);
                           Navigator.of(_scaffoldKey.currentContext!).push(
                             MaterialPageRoute(
-                              builder: (ctx) => ScreenEmpTandC(category:widget.category,),
+                              builder: (ctx) => ScreenEmpTandC(
+                                category: widget.category,
+                              ),
                             ),
                           );
                         }),

@@ -1,4 +1,3 @@
-
 class LocalbdyIdmodel {
   final int? id;
 

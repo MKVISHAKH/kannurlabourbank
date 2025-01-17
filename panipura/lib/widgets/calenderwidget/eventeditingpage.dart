@@ -1,12 +1,9 @@
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/todolist/addtodolist/addtodolistreq.dart';
-import 'package:panipura/model/todolist/addtodolistresp/addtodoresp.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import '../../model/Eventmodel/event.dart';
 import 'utils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
+
 class EventEditingPage extends StatefulWidget {
   final Event? event;
   const EventEditingPage({
@@ -51,11 +48,12 @@ class _EventEditingPageState extends State<EventEditingPage> {
     discriptonController.dispose();
     super.dispose();
   }
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) => Stack(
-    key: _scaffoldKey,
+        key: _scaffoldKey,
         children: [
           const Screensbackground(),
           Scaffold(
@@ -107,7 +105,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextButton.icon(
-              onPressed: saveForm,
+              onPressed:(){saveForm(context);} ,
               icon: const Icon(
                 Icons.done,
                 color: Color.fromARGB(255, 158, 89, 248),
@@ -129,7 +127,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
         border: const UnderlineInputBorder(),
         hintText: AppLocalizations.of(context)!.addtitle,
       ),
-      onFieldSubmitted: (_) => saveForm(),
+      onFieldSubmitted: (_) => saveForm(context),
       validator: (title) =>
           title != null && title.isEmpty ? 'Title Cannot be empty' : null,
       controller: titleController,
@@ -300,14 +298,14 @@ class _EventEditingPageState extends State<EventEditingPage> {
         hintText: AppLocalizations.of(context)!.discrip,
         //labelStyle: L10n.getappbarSize(locale.languageCode),
       ),
-      onFieldSubmitted: (_) => saveForm(),
+      onFieldSubmitted: (_) => saveForm(context),
       // validator: (title)=>
       // title!=null && title.isEmpty ? 'Title Cannot be empty' : null,
       controller: discriptonController,
     );
   }
 
-  Future saveForm() async {
+  Future saveForm(BuildContext context) async {
     final isValid = _formkey.currentState!.validate();
     final discription = discriptonController.text;
     if (discription.isEmpty) {
@@ -348,7 +346,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
             toDt: todate,
             frmTime: fromtime,
             toTime: totime);
-        buildEdittodolist(todoreq, todoId);
+        buildEdittodolist(todoreq, todoId,context);
         provider.editEvent(event, widget.event!);
 
         Navigator.of(context).pop();
@@ -374,7 +372,9 @@ class _EventEditingPageState extends State<EventEditingPage> {
             toDt: todate,
             frmTime: fromtime,
             toTime: totime);
-        buildaddtodo(todoreq);
+        if (!context.mounted) return ;
+
+        buildaddtodo(todoreq,context);
 
         provider.addEvent(event);
       }
@@ -383,17 +383,11 @@ class _EventEditingPageState extends State<EventEditingPage> {
     }
   }
 
-  Future buildaddtodo(Addtodolist addval) async {
+  Future buildaddtodo(Addtodolist addval,BuildContext context) async {
     final addtodoresp = await Labourdata().addtodolist(addval);
     if (addtodoresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "something went wrong");
     } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
@@ -401,48 +395,35 @@ class _EventEditingPageState extends State<EventEditingPage> {
       status = registerval.success;
       if (status == true) {
         message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+         if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       } else {
         message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+            if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    } else if (addtodoresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (addtodoresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 
-  Future buildEdittodolist(Addtodolist editval, int? todoid) async {
+  Future buildEdittodolist(Addtodolist editval, int? todoid,BuildContext context) async {
     final addtodoresp = await Labourdata().edittodolist(editval, todoid);
     if (addtodoresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
+          if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "something went wrong");
     } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
@@ -450,34 +431,27 @@ class _EventEditingPageState extends State<EventEditingPage> {
       final status = registerval.success;
       if (status == true) {
         final message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       } else {
         final message = registerval.message;
-        Fluttertoast.showToast(
-            msg: "$message",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+            if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    } else if (addtodoresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (addtodoresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 }

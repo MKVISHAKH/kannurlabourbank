@@ -1,28 +1,11 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:panipura/api/apidata.dart';
-import 'package:panipura/model/get%20skill/getskillreq/getskillreq.dart';
-import 'package:panipura/model/viewprofile/viewprofileresp/viewpfofileresp.dart';
-import '../model/get skill/getskillresp/getskillsrespmdl.dart';
-import '../model/get skill/skilllistmdlref/skillreflistmdl.dart';
-import '../model/getskillrate/getskillratereq/getskillratereq.dart';
-import '../model/getskillrate/getskillrateresp/getskillratelist/getskillratelist.dart';
-import '../model/getskillrate/getskillrateresp/getskillratemain/getskillrateresp/getskillrateresp.dart';
-import '../model/searchlabour/searchlablist/searchlablist.dart';
-import '../model/searchlabour/searchlabourmdl/searchlabourmdl.dart';
-import '../model/searchlabour/searchlabresp/searchlab.dart';
-import '../model/viewprofile/viewprofileinfo/viewprofileinfo.dart';
-import '../screens/screenemployer/screenfilteredlab.dart';
+import 'package:panipura/core/hooks/hook.dart';
+
 import 'dart:developer';
 
 abstract class Labourfn {
-  Future<List<Getrefskillresplist>> getskillfn(int? userId, String? langcode);
-  Future getsearchdata(Searchlabourmdl value, BuildContext? ctx);
-  Future viewprofile(int? value);
-  
-  // Future rateskill(Getskillratereq value,bool? isSearchnullval,String? name,int? wrkId,String? mobile,String? wrkname,BuildContext? ctx);
-  //Future deleteskill(Deletereq  value);
+  Future<List<Getrefskillresplist>> getskillfn( BuildContext context,int? userId, String? langcode);
+  Future getsearchdata(Searchlabourmdl value, BuildContext context);
+  Future viewprofile(int? value,BuildContext context);
 }
 
 class Labempfn implements Labourfn {
@@ -69,46 +52,37 @@ class Labempfn implements Labourfn {
   //   }
   // }
 
-  Future<void> refreshskillUI(int? userId, String? langcode) async {
-    final list = await getskillfn(userId, langcode);
+  Future<void> refreshskillUI(int? userId, String? langcode, BuildContext context) async {
+    final list = await getskillfn(context,userId, langcode);
     getSkillListNotifier.value.clear();
     log('$list');
-    list
-        .sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
+    list.sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
     //getSkillListNotifier.value.clear();
     getSkillListNotifier.value.addAll(list);
     getSkillListNotifier.notifyListeners();
   }
 
-  Future<void> refreshRateUI(Getskillratereq value) async {
-    final list = await getrateskill(value);
+  Future<void> refreshRateUI(Getskillratereq value,BuildContext context) async {
+    final list = await getrateskill(value,context);
     getSkillrateListNotifier.value.clear();
     log('$list');
-    list
-        .sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
+    list.sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
     getSkillrateListNotifier.value.addAll(list);
     getSkillrateListNotifier.notifyListeners();
   }
 
   @override
   Future<List<Getrefskillresplist>> getskillfn(
-      int? userId, String? langcode) async {
+      BuildContext context,int? userId, String? langcode) async {
     final skillslistreq = Getskillreq.req(userId: userId, locale: langcode);
     final skillslistresp = await Labourdata().getskill(skillslistreq);
     if (skillslistresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (skillslistresp.statusCode == 200) {
+        if (!context.mounted) return[];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (skillslistresp.statusCode == 200) {
       final resultAsjson = jsonDecode(skillslistresp.data);
 
-      final skillsval =
-          Skillsvw.fromJson(resultAsjson as Map<String, dynamic>);
+      final skillsval = Skillsvw.fromJson(resultAsjson as Map<String, dynamic>);
       final status = skillsval.success;
       if (status == true) {
         final listskill = skillsval.data;
@@ -159,28 +133,36 @@ class Labempfn implements Labourfn {
           backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0);
-    } else {
-      Fluttertoast.showToast(
-          msg: "server not found",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    } else if (skillslistresp.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (skillslistresp.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     return [];
     // isskillnull=!isskillnull;
     // return Future.value(isskillnull);
   }
 
   @override
-  Future getsearchdata(Searchlabourmdl value, BuildContext? ctx) async {
+  Future getsearchdata(Searchlabourmdl value, BuildContext context) async {
     isSearchnull = true;
     final createlabrespval = await Labourdata().searchlab(value);
     //print(createlabrespval);
-
-    if (createlabrespval!.statusCode == 200) {
+    if (createlabrespval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } 
+    else if (createlabrespval.statusCode == 200) {
       final resultAsjson = jsonDecode(createlabrespval.data);
 
       final searchval =
@@ -195,7 +177,7 @@ class Labempfn implements Labourfn {
         getSearchListNotifier.notifyListeners();
 
         // ignore: use_build_context_synchronously
-        Navigator.of(ctx!).push(
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => ScreenFilteredLab(
               isSearchnull: isSearchnull,
@@ -205,7 +187,7 @@ class Labempfn implements Labourfn {
       } else {
         isSearchnull = !isSearchnull;
         // ignore: use_build_context_synchronously
-        Navigator.of(ctx!).push(
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => ScreenFilteredLab(
               isSearchnull: isSearchnull,
@@ -216,33 +198,41 @@ class Labempfn implements Labourfn {
     } else if (createlabrespval.statusCode == 404) {
       isSearchnull = !isSearchnull;
       // ignore: use_build_context_synchronously
-      Navigator.of(ctx!).push(
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => ScreenFilteredLab(
             isSearchnull: isSearchnull,
           ),
         ),
       );
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+    } else if (createlabrespval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (createlabrespval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     //return null;
   }
 
   @override
-  Future viewprofile(int? value) async {
+  Future viewprofile(int? value,BuildContext context) async {
     final profilereq = Getskillreq.req(userId: value);
     final createlabrespval = await Labourdata().viewProfile(profilereq);
     //print(createlabrespval);
 
-    if (createlabrespval!.statusCode == 200) {
+   if (createlabrespval == null) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (createlabrespval.statusCode == 200) {
       final resultAsjson = jsonDecode(createlabrespval.data);
       final searchval =
           Viewprofileresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -255,37 +245,30 @@ class Labempfn implements Labourfn {
         viewProfileListNotifier.value.addAll(searchlab);
         viewProfileListNotifier.notifyListeners();
       } else {
-        Fluttertoast.showToast(
-          msg: "No Data Found",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "No Data Found");
       }
     } else if (createlabrespval.statusCode == 404) {
-      Fluttertoast.showToast(
-          msg: "No Data Found",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server not reached",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+      if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "No Data Found");
+    } else if (createlabrespval.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (createlabrespval.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 
-  Future<List<Getskillratelist>> getrateskill(Getskillratereq value) async {
+  Future<List<Getskillratelist>> getrateskill(Getskillratereq value,BuildContext context) async {
     final rateskillrslt = await Labourdata().getrateskill(value);
     List<Getskillratelist>? data;
     if (rateskillrslt == null) {
@@ -332,35 +315,31 @@ class Labempfn implements Labourfn {
               backgroundColor: Colors.black,
               textColor: Colors.white,
               fontSize: 16.0);
+              gettotalrateListNotifier.value = '0';
+          gettotalrateListNotifier.notifyListeners();
         }
       }
     } else if (rateskillrslt.statusCode == 404) {
-      // await showDialogError(_scaffoldKey.currentContext);
-      Fluttertoast.showToast(
-          msg: "No data found",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else {
-      // await showDialogError(_scaffoldKey.currentContext);
-      Fluttertoast.showToast(
-          msg: "server not found",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    }
+      if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "No Data Found");
+    } else if (rateskillrslt.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (rateskillrslt.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
+      gettotalrateListNotifier.value = '0';
+      gettotalrateListNotifier.notifyListeners();
     return [];
   }
-  
-  @override
-  Future deleteAccount(int? userId)async {
-    // TODO: implement deleteAccount
-    throw UnimplementedError();
-  }
+
 }

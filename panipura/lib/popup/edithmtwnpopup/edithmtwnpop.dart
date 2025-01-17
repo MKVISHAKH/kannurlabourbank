@@ -2,6 +2,7 @@ import 'package:panipura/core/hooks/hook.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
 
+
 final _scaffoldKey = GlobalKey<ScaffoldState>();
 final _formkey = GlobalKey<FormState>();
 Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
@@ -62,7 +63,7 @@ Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
               child: Center(
                 child: Row(
                   // crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -74,7 +75,7 @@ Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
                         },
                         child: Text(AppLocalizations.of(context)!.cncl,
                             style: const TextStyle(color: Colors.white))),
-                    const SizedBox(width: 15),
+                    //const SizedBox(width: 15),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -106,7 +107,10 @@ Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
 Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
   final editresp = await Labourdata().edithometwn(val);
   log('$editresp');
-  if (editresp!.statusCode == 200) {
+  if (editresp == null) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } if (editresp!.statusCode == 200) {
     final resultAsjson = jsonDecode(editresp.data);
     final searchval =
         Edithmtwnresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -160,16 +164,12 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
     final status = searchval.success;
 
     final message = searchval.message;
-    Fluttertoast.showToast(
-        msg: message!,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0);
+    
+    if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
     if (status == true) {
-      Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+    if (!context.mounted) return ;
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => ScreenLabProfile(
             usrId: val.userId,
@@ -179,18 +179,9 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
       );
     }
   } else if (editresp.statusCode == 404) {
-    // final _resultAsjson = jsonDecode(editresp.data);
-    //   final searchval= Deleteresp.fromJson(_resultAsjson as Map<String, dynamic>);
-    //       final message=searchval.message;
-    Fluttertoast.showToast(
-        msg: 'Something went wrong',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-    Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
+    if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Data Found");
+    Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => ScreenLabProfile(
           usrId: val.userId,
@@ -198,20 +189,35 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
         ),
       ),
     );
-  } else {
-    Fluttertoast.showToast(
-        msg: "Server not reached",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-    Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) =>
-            ScreenLabProfile(usrId: val.userId, token: val.token),
-      ),
-    );
-  }
+  }else if (editresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                ScreenLabProfile(usrId: val.userId, token: val.token),
+          ),
+        );
+        // showLoginerror(context, 3);
+      } else if (editresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                ScreenLabProfile(usrId: val.userId, token: val.token),
+          ),
+        );
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                ScreenLabProfile(usrId: val.userId, token: val.token),
+          ),
+        );
+      } 
 }

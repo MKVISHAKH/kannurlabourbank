@@ -7,14 +7,14 @@ part of 'addtodolistreq.dart';
 // **************************************************************************
 
 Addtodolist _$AddtodolistFromJson(Map<String, dynamic> json) => Addtodolist(
-      userId: json['user_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
       title: json['title'] as String?,
       description: json['description'] as String?,
       frmDt: json['frm_dt'] as String?,
       toDt: json['to_dt'] as String?,
       frmTime: json['frm_time'] as String?,
       toTime: json['to_time'] as String?,
-      todolistId: json['todolist_id'] as int?,
+      todolistId: (json['todolist_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AddtodolistToJson(Addtodolist instance) =>

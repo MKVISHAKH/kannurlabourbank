@@ -11,7 +11,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       typeId: json['type_id'] as String?,
       userId: json['user_id'] as String?,
       path: json['path'] as String?,
-      size: json['size'] as int?,
+      size: (json['size'] as num?)?.toInt(),
       title: json['title'],
       description: json['description'],
       updatedAt: json['updated_at'] == null
@@ -20,7 +20,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
-      fileId: json['file_id'] as int?,
+      fileId: (json['file_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{

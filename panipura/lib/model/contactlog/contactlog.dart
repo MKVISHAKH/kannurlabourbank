@@ -10,8 +10,17 @@ class Contactlog {
   int? employerId;
   @JsonKey(name: 'user_id')
   int? userId;
+  @JsonKey(name: 'employer_mobile')
+  String? empMob;
+  @JsonKey(name: 'user_mobile')
+  String? usrMob;
 
-  Contactlog({this.contactTime, this.employerId, this.userId});
+  Contactlog(
+      {this.contactTime,
+      this.employerId,
+      this.userId,
+      this.empMob,
+      this.usrMob});
 
   factory Contactlog.fromJson(Map<String, dynamic> json) {
     return _$ContactlogFromJson(json);

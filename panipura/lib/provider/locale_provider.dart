@@ -18,8 +18,8 @@ class LocaleProvider extends ChangeNotifier {
   Locale get locale => _locale;
 
   void setLocale(Locale locale) {
-   // clearLocale();
-   
+    // clearLocale();
+
     if (!L10n.all.contains(locale)) return;
     _locale = locale;
     notifyListeners();

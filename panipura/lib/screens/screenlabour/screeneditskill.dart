@@ -1,18 +1,8 @@
-import 'package:flutter/services.dart';
-import 'package:multiselect/multiselect.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/addrefskill/addrefskillreq/addrefskillreq.dart';
-import 'package:panipura/model/addskill/addskillresp/addskillresp.dart';
-import 'package:panipura/model/edtiskill/editskillmdl.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/constants.dart';
 import '../../core/hooks/hook.dart';
-import '../../database/labourdb.dart';
-import '../../model/addrefskill/addrefskilllist/addrefskilllist.dart';
-import '../../model/get skill/skillreflistmdl/skillreflistmdlresp.dart';
-import '../../widgets/scrollabelwidget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
+
 class ScreenEditSkill extends StatefulWidget {
   const ScreenEditSkill(
       {super.key, required this.skilldet, required this.reference});
@@ -93,8 +83,7 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     localecode = provider.locale;
   }
 
-  void getskilldet
-  () {
+  void getskilldet() {
     for (var skillvalues in widget.skilldet) {
       final skilledit = GetEditskillresplist.fromJson(skillvalues);
       _wrknamecontroller.text = skilledit.occupationname!;
@@ -122,10 +111,6 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     }
   }
 
-
-
-  
-
   DropdownMenuItem<String> getLocalbdyDropDownWidget(Map<String, dynamic> map) {
     if (localecode == Locale('ml')) {
       return DropdownMenuItem<String>(
@@ -144,7 +129,9 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     loclbdslist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getLocalbodies(distId, 2, localecode).then((listMap) {
+        LabourDb.instance
+            .getLocalbodies(distId, 2, localecode, context)
+            .then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getLocalbdyDropDownWidget(map);
@@ -197,7 +184,10 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) =>  ScreenLabProfile(usrId: usrId,token: token,),
+                          builder: (context) => ScreenLabProfile(
+                            usrId: usrId,
+                            token: token,
+                          ),
                         ),
                       );
                     },
@@ -255,7 +245,8 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     final locale = provider.locale;
     return Form(
       key: _formkey4,
-       autovalidateMode: _showErrors?AutovalidateMode.always:AutovalidateMode.disabled,
+      autovalidateMode:
+          _showErrors ? AutovalidateMode.always : AutovalidateMode.disabled,
       child: Column(
         children: [
           /* Occupations */
@@ -346,12 +337,10 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                 items: experiencelist.map((e) {
                   return DropdownMenuItem(value: e, child: Text(e));
                 }).toList(),
-
                 onChanged: (newvalue) {
                   setState(() {
                     dropdownexperiencevalue = newvalue;
                   });
-                  
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -421,9 +410,9 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                 // });
                 // },
                 validator: (value) {
-                  if (value==null || value.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return kremunerationNullError;
-                  }else if(_remunerationcontroller.text.length>=5){
+                  } else if (_remunerationcontroller.text.length >= 5) {
                     return kremunerationValidError;
                   }
                   return null;
@@ -477,12 +466,10 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                 items: perlist.map((e) {
                   return DropdownMenuItem(value: e, child: Text(e));
                 }).toList(),
-
                 onChanged: (newvalue) {
                   setState(() {
                     dropdownpervalue = newvalue;
                   });
-                 
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -546,7 +533,7 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
               ),
             ),
           ),
-          
+
           /* willing to work around */
 
           SizedBox(
@@ -648,15 +635,15 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                 ],
                 onSaved: (newValue) => mobileno1 = newValue,
                 validator: (value) {
-                  if(_referenceperson1controller.text.isNotEmpty){
-                    if(value==null || value.isEmpty){
+                  if (_referenceperson1controller.text.isNotEmpty) {
+                    if (value == null || value.isEmpty) {
                       return kMobileNullError;
-                    }else if(_mobileno1controller.text.length < 10 || _mobileno1controller.text.length > 10){
-                        return kValidMobileError;
-                      }else if (value.contains(' ')) {
-                        showSnackBar(context,
-                        text: kSpaceMobileError);
-                  }
+                    } else if (_mobileno1controller.text.length < 10 ||
+                        _mobileno1controller.text.length > 10) {
+                      return kValidMobileError;
+                    } else if (value.contains(' ')) {
+                      showSnackBar(context, text: kSpaceMobileError);
+                    }
                   }
                   return null;
                 },
@@ -759,15 +746,15 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                 ],
                 onSaved: (newValue) => mobileno2 = newValue,
                 validator: (value) {
-                  if(_referenceperson2controller.text.isNotEmpty){
-                    if(value==null || value.isEmpty){
+                  if (_referenceperson2controller.text.isNotEmpty) {
+                    if (value == null || value.isEmpty) {
                       return kMobileNullError;
-                    }else if(_mobileno2controller.text.length < 10 || _mobileno2controller.text.length > 10){
-                        return kValidMobileError;
-                      }else if (value.contains(' ')) {
-                        showSnackBar(context,
-                        text: kSpaceMobileError);
-                  }
+                    } else if (_mobileno2controller.text.length < 10 ||
+                        _mobileno2controller.text.length > 10) {
+                      return kValidMobileError;
+                    } else if (value.contains(' ')) {
+                      showSnackBar(context, text: kSpaceMobileError);
+                    }
                   }
 
                   return null;
@@ -823,11 +810,12 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
             child: ElevatedButton(
                 onPressed: () async {
                   setState(() {
-                  _showErrors = true; // Set to true to display errors on submit
-                });
+                    _showErrors =
+                        true; // Set to true to display errors on submit
+                  });
                   if (_formkey4.currentState!.validate()) {
                     //goto otp screen
-                    await editLabourSkill();
+                    await editLabourSkill(context);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -859,7 +847,7 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     );
   }
 
-  Future editLabourSkill() async {
+  Future editLabourSkill(BuildContext context) async {
     final wages = _remunerationcontroller.text;
     final otherdmnd = _otherdmndcontroller.text;
     final person1 = _referenceperson1controller.text;
@@ -907,15 +895,9 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
 
     log('$editskillrslt');
     if (editskillrslt == null) {
-      Fluttertoast.showToast(
-          msg: "something went rong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (editskillrslt.statusCode == 200) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }  else if (editskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(editskillrslt.data);
 
       final registerval =
@@ -930,9 +912,21 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
       }
     } else if (editskillrslt.statusCode == 404) {
       await showDialogError(_scaffoldKey.currentContext);
-    } else {
-      await showDialogError(_scaffoldKey.currentContext);
-    }
+    }else if (editskillrslt.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (editskillrslt.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 
   Future showDialogsuccess(BuildContext? context, String? message) async =>

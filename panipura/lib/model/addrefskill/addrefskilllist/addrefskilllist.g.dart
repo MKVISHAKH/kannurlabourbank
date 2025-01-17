@@ -8,7 +8,7 @@ part of 'addrefskilllist.dart';
 
 Addrefskilllist _$AddrefskilllistFromJson(Map<String, dynamic> json) =>
     Addrefskilllist(
-      userId: json['user_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
       name: json['name'] as String?,
       mobile: json['mobile'] as String?,
     );

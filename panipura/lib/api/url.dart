@@ -5,7 +5,6 @@ class Url {
   // String baseUrl = 'http://117.221.68.183:8000/dits/thozhil/public';
 
   String baseUrl = 'https://kannurlabourbank.com:549/thozhil/public';
-  
 
   String registerUrl = '/api/register';
   String empregisterUrl = '/api/employer/register';
@@ -16,7 +15,7 @@ class Url {
   String districtUrl = '/api/districts';
   String educationUrl = '/api/educations';
   String loclbdytypeUrl = '/api/localbody_types';
-  String localbodiesUrl = '/api/localbodies';
+  String localbodiesUrl = '/api/getlocalbodies';
   String genderUrl = '/api/genders';
   String occupationUrl = '/api/occupations';
   String addskillUrl = '/api/skill/create';
@@ -51,6 +50,6 @@ class Url {
   String todolistEditUrl = '/api/todolist/edit';
 
   String contactlogUrl = '/api/contactlog/create';
-  String deleteuserUrl='/api/user';
-  String deleteEmpUrl='/api/employer';
+  String deleteuserUrl = '/api/user';
+  String deleteEmpUrl = '/api/employer';
 }

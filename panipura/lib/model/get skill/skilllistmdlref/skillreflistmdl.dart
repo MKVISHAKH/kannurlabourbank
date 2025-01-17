@@ -49,7 +49,7 @@ class Getrefskillresplist {
   factory Getrefskillresplist.fromJson(Map<String, dynamic> json) {
     var panchlist = ((json["willing_panchayath"] ?? []) as List);
     var list = ((json["references"] ?? []) as List);
-   // print(panchlist.runtimeType);
+    // print(panchlist.runtimeType);
 //print(list.runtimeType);
     List<SkillrefListmdl> reflist =
         list.map((e) => SkillrefListmdl.fromMap(e)).toList();

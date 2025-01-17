@@ -8,8 +8,8 @@ part of 'getskillratereq.dart';
 
 Getskillratereq _$GetskillratereqFromJson(Map<String, dynamic> json) =>
     Getskillratereq(
-      userId: json['user_id'] as int?,
-      skillId: json['skill_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
+      skillId: (json['skill_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$GetskillratereqToJson(Getskillratereq instance) =>

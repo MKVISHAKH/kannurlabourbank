@@ -1,16 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:panipura/screens/screenemployer/screenemployerHome.dart';
-import 'package:panipura/screens/screenlabour/screenlabhome.dart';
+import 'package:panipura/core/hooks/hook.dart';
 
-//import 'package:panipura/screens/ScreenLogin.dart';
-import 'package:panipura/widgets/stylefamily.dart';
+
 import 'package:sms_autofill/sms_autofill.dart';
-import 'package:snippet_coder_utils/FormHelper.dart';
-import 'package:snippet_coder_utils/ProgressHUD.dart';
 
 //import 'ScreenLogin.dart';
-import '../widgets/constants.dart';
-import 'ScreenLogin.dart';
 
 class ScreenOtpverify extends StatefulWidget {
   final String? mobileNo;

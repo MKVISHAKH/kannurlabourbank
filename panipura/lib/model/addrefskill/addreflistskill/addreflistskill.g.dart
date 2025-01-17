@@ -8,9 +8,9 @@ part of 'addreflistskill.dart';
 
 Addreflistskill _$AddreflistskillFromJson(Map<String, dynamic> json) =>
     Addreflistskill(
-      referenceId: json['reference_id'] as int?,
-      userId: json['user_id'] as int?,
-      skillId: json['skill_id'] as int?,
+      referenceId: (json['reference_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
+      skillId: (json['skill_id'] as num?)?.toInt(),
       name: json['name'] as String?,
       mobile: json['mobile'] as String?,
       updatedAt: json['updated_at'] == null

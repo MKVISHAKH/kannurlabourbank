@@ -1,28 +1,10 @@
-//import 'package:panipura/ScreenHomedm.dart';
+
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/screens/Privacypolicy/pandp.dart';
-import 'package:panipura/screens/screenemployer/Screenemprprofile.dart';
 
-import '../../screens/Privacypolicy/commontandc.dart';
 
-//import 'package:panipura/screens/forgotpswrd/forgotpswrd.dart';
+
 
 class Approutes {
-  // PageTransition tandcScreen = PageTransition(
-  //   child: const ScreenEmpTandC(),
-  //   type: PageTransitionType.rotate,
-  //   alignment: Alignment.center,
-  //   curve: Curves.easeInOutBack,
-  //   duration: const Duration(milliseconds: 500),
-  // );
-
-  // PageTransition pandpScreen = PageTransition(
-  //   child: const ScreenCallPandP(),
-  //   type: PageTransitionType.rotate,
-  //   alignment: Alignment.center,
-  //   curve: Curves.easeInOutBack,
-  //   duration: const Duration(milliseconds: 500),
-  // );
 
   PageTransition splashScreen1 = PageTransition(
     child: const ScreensplashOne(),
@@ -126,5 +108,4 @@ class Approutes {
   //  curve: Curves.easeInOutBack,
   //  duration:const Duration(microseconds: 500),
   //  );
-  
 }

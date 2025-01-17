@@ -1,5 +1,3 @@
-
-
 class GenderIdmodel {
   final int? id;
 

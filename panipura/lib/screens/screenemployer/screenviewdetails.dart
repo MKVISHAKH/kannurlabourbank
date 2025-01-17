@@ -1,17 +1,8 @@
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart';
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/functions/laborfn.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/contactlog/contactlog.dart';
-import 'package:panipura/model/contactlog/contactlogresp/contactlogresp.dart';
-import 'package:panipura/provider/callprovider.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/screens/ratingscreen/screenlabRatingpop.dart';
-import 'package:panipura/screens/screenemployer/screenfilteredlab.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
-import '../../model/viewprofile/viewprofileinfo/viewprofileinfo.dart';
 import 'dart:developer';
 
 class Screenviewprofile extends StatefulWidget {
@@ -61,8 +52,8 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
       po.reset();
     });
     labname = widget.name!.toUpperCase();
-    Labempfn.instance.refreshskillUI(widget.userid, widget.localecode);
-    Labempfn.instance.viewprofile(widget.userid);
+    Labempfn.instance.refreshskillUI(widget.userid, widget.localecode,context);
+    Labempfn.instance.viewprofile(widget.userid,context);
   }
 
   Future callalertbox(BuildContext context) async => showDialog<bool>(
@@ -101,13 +92,14 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
 
                     String formattedDate =
                         DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-
+                    final usrmob = widget.mobile;
                     final logreq = Contactlog(
                         userId: labid,
                         employerId: empid,
-                        contactTime: formattedDate);
+                        contactTime: formattedDate,
+                        usrMob: usrmob);
                     // ignore: use_build_context_synchronously
-                    buildcontactlog(logreq,context);
+                    buildcontactlog(logreq, context);
                   } else {
                     showSnackBar(context,
                         text: "Please accept our privacy and policy");
@@ -119,7 +111,15 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
             ],
           ));
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
+Future<bool?> popscreen(BuildContext context) async {
+  Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => ScreenFilteredLab(
+                                isSearchnull: widget.isSearchnull),
+                          ),
+                        );
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
@@ -128,105 +128,115 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
       key: _scaffoldKey,
       children: [
         const Screensbackground(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(70),
-            child: AppBar(
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => ScreenFilteredLab(
-                              isSearchnull: widget.isSearchnull),
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Color.fromARGB(255, 158, 89, 248),
-                    )),
-              ),
-              centerTitle: true,
-              title: Text(AppLocalizations.of(context)!.det,
-                  style: L10n.getappbarSize(locale.languageCode)),
-              backgroundColor: Colors.white,
-              actions: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: GestureDetector(
-                        onTap: () {
-                          var po = context.read<CallProvider>();
-                          po.reset();
-
-                          callalertbox(context);
-                        },
-                        child: const Icon(Icons.call,
-                            color: Color.fromARGB(255, 158, 89, 248)))),
-                //  Icon(Icons.call,color:Color.fromARGB(255, 158, 89, 248))
-              ],
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(50),
-                      bottomLeft: Radius.circular(50))),
-            ),
-          ),
-          extendBodyBehindAppBar: true,
-          body: SafeArea(
-            child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 0.0),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Text(AppLocalizations.of(context)!.personalinfo,
-                          style: L10n.getappbarSize(locale.languageCode)),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 0.0, horizontal: 20.0),
-                      child: buildCrntDet(),
-                    ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 50.0),
-                      child: ElevatedButton(
-                          onPressed: () async {
+        PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
+          },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(70),
+              child: AppBar(
+                leading: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => ScreenFilteredLab(
+                                isSearchnull: widget.isSearchnull),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color.fromARGB(255, 158, 89, 248),
+                      )),
+                ),
+                centerTitle: true,
+                title: Text(AppLocalizations.of(context)!.det,
+                    style: L10n.getappbarSize(locale.languageCode)),
+                backgroundColor: Colors.white,
+                actions: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: GestureDetector(
+                          onTap: () {
                             var po = context.read<CallProvider>();
                             po.reset();
-
+          
                             callalertbox(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 158, 89, 248),
-                              fixedSize: const Size(180, 40),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5))),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(AppLocalizations.of(context)!.makecall,
-                                  style:
-                                      L10n.getbuttonstyle(locale.languageCode)),
-                              const Icon(Icons.call)
-                            ],
-                          )),
-                    ),
-                    /* ************* */
-                    Expanded(child: buildviewskills()),
-                    // TextButton(onPressed: (){
-                    //   buildviewskills();
-                    //   // getskillsdet(widget.userid);
-                    // }, child:const Text('Skill Details:',style:kbodyfont))
-                  ],
-                )),
+                          child: const Icon(Icons.call,
+                              color: Color.fromARGB(255, 158, 89, 248)))),
+                  //  Icon(Icons.call,color:Color.fromARGB(255, 158, 89, 248))
+                ],
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(50),
+                        bottomLeft: Radius.circular(50))),
+              ),
+            ),
+            extendBodyBehindAppBar: true,
+            body: SafeArea(
+              child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 0.0),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Text(AppLocalizations.of(context)!.personalinfo,
+                            style: L10n.getappbarSize(locale.languageCode)),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 20.0),
+                        child: buildCrntDet(),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 50.0),
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              var po = context.read<CallProvider>();
+                              po.reset();
+          
+                              callalertbox(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 158, 89, 248),
+                                fixedSize: const Size(180, 40),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5))),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(AppLocalizations.of(context)!.makecall,
+                                    style:
+                                        L10n.getbuttonstyle(locale.languageCode)),
+                                const Icon(Icons.call)
+                              ],
+                            )),
+                      ),
+                      /* ************* */
+                      Expanded(child: buildviewskills()),
+                      // TextButton(onPressed: (){
+                      //   buildviewskills();
+                      //   // getskillsdet(widget.userid);
+                      // }, child:const Text('Skill Details:',style:kbodyfont))
+                    ],
+                  )),
+            ),
           ),
         ),
       ],
@@ -259,12 +269,12 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                     buildRow([
                       AppLocalizations.of(context)!.nameemp,
                       ':',
-                      newList.single.name?? '' 
+                      newList.single.name ?? ''
                     ]),
                     buildRow([
                       AppLocalizations.of(context)!.genderemp,
                       ':',
-                      newList.single.gendername??'' 
+                      newList.single.gendername ?? ''
                     ]),
                     // buildRow([
                     //   AppLocalizations.of(context)!.addressemp,
@@ -274,7 +284,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                     buildRow([
                       AppLocalizations.of(context)!.placeemp,
                       ':',
-                      newList.single.place??''
+                      newList.single.place ?? ''
                     ]),
                     // buildRow([
                     //   AppLocalizations.of(context)!.postemp,
@@ -292,7 +302,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                     buildRow([
                       AppLocalizations.of(context)!.districtemp,
                       ':',
-                      newList.single.disname??''
+                      newList.single.disname ?? ''
                     ]),
                     // buildRow([
                     //   AppLocalizations.of(context)!.localtypename,
@@ -302,7 +312,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                     buildRow([
                       AppLocalizations.of(context)!.localnameemp,
                       ':',
-                      '${newList.single.localname!.toUpperCase()} ${newList.single.localtypename??''}'
+                      '${newList.single.localname!.toUpperCase()} ${newList.single.localtypename ?? ''}'
                     ]),
                   ],
                 );
@@ -315,17 +325,17 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ScreenCallPandP(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: widget.localecode,
-                            ),
-                          ),
-                        );
+            MaterialPageRoute(
+              builder: (context) => ScreenCallPandP(
+                isSearchnull: widget.isSearchnull,
+                userid: widget.userid,
+                name: widget.name,
+                occupationid: widget.occupationid,
+                mobile: widget.mobile,
+                localecode: widget.localecode,
+              ),
+            ),
+          );
         },
         child: Row(
           children: <Widget>[
@@ -342,17 +352,17 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                       log('$value');
                       check.setAccepted(value!);
                       Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ScreenCallPandP(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: widget.localecode,
-                            ),
+                        MaterialPageRoute(
+                          builder: (context) => ScreenCallPandP(
+                            isSearchnull: widget.isSearchnull,
+                            userid: widget.userid,
+                            name: widget.name,
+                            occupationid: widget.occupationid,
+                            mobile: widget.mobile,
+                            localecode: widget.localecode,
                           ),
-                        );
+                        ),
+                      );
                     }),
               ),
             ),
@@ -407,7 +417,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
             itemBuilder: (ctx, index) {
               final val = newList[index];
               final wages = val.wages;
-              final per=val.wPeriod;
+              final per = val.wPeriod;
 
               if (val.references.isEmpty) {
                 mob1 = '';
@@ -453,7 +463,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                         padding: const EdgeInsets.all(5.0),
                         child: Container(
                           width: MediaQuery.of(context).size.width,
-                         // height: 275,
+                          // height: 275,
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -483,11 +493,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                                 ':',
                                 '(₹) $wageval'
                               ]),
-                              buildRow1([
-                                'Per (Hour/Day)',
-                                ':',
-                                '(₹) $per'
-                              ]),
+                              buildRow1(['Per (Hour/Day)', ':', '(₹) $per']),
                               buildRow1([
                                 AppLocalizations.of(context)!.other,
                                 ':',
@@ -495,42 +501,63 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
                               ]),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
-                                      ? buildRow1(
-                                          [
-                                            AppLocalizations.of(context)!.reference1,
-                                             ':', ref1??''])
-                                      : buildRow1(
-                                          [AppLocalizations.of(context)!.reference1, ':', ref1??''])
+                                      ? buildRow1([
+                                          AppLocalizations.of(context)!
+                                              .reference1,
+                                          ':',
+                                          ref1 ?? ''
+                                        ])
+                                      : buildRow1([
+                                          AppLocalizations.of(context)!
+                                              .reference1,
+                                          ':',
+                                          ref1 ?? ''
+                                        ])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
-                                      ? buildRow1(
-                                          [AppLocalizations.of(context)!.mob, ':', mob1??''])
-                                      : buildRow1(
-                                          [AppLocalizations.of(context)!.mob, ':', mob1??''])
+                                      ? buildRow1([
+                                          AppLocalizations.of(context)!.mob,
+                                          ':',
+                                          mob1 ?? ''
+                                        ])
+                                      : buildRow1([
+                                          AppLocalizations.of(context)!.mob,
+                                          ':',
+                                          mob1 ?? ''
+                                        ])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
-                                      ? buildRow1(
-                                          [AppLocalizations.of(context)!.reference2, ':', ref2??''])
+                                      ? buildRow1([
+                                          AppLocalizations.of(context)!
+                                              .reference2,
+                                          ':',
+                                          ref2 ?? ''
+                                        ])
                                       : buildRow1([' ', ' ', ' '])
                                   : buildRow1([' ', ' ', ' ']),
                               val.references.isNotEmpty
                                   ? val.references.length == 2
-                                      ? buildRow1(
-                                          [AppLocalizations.of(context)!.mob, ':', mob2??''])
+                                      ? buildRow1([
+                                          AppLocalizations.of(context)!.mob,
+                                          ':',
+                                          mob2 ?? ''
+                                        ])
                                       : buildRow1([' ', ' ', ' '])
                                   : buildRow1([' ', ' ', ' ']),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       TextButton(
-                          onPressed: () async{
+                          onPressed: () async {
                             final value = await Sharedata.instance.getdata();
-                            empid=value!.userid;
-                            if (!context.mounted) return ;
+                            empid = value!.userid;
+                            if (!context.mounted) return;
 
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -573,7 +600,7 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
         }).toList(),
       );
 
-  Future buildcontactlog(Contactlog value,BuildContext context) async {
+  Future buildcontactlog(Contactlog value, BuildContext context) async {
     final contactresp = await Labourdata().contactlog(value);
     if (contactresp == null) {
       log('$contactresp');
@@ -581,54 +608,54 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
       final resultAsjson = jsonDecode(contactresp.data);
       final logval =
           Contactlogresp.fromJson(resultAsjson as Map<String, dynamic>);
-          final status=logval.success;
-          final message=logval.message;
-          if(status==true){
-              // ignore: use_build_context_synchronously
-              Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => Screenviewprofile(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: widget.localecode,
-                            ),
-                          ),
-                        );
-                        log('$message');
-          } else{
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => Screenviewprofile(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: widget.localecode,
-                            ),
-                          ),
-                        );
-                        log('$message');
-          }       
+      final status = logval.success;
+      final message = logval.message;
+      if (status == true) {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => Screenviewprofile(
+              isSearchnull: widget.isSearchnull,
+              userid: widget.userid,
+              name: widget.name,
+              occupationid: widget.occupationid,
+              mobile: widget.mobile,
+              localecode: widget.localecode,
+            ),
+          ),
+        );
+        log('$message');
+      } else {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => Screenviewprofile(
+              isSearchnull: widget.isSearchnull,
+              userid: widget.userid,
+              name: widget.name,
+              occupationid: widget.occupationid,
+              mobile: widget.mobile,
+              localecode: widget.localecode,
+            ),
+          ),
+        );
+        log('$message');
+      }
     } else {
       // ignore: use_build_context_synchronously
-            Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => Screenviewprofile(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: widget.localecode,
-                            ),
-                          ),
-                        );
-                        log('${contactresp.statusCode}');
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => Screenviewprofile(
+            isSearchnull: widget.isSearchnull,
+            userid: widget.userid,
+            name: widget.name,
+            occupationid: widget.occupationid,
+            mobile: widget.mobile,
+            localecode: widget.localecode,
+          ),
+        ),
+      );
+      log('${contactresp.statusCode}');
     }
   }
 }

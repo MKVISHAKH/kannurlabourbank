@@ -7,10 +7,10 @@ part of 'ratingreqmdl.dart';
 // **************************************************************************
 
 Ratingreqmdl _$RatingreqmdlFromJson(Map<String, dynamic> json) => Ratingreqmdl(
-      employerId: json['employer_id'] as int?,
-      userId: json['user_id'] as int?,
+      employerId: (json['employer_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
       rating: (json['rating'] as num?)?.toDouble(),
-      skillId: json['skill_id'] as int?,
+      skillId: (json['skill_id'] as num?)?.toInt(),
       comments: json['comments'] as String?,
     );
 

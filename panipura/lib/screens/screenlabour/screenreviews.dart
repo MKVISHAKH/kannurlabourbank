@@ -1,10 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/locale_provider.dart';
 import '../../core/hooks/hook.dart';
-import '../../functions/laborfn.dart';
-import '../../model/getskillrate/getskillratereq/getskillratereq.dart';
-import '../../model/getskillrate/getskillrateresp/getskillratelist/getskillratelist.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScreenReviews extends StatefulWidget {
@@ -28,13 +24,13 @@ class _ScreenReviewsState extends State<ScreenReviews> {
   void initState() {
     super.initState();
 
-    getskillrate();
+    getskillrate(context);
   }
 
-  getskillrate() async {
+  getskillrate(BuildContext context) async {
     final getratereq =
         Getskillratereq.req(userId: widget.usrId, skillId: widget.skillId);
-    Labempfn.instance.refreshRateUI(getratereq);
+    Labempfn.instance.refreshRateUI(getratereq,context);
   }
 
   @override

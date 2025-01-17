@@ -8,15 +8,15 @@ part of 'data.dart';
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
       contactTime: json['contact_time'] as String?,
-      employerId: json['employer_id'] as int?,
-      userId: json['user_id'] as int?,
+      employerId: (json['employer_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
-      contactId: json['contact_id'] as int?,
+      contactId: (json['contact_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{

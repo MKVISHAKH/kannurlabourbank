@@ -8,11 +8,11 @@ part of 'searchlabourmdl.dart';
 
 Searchlabourmdl _$SearchlabourmdlFromJson(Map<String, dynamic> json) =>
     Searchlabourmdl(
-      userId: json['user_id'] as int?,
-      occupationId: json['occupation_id'] as int?,
-      districtId: json['district_id'] as int?,
-      lbTypeId: json['lb_type_id'] as int?,
-      localbodyId: json['localbody_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
+      occupationId: (json['occupation_id'] as num?)?.toInt(),
+      districtId: (json['district_id'] as num?)?.toInt(),
+      lbTypeId: (json['lb_type_id'] as num?)?.toInt(),
+      localbodyId: (json['localbody_id'] as num?)?.toInt(),
       experience: json['experience'] as String?,
       minWage: json['min_wage'] as String?,
       maxWage: json['max_wage'] as String?,

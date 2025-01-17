@@ -7,8 +7,8 @@ part of 'data.dart';
 // **************************************************************************
 
 Data _$DataFromJson(Map<String, dynamic> json) => Data(
-      userId: json['user_id'] as int?,
-      occupationId: json['occupation_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
+      occupationId: (json['occupation_id'] as num?)?.toInt(),
       experience: json['experience'] as String?,
       wages: json['wages'] as String?,
       wPeriod: json['w_period'] as String?,
@@ -19,7 +19,7 @@ Data _$DataFromJson(Map<String, dynamic> json) => Data(
       createdAt: json['created_at'] == null
           ? null
           : DateTime.parse(json['created_at'] as String),
-      skillId: json['skill_id'] as int?,
+      skillId: (json['skill_id'] as num?)?.toInt(),
       error: json['error'] as String?,
     );
 

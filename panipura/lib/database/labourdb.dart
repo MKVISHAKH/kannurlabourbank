@@ -1,59 +1,62 @@
 import 'dart:developer';
-
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/model/districtmodel/districtmodel.dart';
-import 'package:panipura/model/educationmdl/educationmodel.dart';
-import 'package:panipura/model/localbodytype/loclbdytypmdl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
-import '../model/gendermdl/gendermodel.dart';
-import '../model/localbodies/localbodies.dart';
-import '../model/occupationmdl/occupationmdl.dart';
 
 abstract class LabourDbFunction {
   Future addDistrict(Districtmodel newDistrict);
   Future<int> deleteDistrict();
-  Future<List<Map<String, dynamic>>> getDistrict(Locale? locale);
+  Future<List<Map<String, dynamic>>> getDistrict(
+      Locale? locale, BuildContext context);
   Future<List<Map<String, Object?>>> getDistrictId(
-      String? name, Locale? locale);
-  Future<List<Map<String, Object?>>> getDistrictName(int? id, Locale? locale);
+      String? name, Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getDistrictName(
+      int? id, Locale? locale, BuildContext context);
 
   Future addEducation(Educationmodel newEducation);
   Future<int> deleteEducation();
-  Future<List<Map<String, dynamic>>> getEducation(Locale? locale);
-  Future<List<Map<String, Object?>>> getEduId(String? name, Locale? locale);
-  Future<List<Map<String, Object?>>> getEduName(int? id, Locale? locale);
+  Future<List<Map<String, dynamic>>> getEducation(
+      Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getEduId(
+      String? name, Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getEduName(
+      int? id, Locale? locale, BuildContext context);
 
   Future addLocalbodyType(Localbdytypemodel newLocalbdyType);
   Future<int> deleteLocalbodyType();
-  Future<List<Map<String, dynamic>>> getLocalbodyType(Locale? locale);
+  Future<List<Map<String, dynamic>>> getLocalbodyType(
+      Locale? locale, BuildContext context);
   Future<List<Map<String, Object?>>> getLocalbdytypeId(
-      String? name, Locale? locale);
+      String? name, Locale? locale, BuildContext context);
   Future<List<Map<String, Object?>>> getLocalbdytypeName(
-      int? id, Locale? locale);
+      int? id, Locale? locale, BuildContext context);
 
   Future addGenderType(Gendermodel newgenderType);
   Future<int> deleteGender();
-  Future<List<Map<String, dynamic>>> getGender(Locale? locale);
-  Future<List<Map<String, Object?>>> getGenderId(String? name, Locale? locale);
-  Future<List<Map<String, Object?>>> getGenderName(int? id, Locale? locale);
+  Future<List<Map<String, dynamic>>> getGender(
+      Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getGenderId(
+      String? name, Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getGenderName(
+      int? id, Locale? locale, BuildContext context);
 
   Future addLocalbodies(Localbodiesmodel localbodyname);
   Future<int> deleteLocalbodies();
   Future<List<Map<String, dynamic>>> getLocalbodies(
-      int? distid, int? typeid, Locale? locale);
-  Future<List<Map<String, Object?>>> getLocalbodyId(
-      String? name, Locale? locale);
-  Future<List<Map<String, Object?>>> getLocalbodyName(int? id, Locale? locale);
+      int? distid, int? typeid, Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getLocalbodyId(int? distid, int? typeid,
+      String? name, Locale? locale, BuildContext context);
+  Future<List<Map<String, Object?>>> getLocalbodyName(
+      int? distid, int? typeid, int? id, Locale? locale, BuildContext context);
 
   Future addOccupations(Occupationmodel localbodyname);
   Future<int> deleteOccupations();
-  Future<List<Map<String, dynamic>>> getOccupations(Locale? locale);
+  Future<List<Map<String, dynamic>>> getOccupations(
+      Locale? locale, BuildContext context);
   Future<List<Map<String, Object?>>> getOccupationsId(
-      String? name, Locale? locale);
+      String? name, Locale? locale, BuildContext context);
   Future<List<Map<String, Object?>>> getOccupationsName(
-      int? id, Locale? locale);
+      int? id, Locale? locale, BuildContext context);
   // Future addLocalbodyType(Districtmodel newDistrict);
 }
 
@@ -139,61 +142,248 @@ class LabourDb implements LabourDbFunction {
     // }
     return _db.isOpen;
   }
-
   /* District table entry*/
 
   @override
   Future addDistrict(Districtmodel newDistrict) async {
     await deleteDistrict();
     final db = await database;
-    final res = await db.insert('districts', newDistrict.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('districts', newDistrict.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting district: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteDistrict() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM districts');
+    try {
+      final res = await db.rawDelete('DELETE FROM districts');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error deleting districts: $e');
+      return 0;
+    }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getDistrict(Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, dynamic>>> getDistrict(
+      Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db
-          .rawQuery('SELECT name_ml FROM districts ORDER BY name_ml ASC');
-    } else {
-      return await _db.rawQuery('SELECT name FROM districts ORDER BY name ASC');
+          .rawQuery('SELECT $column FROM districts ORDER BY $column ASC');
+    } catch (e) {
+      log('Error fetching districts: $e');
+
+      String? message;
+
+      final distval = await Labourdata().district();
+      final resultAsjson = jsonDecode(distval.toString());
+      final loginval =
+          FetchDistrict.fromJson(resultAsjson as Map<String, dynamic>);
+      if (distval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (distval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final distlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        return distlist!.map((datum) => datum.toJson()).toList();
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || distval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (distval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (distval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery('SELECT name_ml FROM districts ORDER BY name_ml ASC');
+  // } else {
+  //   return await _db.rawQuery('SELECT name FROM districts ORDER BY name ASC');
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getDistrictId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
-      final listid=await _db
-          .rawQuery("SELECT district_id FROM districts WHERE name_ml='$name'");
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+      final listid = await _db
+          .rawQuery("SELECT district_id FROM districts WHERE $column='$name'");
       return listid;
-    } else {
-      final listid=await _db
-          .rawQuery("SELECT district_id FROM districts WHERE name='$name'");
-      return listid;
+    } catch (e) {
+      log('Error fetching district ID: $e');
+      String? message;
+
+      final distval = await Labourdata().district();
+      final resultAsjson = jsonDecode(distval.toString());
+      final loginval =
+          FetchDistrict.fromJson(resultAsjson as Map<String, dynamic>);
+      if (distval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (distval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final distlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        final matchingDistrict = distlist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return [
+          {'district_id': matchingDistrict.districtId}
+        ];
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || distval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (distval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (distval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   final listid=await _db
+  //       .rawQuery("SELECT district_id FROM districts WHERE name_ml='$name'");
+  //   return listid;
+  // } else {
+  //   final listid=await _db
+  //       .rawQuery("SELECT district_id FROM districts WHERE name='$name'");
+  //   return listid;
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getDistrictName(
-      int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
-      return await _db
-          .rawQuery("SELECT name_ml FROM districts WHERE district_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM districts WHERE district_id='$id'");
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+      final listid = await _db
+          .rawQuery("SELECT $column FROM districts WHERE district_id='$id'");
+      return listid;
+    } catch (e) {
+      log('Error fetching District Name: $e');
+      String? message;
+
+      final distval = await Labourdata().district();
+      final resultAsjson = jsonDecode(distval.toString());
+      final loginval =
+          FetchDistrict.fromJson(resultAsjson as Map<String, dynamic>);
+      if (distval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (distval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final distlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        final matchingDist = distlist!.firstWhere(
+          (datum) => datum.districtId == id,
+          //orElse: () => null,
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+        // Return the gender name based on locale
+        return [
+          {
+            column:
+                locale == Locale('ml') ? matchingDist.nameMl : matchingDist.name
+          }
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || distval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (distval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (distval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery("SELECT name_ml FROM districts WHERE district_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM districts WHERE district_id='$id'");
+  // }
   /* ********************************************* */
 
   /* Education details entry */
@@ -201,52 +391,239 @@ class LabourDb implements LabourDbFunction {
   Future addEducation(Educationmodel newEducation) async {
     await deleteEducation();
     final db = await database;
-    final res = await db.insert('educations', newEducation.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('educations', newEducation.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting Education: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteEducation() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM educations');
+    try {
+      final res = await db.rawDelete('DELETE FROM educations');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error delete Education: $e');
+      return 0;
+    }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getEducation(Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, dynamic>>> getEducation(
+      Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db
-          .rawQuery('SELECT name_ml FROM educations ORDER BY name_ml ASC');
-    } else {
-      return await _db
-          .rawQuery('SELECT name FROM educations ORDER BY name ASC');
+          .rawQuery('SELECT $column FROM educations ORDER BY $column ASC');
+    } catch (e) {
+      log('Error fetching Education: $e');
+      String? message;
+
+      final eduval = await Labourdata().education();
+      final resultAsjson = jsonDecode(eduval.toString());
+      final loginval =
+          Fetcheducation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (eduval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (eduval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final edulist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        return edulist!.map((datum) => datum.toJson()).toList();
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || eduval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (eduval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (eduval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery('SELECT name_ml FROM educations ORDER BY name_ml ASC');
+  // } else {
+  //   return await _db
+  //       .rawQuery('SELECT name FROM educations ORDER BY name ASC');
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getEduId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db.rawQuery(
-          "SELECT education_id FROM educations WHERE name_ml='$name'");
-    } else {
-      return await _db
-          .rawQuery("SELECT education_id FROM educations WHERE name='$name'");
+          "SELECT education_id FROM educations WHERE $column='$name'");
+    } catch (e) {
+      log('Error fetching Education id: $e');
+      String? message;
+
+      final eduval = await Labourdata().education();
+      final resultAsjson = jsonDecode(eduval.toString());
+      final loginval =
+          Fetcheducation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (eduval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (eduval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final edulist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        final matchingDistrict = edulist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return [
+          {'education_id': matchingDistrict.educationId}
+        ];
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || eduval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (eduval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (eduval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT education_id FROM educations WHERE name_ml='$name'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT education_id FROM educations WHERE name='$name'");
+  // }
 
   @override
-  Future<List<Map<String, Object?>>> getEduName(int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, Object?>>> getEduName(
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db
-          .rawQuery("SELECT name_ml FROM educations WHERE education_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM educations WHERE education_id='$id'");
+          .rawQuery("SELECT $column FROM educations WHERE education_id='$id'");
+    } catch (e) {
+      String? message;
+
+      final eduval = await Labourdata().education();
+      final resultAsjson = jsonDecode(eduval.toString());
+      final loginval =
+          Fetcheducation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (eduval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (eduval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final edulist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingEdu = edulist!.firstWhere(
+          (datum) => datum.educationId == id,
+          orElse: () =>
+              Datum(educationId: -1, name: "Unknown", nameMl: "അജ്ഞാതം"),
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+        // Return the gender name based on locale
+        return [
+          {
+            column:
+                locale == Locale('ml') ? matchingEdu.nameMl : matchingEdu.name
+          }
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || eduval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (eduval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (eduval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery("SELECT name_ml FROM educations WHERE education_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM educations WHERE education_id='$id'");
+  // }
+
   /* ********************************************* */
 
   /*LOCALBODYTYPE */
@@ -255,53 +632,245 @@ class LabourDb implements LabourDbFunction {
   Future addLocalbodyType(Localbdytypemodel newLocalbdyType) async {
     await deleteLocalbodyType();
     final db = await database;
-    final res = await db.insert('localbody_types', newLocalbdyType.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('localbody_types', newLocalbdyType.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting localbody: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteLocalbodyType() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM localbody_types');
+    try {
+      final res = await db.rawDelete('DELETE FROM localbody_types');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error deleting localbody: $e');
+      return 0;
+    }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getLocalbodyType(Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, dynamic>>> getLocalbodyType(
+      Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
       return await _db
-          .rawQuery('SELECT name_ml FROM localbody_types ORDER BY name_ml ASC');
-    } else {
-      return await _db
-          .rawQuery('SELECT name FROM localbody_types ORDER BY name ASC');
+          .rawQuery('SELECT $column FROM localbody_types ORDER BY $column ASC');
+    } catch (e) {
+      log('Error fetching localbody: $e');
+      String? message;
+
+      final loctypeval = await Labourdata().localbodytype();
+      final resultAsjson = jsonDecode(loctypeval.toString());
+      final loginval =
+          FetchLocalType.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loctypeval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loctypeval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loctypelist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return loctypelist!.map((datum) => datum.toJson()).toList();
+
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loctypeval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loctypeval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loctypeval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery('SELECT name_ml FROM localbody_types ORDER BY name_ml ASC');
+  // } else {
+  //   return await _db
+  //       .rawQuery('SELECT name FROM localbody_types ORDER BY name ASC');
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getLocalbdytypeId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db.rawQuery(
-          "SELECT lb_type_id FROM localbody_types WHERE name_ml='$name'");
-    } else {
-      return await _db.rawQuery(
-          "SELECT lb_type_id FROM localbody_types WHERE name='$name'");
+          "SELECT lb_type_id FROM localbody_types WHERE $column ='$name'");
+    } catch (e) {
+      log('Error fetching localbody id: $e');
+      String? message;
+
+      final loctypeval = await Labourdata().localbodytype();
+      final resultAsjson = jsonDecode(loctypeval.toString());
+      final loginval =
+          FetchLocalType.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loctypeval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loctypeval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loctypelist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchinglocaltype = loctypelist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return [
+          {'lb_type_id': matchinglocaltype.lbTypeId}
+        ];
+
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loctypeval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loctypeval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loctypeval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT lb_type_id FROM localbody_types WHERE name_ml='$name'");
+  // } else {
+  //   return await _db.rawQuery(
+  //       "SELECT lb_type_id FROM localbody_types WHERE name='$name'");
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getLocalbdytypeName(
-      int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db.rawQuery(
-          "SELECT name_ml FROM localbody_types WHERE lb_type_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM localbody_types WHERE lb_type_id='$id'");
+          "SELECT $column FROM localbody_types WHERE lb_type_id='$id'");
+    } catch (e) {
+      log('Error fetching localbody name: $e');
+      String? message;
+
+      final loctypeval = await Labourdata().localbodytype();
+      final resultAsjson = jsonDecode(loctypeval.toString());
+      final loginval =
+          FetchLocalType.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loctypeval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loctypeval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loctypelist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingLoctype = loctypelist!.firstWhere(
+          (datum) => datum.lbTypeId == id,
+          //orElse: () => null,
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+        // Return the gender name based on locale
+        return [
+          {
+            column: locale == Locale('ml')
+                ? matchingLoctype.nameMl
+                : matchingLoctype.name
+          }
+        ];
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loctypeval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loctypeval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loctypeval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT name_ml FROM localbody_types WHERE lb_type_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM localbody_types WHERE lb_type_id='$id'");
+  // }
+
   /* ********************************************* */
 
   /*GENDER */
@@ -309,51 +878,244 @@ class LabourDb implements LabourDbFunction {
   Future addGenderType(Gendermodel newgenderType) async {
     await deleteGender();
     final db = await database;
-    final res = await db.insert('genders', newgenderType.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('genders', newgenderType.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting gender: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteGender() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM genders');
+    try {
+      final res = await db.rawDelete('DELETE FROM genders');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error deleting gender: $e');
+      return 0;
+    }
+    // final res = await db.rawDelete('DELETE FROM genders');
+
+    // return res;
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getGender(Locale? locale) async {
-    if (locale == Locale('ml')) {
-      return await _db.rawQuery('SELECT name_ml FROM genders');
-    } else {
-      return await _db.rawQuery('SELECT name FROM genders');
+  Future<List<Map<String, dynamic>>> getGender(
+      Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+      return await _db.rawQuery('SELECT $column FROM genders');
+    } catch (e) {
+      log('Error fetching gender: $e');
+      String? message;
+
+      final genderval = await Labourdata().gender();
+      final resultAsjson = jsonDecode(genderval.toString());
+      final loginval =
+          Fetchgender.fromJson(resultAsjson as Map<String, dynamic>);
+      if (genderval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (genderval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final genderlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        return genderlist!.map((datum) => datum.toJson()).toList();
+
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || genderval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (genderval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (genderval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery('SELECT name_ml FROM genders');
+  // } else {
+  //   return await _db.rawQuery('SELECT name FROM genders');
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getGenderId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db
-          .rawQuery("SELECT gender_id FROM genders WHERE name_ml='$name'");
-    } else {
-      return await _db
-          .rawQuery("SELECT gender_id FROM genders WHERE name='$name'");
+          .rawQuery("SELECT gender_id FROM genders WHERE $column='$name'");
+    } catch (e) {
+      log('Error fetching gender id: $e');
+      String? message;
+
+      final genderval = await Labourdata().gender();
+      final resultAsjson = jsonDecode(genderval.toString());
+      final loginval =
+          Fetchgender.fromJson(resultAsjson as Map<String, dynamic>);
+      if (genderval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (genderval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final genderlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingGender = genderlist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return [
+          {'gender_id': matchingGender.genderId}
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || genderval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (genderval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (genderval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery("SELECT gender_id FROM genders WHERE name_ml='$name'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT gender_id FROM genders WHERE name='$name'");
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getGenderName(
-      int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
       return await _db
-          .rawQuery("SELECT name_ml FROM genders WHERE gender_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM genders WHERE gender_id='$id'");
+          .rawQuery("SELECT $column FROM genders WHERE gender_id='$id'");
+    } catch (e) {
+      log('Error fetching gender name: $e');
+      String? message;
+
+      final genderval = await Labourdata().gender();
+      final resultAsjson = jsonDecode(genderval.toString());
+      final loginval =
+          Fetchgender.fromJson(resultAsjson as Map<String, dynamic>);
+      if (genderval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (genderval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final genderlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingGender = genderlist!.firstWhere(
+          (datum) => datum.genderId == id,
+          //orElse: () => null,
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+        // Return the gender name based on locale
+        return [
+          {
+            column: locale == Locale('ml')
+                ? matchingGender.nameMl
+                : matchingGender.name
+          }
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || genderval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (genderval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (genderval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery("SELECT name_ml FROM genders WHERE gender_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM genders WHERE gender_id='$id'");
+  // }
+
   /* ********************************************* */
 
   /*LocalBodies */
@@ -361,56 +1123,249 @@ class LabourDb implements LabourDbFunction {
   Future addLocalbodies(Localbodiesmodel localbodyname) async {
     await deleteLocalbodies();
     final db = await database;
-    final res = await db.insert('localbodies', localbodyname.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('localbodies', localbodyname.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting localbody: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteLocalbodies() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM localbodies');
+    try {
+      final res = await db.rawDelete('DELETE FROM localbodies');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error deleting localbody: $e');
+      return 0;
+    }
   }
 
   @override
   Future<List<Map<String, dynamic>>> getLocalbodies(
-      int? distid, int? typeid, Locale? locale) async {
-    if (locale == Locale('ml')) {
-      final listbodies=await _db.rawQuery(
-          "SELECT name_ml FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name_ml ASC");
+      int? distid, int? typeid, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+      final listbodies = await _db.rawQuery(
+          "SELECT $column FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY $column ASC");
       return listbodies;
-    } else {
-      final listbodies=await _db.rawQuery(
-          "SELECT name FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name ASC");
-      return listbodies;
+    } catch (e) {
+      log('Error fetching localbody: $e');
+      String? message;
+      final locreqval = LocbodyReq(districtId: distid, lbTypeId: typeid);
+      final loclbdyval = await Labourdata().localbodies(locreqval);
+      final resultAsjson = jsonDecode(loclbdyval.toString());
+      final loginval =
+          Fetchlocalbody.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loclbdyval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loclbdyval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loclbdylist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return loclbdylist!.map((datum) => datum.toJson()).toList();
+
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loclbdyval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loclbdyval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loclbdyval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   final listbodies=await _db.rawQuery(
+  //       "SELECT name_ml FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name_ml ASC");
+  //   return listbodies;
+  // } else {
+  //   final listbodies=await _db.rawQuery(
+  //       "SELECT name FROM localbodies WHERE district_id='$distid' AND lb_type_id='$typeid' ORDER BY name ASC");
+  //   return listbodies;
+  // }
 
   @override
-  Future<List<Map<String, Object?>>> getLocalbodyId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, Object?>>> getLocalbodyId(int? distid, int? typeid,
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
       return await _db.rawQuery(
-          "SELECT localbody_id FROM localbodies WHERE name_ml='$name'");
-    } else {
-      return await _db
-          .rawQuery("SELECT localbody_id FROM localbodies WHERE name='$name'");
+          "SELECT localbody_id FROM localbodies WHERE $column='$name'");
+    } catch (e) {
+      log('Error fetching localbody id: $e');
+      String? message;
+      final locreqval = LocbodyReq(districtId: distid, lbTypeId: typeid);
+      final loclbdyval = await Labourdata().localbodies(locreqval);
+      final resultAsjson = jsonDecode(loclbdyval.toString());
+      final loginval =
+          Fetchlocalbody.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loclbdyval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loclbdyval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loclbdylist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingLoclBdy = loclbdylist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        // Return the matching district ID
+        //if (matchingDistrict!=null) {
+        return [
+          {'localbody_id': matchingLoclBdy.localbodyId}
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loclbdyval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loclbdyval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loclbdyval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT localbody_id FROM localbodies WHERE name_ml='$name'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT localbody_id FROM localbodies WHERE name='$name'");
+  // }
 
   @override
-  Future<List<Map<String, Object?>>> getLocalbodyName(
-      int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, Object?>>> getLocalbodyName(int? distid, int? typeid,
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
       return await _db
-          .rawQuery("SELECT name_ml FROM localbodies WHERE localbody_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM localbodies WHERE localbody_id='$id'");
+          .rawQuery("SELECT $column FROM localbodies WHERE localbody_id='$id'");
+    } catch (e) {
+      log('Error fetching localbody name: $e');
+      String? message;
+      final locreqval = LocbodyReq(districtId: distid, lbTypeId: typeid);
+      final loclbdyval = await Labourdata().localbodies(locreqval);
+      final resultAsjson = jsonDecode(loclbdyval.toString());
+      final loginval =
+          Fetchlocalbody.fromJson(resultAsjson as Map<String, dynamic>);
+      if (loclbdyval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (loclbdyval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final loclbdylist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        final matchingLoclBdy = loclbdylist!.firstWhere(
+          (datum) => datum.localbodyId == id,
+          //orElse: () => null,
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
+        // Return the gender name based on locale
+        return [
+          {
+            column: locale == Locale('ml')
+                ? matchingLoclBdy.nameMl
+                : matchingLoclBdy.name
+          }
+        ];
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || loclbdyval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (loclbdyval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (loclbdyval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery("SELECT name_ml FROM localbodies WHERE localbody_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM localbodies WHERE localbody_id='$id'");
+  // }
 
   /* ********************************************* */
 
@@ -419,53 +1374,236 @@ class LabourDb implements LabourDbFunction {
   Future addOccupations(Occupationmodel occupationname) async {
     await deleteOccupations();
     final db = await database;
-    final res = await db.insert('occupations', occupationname.toJson());
-    log('inserted');
-    return res;
+    try {
+      final res = await db.insert('occupations', occupationname.toJson());
+      log('inserted');
+      return res;
+    } catch (e) {
+      log('Error inserting occupation: $e');
+      return 0;
+    }
   }
 
   @override
   Future<int> deleteOccupations() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM occupations');
+    try {
+      final res = await db.rawDelete('DELETE FROM occupations');
 
-    return res;
+      return res;
+    } catch (e) {
+      log('Error delete occupation: $e');
+      return 0;
+    }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getOccupations(Locale? locale) async {
-    if (locale == Locale('ml')) {
+  Future<List<Map<String, dynamic>>> getOccupations(
+      Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db
-          .rawQuery('SELECT name_ml FROM occupations ORDER BY name_ml ASC');
-    } else {
-      return await _db
-          .rawQuery('SELECT name FROM occupations ORDER BY name ASC');
+          .rawQuery('SELECT $column FROM occupations ORDER BY $column ASC');
+    } catch (e) {
+      log('Error fetching occupation: $e');
+      String? message;
+
+      final occupationval = await Labourdata().occupations();
+      final resultAsjson = jsonDecode(occupationval.toString());
+      final loginval =
+          Fetchoccupation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (occupationval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (occupationval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final occupationlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+
+        return occupationlist!.map((datum) => datum.toJson()).toList();
+
+        //  }
+
+        //showLoginerror(_scaffoldKey.currentContext!);
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (occupationval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (occupationval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db
+  //       .rawQuery('SELECT name_ml FROM occupations ORDER BY name_ml ASC');
+  // } else {
+  //   return await _db
+  //       .rawQuery('SELECT name FROM occupations ORDER BY name ASC');
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getOccupationsId(
-      String? name, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      String? name, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
       return await _db.rawQuery(
-          "SELECT occupation_id FROM occupations WHERE name_ml='$name'");
-    } else {
-      return await _db
-          .rawQuery("SELECT occupation_id FROM occupations WHERE name='$name'");
+          "SELECT occupation_id FROM occupations WHERE $column='$name'");
+    } catch (e) {
+      log('Error fetching occupation id: $e');
+      String? message;
+
+      final occupationval = await Labourdata().occupations();
+      final resultAsjson = jsonDecode(occupationval.toString());
+      final loginval =
+          Fetchoccupation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (occupationval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (occupationval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final occupationlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        
+        final matchingOccupation = occupationlist!.firstWhere(
+          (datum) => locale == Locale('ml')
+              ? datum.nameMl == name // Match Malayalam name
+              : datum.name == name, // Match default name
+          // orElse: () => [], // Return null if no match
+        );
+
+        
+        return [
+          {'occupation_id': matchingOccupation.occupationId}
+        ];
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (occupationval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (occupationval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
-  }
+      return [];
+    }
+    // if (locale == Locale('ml')) {
+    //   return await _db.rawQuery(
+    //       "SELECT occupation_id FROM occupations WHERE name_ml='$name'");
+    // } else {
+    //   return await _db
+    //       .rawQuery("SELECT occupation_id FROM occupations WHERE name='$name'");
+    // }
 
   @override
   Future<List<Map<String, Object?>>> getOccupationsName(
-      int? id, Locale? locale) async {
-    if (locale == Locale('ml')) {
+      int? id, Locale? locale, BuildContext context) async {
+    try {
+      final column = locale == Locale('ml') ? 'name_ml' : 'name';
+
       return await _db.rawQuery(
-          "SELECT name_ml FROM occupations WHERE occupation_id='$id'");
-    } else {
-      return await _db
-          .rawQuery("SELECT name FROM occupations WHERE occupation_id='$id'");
+          "SELECT $column FROM occupations WHERE occupation_id='$id'");
+    } catch (e) {
+      log('Error fetching occupation name: $e');
+      String? message;
+
+      final occupationval = await Labourdata().occupations();
+      final resultAsjson = jsonDecode(occupationval.toString());
+      final loginval =
+          Fetchoccupation.fromJson(resultAsjson as Map<String, dynamic>);
+      if (occupationval == null) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (occupationval.statusCode == 200 && loginval.success == true) {
+        final msg = loginval.message;
+        final occupationlist = loginval.data;
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+        
+        final matchingOccupation = occupationlist!.firstWhere(
+          (datum) => datum.occupationId == id,
+          //orElse: () => null,
+        );
+
+        final column = locale == Locale('ml') ? 'name_ml' : 'name';
+         return [
+          {
+            column: locale == Locale('ml')
+                ? matchingOccupation.nameMl
+                : matchingOccupation.name
+          }
+        ];
+      } else if (loginval.success == false) {
+        final msg = loginval.message;
+
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, msg);
+      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+        if (!context.mounted) return [];
+
+        //CommonFun.instance.signout(context);
+      } else if (occupationval.statusCode == 500) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (occupationval.statusCode == 408) {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return [];
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
     }
+      return [];
+    }
+    // if (locale == Locale('ml')) {
+    //   return await _db.rawQuery(
+    //       "SELECT name_ml FROM occupations WHERE occupation_id='$id'");
+    // } else {
+    //   return await _db
+    //       .rawQuery("SELECT name FROM occupations WHERE occupation_id='$id'");
+    // }
   }
 
   /* ********************************************* */
-}
+

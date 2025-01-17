@@ -1,9 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:panipura/utils/appcolor.dart';
-import 'package:panipura/widgets/calenderwidget/event_data_source.dart';
-import 'package:panipura/provider/eventprovider.dart';
-import 'package:panipura/widgets/calenderwidget/eventviewingpage.dart';
-import 'package:provider/provider.dart';
+
+import 'package:panipura/core/hooks/hook.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/src/theme/calendar_theme.dart';
 
@@ -50,7 +46,10 @@ class _TaskWidgetState extends State<TaskWidget> {
         ));
   }
 
-  Widget appointmentBuilder(BuildContext context,CalendarAppointmentDetails details,) {
+  Widget appointmentBuilder(
+    BuildContext context,
+    CalendarAppointmentDetails details,
+  ) {
     final event = details.appointments.first;
     return Container(
       width: details.bounds.width,

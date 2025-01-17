@@ -1,21 +1,13 @@
-import 'package:flutter/services.dart';
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/database/labourdb.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/callprovider.dart';
-import 'package:panipura/provider/loadingprovider.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/provider/profilepicprovider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'provider/themeProvider.dart';
 
 const savekeyname = '_userLoggedIn';
 const savelocalekey = '_userLocaleIn';
 const savedeviceinfo = '_userDeviceIn';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([
@@ -42,7 +34,7 @@ class MyApp extends StatelessWidget {
               create: (context) => CallProvider()),
           ChangeNotifierProvider<ProfilepicProvider>(
               create: (context) => ProfilepicProvider()),
-              ChangeNotifierProvider<LoadingProvider>(
+          ChangeNotifierProvider<LoadingProvider>(
               create: (context) => LoadingProvider()),
           ChangeNotifierProvider<LocaleProvider>(
             create: (context) => LocaleProvider(),
@@ -50,7 +42,6 @@ class MyApp extends StatelessWidget {
               final provider = Provider.of<LocaleProvider>(context);
               return MaterialApp(
                 title: 'LABOUR BANK',
-
                 themeMode: ThemeMode.system,
                 theme: MyTheme.lightTheme,
                 darkTheme: MyTheme.darkTheme,
@@ -62,10 +53,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                 ],
-
-                
                 home: const ScreensplashOne(),
-                
               );
             },
           ),

@@ -2,8 +2,6 @@ import 'dart:developer';
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/constants.dart';
 
 class Screenotpvfy extends StatefulWidget {
   final String? mobileNo;
@@ -148,7 +146,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                             });
                             final otpreq = Otprsndreq.req(
                                 mobile: widget.mobileNo, type: type);
-                            buildotpresend(otpreq);
+                            buildotpresend(otpreq,context);
                           }
                         },
                         child: Text(
@@ -182,7 +180,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                                   mobile: widget.mobileNo,
                                   otp: otppin,
                                   type: type);
-                              buildotpvrf(otpreq);
+                              buildotpvrf(otpreq,context);
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -202,53 +200,40 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
         ));
   }
 
-  Future buildotpresend(Otprsndreq value) async {
+  Future buildotpresend(Otprsndreq value,BuildContext context) async {
     if (widget.category == 1) {
       /*labour resend otp */
 
       final otpreq = await Labourdata().otpresend(value);
 
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else if (otpreq.statusCode == 200) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }  else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        Fluttertoast.showToast(
-            msg: message!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Data Found");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
 
       /*------------------------------ */
@@ -257,46 +242,33 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
 
       final otpreq = await Labourdata().empotpresend(value);
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        Fluttertoast.showToast(
-            msg: message!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Data Found");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
 
       /*------------------------------ */
@@ -335,55 +307,42 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
     );
   }
 
-  Future buildotpvrf(Otpvrfyreq value) async {
+  Future buildotpvrf(Otpvrfyreq value,BuildContext context) async {
     if (widget.category == 1) {
       /*----labour otp verify---- */
 
       final otpreq = await Labourdata().otpvrfy(value);
 
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         final errorval = otpresp.error;
-        Fluttertoast.showToast(
-            msg: message ?? errorval!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        await showDialogsuccess(_scaffoldKey.currentContext, widget.category);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message ?? errorval!);
+        await showDialogsuccess(context, widget.category);
         // buildcommonotpvrfy(_resultAsjson);
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Data Found");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
       /*--------------------------------- */
     } else {
@@ -391,48 +350,35 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
 
       final otpreq = await Labourdata().empotpvrfy(value);
       if (otpreq == null) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else if (otpreq.statusCode == 200) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         final error = otpresp.error;
-        Fluttertoast.showToast(
-            msg: message ?? error!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
-        await showDialogsuccess(_scaffoldKey.currentContext, widget.category);
+         if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message ?? error!);
+        await showDialogsuccess(context, widget.category);
         // buildcommonotpvrfy(_resultAsjson);
       } else if (otpreq.statusCode == 404) {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "No Data Found");
+      } else if (otpreq.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (otpreq.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
       } else {
-        Fluttertoast.showToast(
-            msg: "something went rong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
       }
 
       /*--------------------------------- */
@@ -490,158 +436,30 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                         onPressed: () {
                           log('$catrslt');
                           if (catrslt == 1) {
-                            if(widget.pending==otppending){
-                               Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (ctx) => ScreenLogin(category: catrslt)
-                              ),
-                            );
-                            }else if(widget.pending==otpvrfy){
-                                 Navigator.pushReplacement(
-                                context, Approutes().labhomeScreen);
+                            if (widget.pending == otppending) {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) =>
+                                        ScreenLogin(category: catrslt)),
+                              );
+                            } else if (widget.pending == otpvrfy) {
+                              Navigator.pushReplacement(
+                                  context, Approutes().labhomeScreen);
                             }
-                           
                           } else {
-                            if(widget.pending==otppending){
-                               Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (ctx) => ScreenLogin(category: catrslt)
-                              ),
-                            );
-                            }else if(widget.pending==otpvrfy){
-                                 Navigator.pushReplacement(
-                                context, Approutes().emphomeScreen);
+                            if (widget.pending == otppending) {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (ctx) =>
+                                        ScreenLogin(category: catrslt)),
+                              );
+                            } else if (widget.pending == otpvrfy) {
+                              Navigator.pushReplacement(
+                                  context, Approutes().emphomeScreen);
                             }
-                            
                           }
                         },
                         child: const Center(child: Text('OK'))),
                   ]));
 }
 
-// class BuildTimer extends GetView<TimerController>{
-//   const BuildTimer({Key?key}):super(key:key);
-//   @override
-//   Widget build(BuildContext context){
-//     return Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   const Text("This otp will expired in ",style:TextStyle(
-//                           fontFamily: 'Oswald',
-//                           fontSize: 18,
-//                           color: Appcolors.magenta,
-//                           fontWeight: FontWeight.bold
-//                         ),
-//                         ),
-//                   Obx(() => Center(child: Text(controller.time.value,style:const TextStyle(
-//                     fontSize: 18,
-//                     color: Colors.red,
-//                   )),))
-
-//                 ],
-//               );
-
-//   }
-// }
-
-// Row buildTimer() {
-//     return Row(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     const Text("This otp will expired in ",style:TextStyle(
-//                             fontFamily: 'Oswald',
-//                             fontSize: 18,
-//                             color: Color.fromARGB(255, 114, 188, 248),
-//                             fontWeight: FontWeight.bold
-//                           ),
-//                           ),
-//                     TweenAnimationBuilder(
-//                       tween: Tween(begin:60,end:0),
-//                        duration:const Duration(minutes:3),
-//                         builder: (context,value,child)=>Text("00:${value.toInt()}",
-//                         style:const TextStyle(color: Colors.red),
-//                         ),
-//                         onEnd: (){},
-//                         ),
-
-//                   ],
-//                 );
-//   }
-
-// child:FormHelper.submitButton(
-//                         "Verify",
-//                       (){
-
-//                         if(widget.category==1){
-//                          Navigator.pushReplacement(context,Approutes().labhomeScreen);
-//                         }else{
-//                          Navigator.pushReplacement(context,Approutes().emphomeScreen);
-
-//                         }
-//                       },
-//                       borderColor: const Color.fromARGB(255, 158, 89, 248),
-//                       btnColor: const Color.fromARGB(255, 158, 89, 248),
-//                       txtColor: Colors.white,
-//                       borderRadius: 20
-//                       )
-
-// final otpreq= await Labourdata().otpvrfy(value);
-//     if(otpreq!.statusCode==200){
-//               final _resultAsjson = jsonDecode(otpreq.data);
-
-//              final otpresp= Otpreqresp.fromJson(_resultAsjson as Map<String, dynamic>);
-//              final message=otpresp.success;
-//       Fluttertoast.showToast(
-//             msg: message!,
-//             toastLength: Toast.LENGTH_SHORT,
-//             gravity: ToastGravity.CENTER,
-//             timeInSecForIosWeb: 1,
-//             backgroundColor: Colors.green,
-//             textColor: Colors.white,
-//             fontSize: 16.0
-//             );
-//       await showDialogsuccess(_scaffoldKey.currentContext,widget.category);
-
-// }
-// else if(otpreq.statusCode==404){
-//           Fluttertoast.showToast(
-//             msg: "something went rong",
-//             toastLength: Toast.LENGTH_SHORT,
-//             gravity: ToastGravity.CENTER,
-//             timeInSecForIosWeb: 1,
-//             backgroundColor: Colors.red,
-//             textColor: Colors.white,
-//             fontSize: 16.0
-//             );
-// }
-// return null;
-
-// final otpreq= await Labourdata().otpresend(value);
-// if(otpreq!.statusCode==200){
-//               final _resultAsjson = jsonDecode(otpreq.data);
-
-//              final otpresp= Otpreqresp.fromJson(_resultAsjson as Map<String, dynamic>);
-//              final message=otpresp.success;
-//       Fluttertoast.showToast(
-//             msg: message!,
-//             toastLength: Toast.LENGTH_SHORT,
-//             gravity: ToastGravity.CENTER,
-//             timeInSecForIosWeb: 1,
-//             backgroundColor: Colors.green,
-//             textColor: Colors.white,
-//             fontSize: 16.0
-//             );
-
-// }
-// else if(otpreq.statusCode==404){
-//           Fluttertoast.showToast(
-//             msg: "something went rong",
-//             toastLength: Toast.LENGTH_SHORT,
-//             gravity: ToastGravity.CENTER,
-//             timeInSecForIosWeb: 1,
-//             backgroundColor: Colors.red,
-//             textColor: Colors.white,
-//             fontSize: 16.0
-//             );
-// }
-// return null;

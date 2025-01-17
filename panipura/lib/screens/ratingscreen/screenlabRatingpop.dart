@@ -1,19 +1,9 @@
 
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/functions/laborfn.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/getskillrate/getskillrateresp/getskillratelist/getskillratelist.dart';
-import 'package:panipura/model/ratingmdl/ratingreqmdl/ratingreqmdl.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/screens/screenemployer/screenviewdetails.dart';
-import 'package:panipura/widgets/constants.dart';
-import '../../model/getskillrate/getskillratereq/getskillratereq.dart';
-import '../../model/ratingmdl/rateskillresp/rateskillresp.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
-
 
 class ScreenLabRating extends StatefulWidget {
   const ScreenLabRating(
@@ -63,11 +53,11 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
     wrkname = widget.wrkname!.toUpperCase();
     isSearchnullval = widget.isSearchnull;
     nameval = widget.name;
-    usrId=widget.userid;
+    usrId = widget.userid;
     print(usrId);
     occupationId = widget.occupationid;
     mobileno = widget.mobile;
-    getskillrate();
+    getskillrate(context);
   }
 
   void initializedata() {
@@ -75,12 +65,27 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
     localecode = provider.locale;
   }
 
-  getskillrate() async {
+  getskillrate(BuildContext context) async {
     final getratereq =
         Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
 
     await Labempfn.instance.refreshRateUI(
-        getratereq); // Labempfn.instance.getrateskill(getratereq);
+        getratereq,context); // Labempfn.instance.getrateskill(getratereq);
+  }
+  Future<bool?> popscreen(BuildContext context) async {
+   Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => Screenviewprofile(
+                                isSearchnull: widget.isSearchnull,
+                                userid: widget.userid,
+                                name: widget.name,
+                                occupationid: widget.occupationid,
+                                mobile: widget.mobile,
+                                localecode: langcode,
+                              ),
+                            ),
+                          );
+    return true;
   }
 
   @override
@@ -90,173 +95,185 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
     return Stack(
       children: [
         const Screensbackground(),
-        Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: Colors.transparent,
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
-              child: AppBar(
-                leading: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: IconButton(
-                      onPressed: () {
-                        if (localecode == Locale('ml')) {
-                          langcode = langmal;
-                        } else {
-                          langcode = langeng;
-                        }
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => Screenviewprofile(
-                              isSearchnull: widget.isSearchnull,
-                              userid: widget.userid,
-                              name: widget.name,
-                              occupationid: widget.occupationid,
-                              mobile: widget.mobile,
-                              localecode: langcode,
+       PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
+          },
+          child: Scaffold(
+              key: _scaffoldKey,
+              backgroundColor: Colors.transparent,
+              appBar: PreferredSize(
+                preferredSize: const Size.fromHeight(70),
+                child: AppBar(
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: IconButton(
+                        onPressed: () {
+                          if (localecode == Locale('ml')) {
+                            langcode = langmal;
+                          } else {
+                            langcode = langeng;
+                          }
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => Screenviewprofile(
+                                isSearchnull: widget.isSearchnull,
+                                userid: widget.userid,
+                                name: widget.name,
+                                occupationid: widget.occupationid,
+                                mobile: widget.mobile,
+                                localecode: langcode,
+                              ),
                             ),
-                          ),
-                        );
-                        // Navigator.of(context).pop();
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color.fromARGB(255, 158, 89, 248),
-                      )),
+                          );
+                          // Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color.fromARGB(255, 158, 89, 248),
+                        )),
+                  ),
+                  centerTitle: true,
+                  title: Text(
+                    AppLocalizations.of(context)!.addratervw,
+                    style: L10n.getappbarSize(locale.languageCode),
+                    textAlign: TextAlign.center,
+                  ),
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(50),
+                          bottomLeft: Radius.circular(50))),
                 ),
-                centerTitle: true,
-                title: Text(
-                  AppLocalizations.of(context)!.addratervw,
-                  style: L10n.getappbarSize(locale.languageCode),
-                  textAlign: TextAlign.center,
-                ),
-                backgroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(50),
-                        bottomLeft: Radius.circular(50))),
               ),
-            ),
-            extendBodyBehindAppBar: true,
-            body: SafeArea(
-              child: Container(
-                color: const Color(0xfff3f3f3),
-                height: MediaQuery.of(context).size.height,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: ListView(
-                  children: [
-                    Container(
-                        width: double.infinity,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 5.0, horizontal: 15),
-                              child: Text(
-                                  "${AppLocalizations.of(context)!.nameemp} : $username",
-                                  style: kbodyfont),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 5.0, horizontal: 15),
-                              child: Text(
-                                  "${AppLocalizations.of(context)!.wrk}   : $wrkname",
-                                  style: kbodyfont),
-                            ),
-                            Row(
-                              // crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 0.0, horizontal: 15.0),
-                                  child: Text(
-                                      "${AppLocalizations.of(context)!.ratervw} :",
-                                      style: kbodyfont),
-                                ),
-                                Container(
-                                  height: 30,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 158, 89, 248),
-                                      borderRadius: BorderRadius.circular(8)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ValueListenableBuilder(
-                                          valueListenable: Labempfn.instance
-                                              .gettotalrateListNotifier,
-                                          builder: (BuildContext context,
-                                              String? value, _) {
-                                            return Text(
-                                              "$value",
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14),
-                                            );
-                                          }),
-                                      //Text("4.4",style: TextStyle(color: Colors.white,fontSize: 14),),
-                                      const Icon(Icons.star,
-                                          color: Colors.white, size: 15),
-                                    ],
+              extendBodyBehindAppBar: true,
+              body: SafeArea(
+                child: Container(
+                  color: const Color(0xfff3f3f3),
+                  height: MediaQuery.of(context).size.height,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  child: ListView(
+                    children: [
+                      Container(
+                          width: double.infinity,
+                          //height: 180,
+                          
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0, horizontal: 15),
+                                child: Text(
+                                    "${AppLocalizations.of(context)!.nameemp} : $username",
+                                    style: kbodyfont),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0, horizontal: 15),
+                                child: Text(
+                                    "${AppLocalizations.of(context)!.wrk}   : $wrkname",
+                                    style: kbodyfont),
+                              ),
+                              Row(
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0.0, horizontal: 15.0),
+                                    child: Text(
+                                        "${AppLocalizations.of(context)!.ratervw} :",
+                                        style: kbodyfont),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 0.0, horizontal: 15),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  showratingpopup(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 158, 89, 248),
-                                    fixedSize: const Size(160, 40),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10))),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                          AppLocalizations.of(context)!
-                                              .ratemywrk,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14)),
-                                      const Icon(Icons.star,
-                                          color: Colors.white, size: 15)
-                                    ],
+                                  Container(
+                                    height: 30,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: const Color.fromARGB(
+                                            255, 158, 89, 248),
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        ValueListenableBuilder(
+                                            valueListenable: Labempfn.instance
+                                                .gettotalrateListNotifier,
+                                            builder: (BuildContext context,
+                                                String? value, _) {
+                                              return Text(
+                                                value??'0',
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14),
+                                              );
+                                            }),
+                                        //Text("4.4",style: TextStyle(color: Colors.white,fontSize: 14),),
+                                        const Icon(Icons.star,
+                                            color: Colors.white, size: 15),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 0.0, horizontal: 15),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    showratingpopup(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 158, 89, 248),
+                                      fixedSize: const Size(160, 40),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                  child: Center(
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                            AppLocalizations.of(context)!
+                                                .ratemywrk,
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14)),
+                                        const Icon(Icons.star,
+                                            color: Colors.white, size: 15)
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        )),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Divider(
-                      thickness: 2,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    buildskillrate(),
-                  ],
+                            ],
+                          )),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(
+                        thickness: 2,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      buildskillrate(),
+                    ],
+                  ),
                 ),
-              ),
-            )),
+              )),
+        ),
       ],
     );
   }
@@ -284,18 +301,18 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           (BuildContext context, List<Getskillratelist> newList, Widget? _) {
         return ListView.separated(
             shrinkWrap: true,
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(2.0),
             itemBuilder: (ctx, index) {
               final value = newList[index];
 
               final rating = value.rating;
-              int? usrid=value.employerId;
+              int? usrid = value.employerId;
               print(usrid);
               String? comment = value.comments;
               comment ??= '';
               String? empname = value.employerName;
               empname ??= '';
-              int? rateId=value.ratingId;
+              int? rateId = value.ratingId;
               String? jobdt = value.createdAt;
               jobdt ??= '';
               DateTime ratedate = DateTime.parse(jobdt);
@@ -367,15 +384,18 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                     )),
                               ]),
                             ),
-                            
-                            trailing:usrid==widget.empid? IconButton(
-                            onPressed: () async {
 
-                                  warningBox(context, rateId);
-                              },
-                              icon: const Icon(Icons.delete,
-                                  size: 30, color: Color.fromARGB(255, 158, 89, 248)),
-                            ):const SizedBox.shrink(),
+                            trailing: usrid == widget.empid
+                                ? IconButton(
+                                    onPressed: () async {
+                                      warningBox(context, rateId);
+                                    },
+                                    icon: const Icon(Icons.delete,
+                                        size: 30,
+                                        color:
+                                            Color.fromARGB(255, 158, 89, 248)),
+                                  )
+                                : const SizedBox.shrink(),
                           ),
                         ),
                       ],
@@ -419,7 +439,6 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                         maxLines: 5,
                         maxLength: 200,
                         style: const TextStyle(color: Colors.black),
-                        
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 15),
@@ -455,11 +474,11 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10),
                 child: Center(
                   child: Row(
                     // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -471,7 +490,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                           },
                           child: Text(AppLocalizations.of(context)!.cancel,
                               style: const TextStyle(color: Colors.white))),
-                      const SizedBox(width: 10),
+                      //const SizedBox(width: 10),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
@@ -487,7 +506,9 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                 rating: rating,
                                 skillId: widget.skillid,
                                 comments: comments);
-                            buildrateskill(ratingreq);
+                          if (!context.mounted) return ;
+
+                            buildrateskill(ratingreq,context);
                             //Labempfn.instance.rateskill(ratingreq,isSearchnullval,nameval,occupationId,mobileno,wrkname,context);
                           },
                           child: Text(AppLocalizations.of(context)!.sub,
@@ -501,18 +522,12 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         });
   }
 
-  Future buildrateskill(Ratingreqmdl value) async {
+  Future buildrateskill(Ratingreqmdl value,BuildContext context) async {
     final rateskillrslt = await Labourdata().rateskill(value);
     if (rateskillrslt == null) {
-      Fluttertoast.showToast(
-          msg: "something went rong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (rateskillrslt.statusCode == 200) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      }else if (rateskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(rateskillrslt.data);
 
       final registerval =
@@ -523,19 +538,14 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         final message = registerval.message;
         final getratereq =
             Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
+        if (!context.mounted) return ;
 
-        Labempfn.instance.refreshRateUI(getratereq);
-        //Labempfn.instance.refreshRateUI(value)
-        Fluttertoast.showToast(
-            msg: message!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        Labempfn.instance.refreshRateUI(getratereq,context);
+        
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
 
-        Navigator.of(_scaffoldKey.currentContext!).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (ctx) => ScreenLabRating(
               isSearchnull: isSearchnullval,
@@ -551,11 +561,25 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         );
       } else {
         final message = registerval.message;
-        await showDialogError(_scaffoldKey.currentContext, message);
+        if (!context.mounted) return ;
+
+        await showDialogError(context, message);
       }
-    } else {
-      await showDialogfail(_scaffoldKey.currentContext);
-    }
+    }else if (rateskillrslt.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (rateskillrslt.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 
   @override
@@ -574,7 +598,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
               actions: [
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.of(_scaffoldKey.currentContext!).push(
+        if (!context.mounted) return ;
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (ctx) => ScreenLabRating(
                             isSearchnull: isSearchnullval,
@@ -615,50 +640,43 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                     child: const Center(child: Text('OK'))),
               ]));
 
-Future warningBox(BuildContext context, int? value) async =>
-      showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-                title: Center(
-                    child: Text(AppLocalizations.of(context)!.delskill,
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 101, 47, 248)))),
-                actions: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 158, 89, 248),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(AppLocalizations.of(context)!.no,
-                        style: const TextStyle(color: Colors.white)),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 158, 89, 248),
-                    ),
-                    onPressed: () async {
-                      builddeleteskill(context, value);
-                    },
-                    child: Text(AppLocalizations.of(context)!.yes,
-                        style: const TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ));
+  Future warningBox(BuildContext context, int? value) async => showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+            title: Center(
+                child: Text(AppLocalizations.of(context)!.delskill,
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 101, 47, 248)))),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 158, 89, 248),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(AppLocalizations.of(context)!.no,
+                    style: const TextStyle(color: Colors.white)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 158, 89, 248),
+                ),
+                onPressed: () async {
+                  builddeleteskill(context, value);
+                },
+                child: Text(AppLocalizations.of(context)!.yes,
+                    style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          ));
 
-Future builddeleteskill(BuildContext context, int? value) async {
+  Future builddeleteskill(BuildContext context, int? value) async {
     final deleteresp = await Labourdata().delrate(value);
 
     log('$deleteresp');
     if (deleteresp == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+          if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
     } else if (deleteresp.statusCode == 200) {
       final resultAsjson = jsonDecode(deleteresp.data);
       final searchval =
@@ -666,83 +684,104 @@ Future builddeleteskill(BuildContext context, int? value) async {
       final message = searchval.message;
       final status = searchval.success;
       if (status == true) {
-        Fluttertoast.showToast(
-            msg: message!,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-            final getratereq =
-       
-        Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
-        await Labempfn.instance.refreshRateUI(
-        getratereq);
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message);
+        final getratereq =
+            Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
+        await Labempfn.instance.refreshRateUI(getratereq,context);
+        if (!context.mounted) return ;
 
-        Labempfn.instance.refreshRateUI(getratereq);
+        Labempfn.instance.refreshRateUI(getratereq,context);
+        if (!context.mounted) return ;
 
-        Navigator.of(_scaffoldKey.currentContext!).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (ctx) => ScreenLabRating(
-                              isSearchnull: isSearchnullval,
-                              userid: widget.userid,
-                              name: nameval,
-                              occupationid: occupationId,
-                              mobile: mobileno,
-                              wrkname: wrkname,
-                              skillid: widget.skillid,
-                              empid: widget.empid,
-                            ),
-                          ),
-                        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (ctx) => ScreenLabRating(
+              isSearchnull: isSearchnullval,
+              userid: widget.userid,
+              name: nameval,
+              occupationid: occupationId,
+              mobile: mobileno,
+              wrkname: wrkname,
+              skillid: widget.skillid,
+              empid: widget.empid,
+            ),
+          ),
+        );
       } else {
-        Fluttertoast.showToast(
-            msg: message ?? "something went wrong",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-       Navigator.of(_scaffoldKey.currentContext!).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => ScreenLabRating(
-                              isSearchnull: isSearchnullval,
-                              userid: widget.userid,
-                              name: nameval,
-                              occupationid: occupationId,
-                              mobile: mobileno,
-                              wrkname: wrkname,
-                              skillid: widget.skillid,
-                              empid: widget.empid,
-                            ),
-                          ),
-                        );
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, message ?? "something went wrong");
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => ScreenLabRating(
+              isSearchnull: isSearchnullval,
+              userid: widget.userid,
+              name: nameval,
+              occupationid: occupationId,
+              mobile: mobileno,
+              wrkname: wrkname,
+              skillid: widget.skillid,
+              empid: widget.empid,
+            ),
+          ),
+        );
       }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Server error",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      Navigator.of(_scaffoldKey.currentContext!).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => ScreenLabRating(
-                              isSearchnull: isSearchnullval,
-                              userid: widget.userid,
-                              name: nameval,
-                              occupationid: occupationId,
-                              mobile: mobileno,
-                              wrkname: wrkname,
-                              skillid: widget.skillid,
-                              empid: widget.empid,
-                            ),
-                          ),
-                        );
-    }
+    } 
+    else if (deleteresp.statusCode == 500) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+        Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => ScreenLabRating(
+            isSearchnull: isSearchnullval,
+            userid: widget.userid,
+            name: nameval,
+            occupationid: occupationId,
+            mobile: mobileno,
+            wrkname: wrkname,
+            skillid: widget.skillid,
+            empid: widget.empid,
+          ),
+        ),
+      );
+        // showLoginerror(context, 3);
+      } else if (deleteresp.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+        Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => ScreenLabRating(
+            isSearchnull: isSearchnullval,
+            userid: widget.userid,
+            name: nameval,
+            occupationid: occupationId,
+            mobile: mobileno,
+            wrkname: wrkname,
+            skillid: widget.skillid,
+            empid: widget.empid,
+          ),
+        ),
+      );
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+        Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (ctx) => ScreenLabRating(
+            isSearchnull: isSearchnullval,
+            userid: widget.userid,
+            name: nameval,
+            occupationid: occupationId,
+            mobile: mobileno,
+            wrkname: wrkname,
+            skillid: widget.skillid,
+            empid: widget.empid,
+          ),
+        ),
+      );
+      }
   }
 }

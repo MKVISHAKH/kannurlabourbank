@@ -1,6 +1,4 @@
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/widgets/constants.dart';
-import 'package:panipura/widgets/language/language_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Navbar extends StatefulWidget {
@@ -31,43 +29,42 @@ class _NavbarState extends State<Navbar> {
     }
     buildversion();
   }
+
   void buildversion() async {
     final value = await Sharedata.instance.getdeviceinfo();
-  
-   final devversion=value.appversion;
-   final devicever=devversion!.split('+');
-   final versionval=devicever[0];
+
+    final devversion = value.appversion;
+    final devicever = devversion!.split('+');
+    final versionval = devicever[0];
 
     setState(() {
-      version=versionval;
+      version = versionval;
     });
   }
 
   Future<bool?> popscreen(BuildContext context) async {
-    if(widget.category==lab){
+    if (widget.category == lab) {
       Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) =>const Screenlabhome(),
-      ),
-    );
-    return true;
-    }else if(widget.category==emp){
+        MaterialPageRoute(
+          builder: (context) => const Screenlabhome(),
+        ),
+      );
+      return true;
+    } else if (widget.category == emp) {
       Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) =>const ScreenEmployerHome(),
-      ),
-    );
-    return true;
-    }else{
+        MaterialPageRoute(
+          builder: (context) => const ScreenEmployerHome(),
+        ),
+      );
+      return true;
+    } else {
       Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => ScreenHome(),
-      ),
-    );
-    return true;
+        MaterialPageRoute(
+          builder: (context) => ScreenHome(),
+        ),
+      );
+      return true;
     }
-    
-    
   }
 
   @override
@@ -75,14 +72,13 @@ class _NavbarState extends State<Navbar> {
     // final provider=Provider.of<LocaleProvider>(context);
     // final locale=provider.locale ;
     return PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            if (!didPop){
-              if (didPop) return;
-               await popscreen(context);
-            
-            } 
-          },
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          if (didPop) return;
+          await popscreen(context);
+        }
+      },
       child: Drawer(
         key: _scaffoldKey,
         child: ListView(
@@ -92,7 +88,7 @@ class _NavbarState extends State<Navbar> {
               accountName: Text(
                 AppLocalizations.of(context)!.appname,
               ),
-              accountEmail:  Text('Version:$version'),
+              accountEmail: Text('Version:$version'),
               currentAccountPicture: CircleAvatar(
                 child: ClipOval(
                   child: Image.asset(
@@ -137,7 +133,7 @@ class _NavbarState extends State<Navbar> {
                   //   locvale=Locale('en');
                   //  }
                   // ignore: use_build_context_synchronously
-                  callalertbox(context,widget.category);
+                  callalertbox(context, widget.category);
                 }),
             const Divider(),
             ListTile(

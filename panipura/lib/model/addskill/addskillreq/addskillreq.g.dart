@@ -7,8 +7,8 @@ part of 'addskillreq.dart';
 // **************************************************************************
 
 Addskillreq _$AddskillreqFromJson(Map<String, dynamic> json) => Addskillreq(
-      userId: json['user_id'] as int?,
-      occupationId: json['occupation_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
+      occupationId: (json['occupation_id'] as num?)?.toInt(),
       experience: json['experience'] as String?,
       wages: json['wages'] as String?,
       wPeriod: json['w_period'] as String?,

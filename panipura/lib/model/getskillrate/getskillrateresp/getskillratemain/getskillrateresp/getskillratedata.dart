@@ -1,7 +1,6 @@
 import '../../getskillratelist/getskillratelist.dart';
 import 'dart:developer';
 
-
 class GetskillRatedata {
   final String? rate;
   List<Getskillratelist>? ratings;

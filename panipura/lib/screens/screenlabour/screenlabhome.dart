@@ -1,11 +1,8 @@
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/widgets/constants.dart';
-import 'package:panipura/widgets/navbar.dart';
-import '../../widgets/gridlabview.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/provider/locale_provider.dart';
 import 'dart:developer';
+
 class Screenlabhome extends StatefulWidget {
   const Screenlabhome({super.key});
 
@@ -27,7 +24,7 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
 
   void getUsername() async {
     final value = await Sharedata.instance.getdata();
-  
+
     final username = value!.name;
     token = value.token;
     usrID = value.userid;
@@ -53,17 +50,15 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
     final locale = provider.locale;
-    return 
-    PopScope(        
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            if (!didPop){
-              if (didPop) return;
-               await warningBox(context);
-            
-            } 
-             log('BackButton pressed!');
-          },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          if (didPop) return;
+          await warningBox(context);
+        }
+        log('BackButton pressed!');
+      },
       //     WillPopScope(
       // onWillPop: () async {
       //   log('BackButton pressed!');
@@ -155,7 +150,7 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
 
   void signout(BuildContext ctx) async {
     // final sharedprefs = await SharedPreferences.getInstance();
-     await Sharedata.instance.cleardata();
+    await Sharedata.instance.cleardata();
     // await sharedprefs.clear();
     Navigator.of(_scaffoldKey.currentContext!).pushAndRemoveUntil(
         MaterialPageRoute(builder: (ctx1) => ScreenHome()), (route) => false);

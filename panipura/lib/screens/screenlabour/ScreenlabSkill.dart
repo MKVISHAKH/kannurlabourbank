@@ -1,19 +1,8 @@
-
-import 'package:flutter/services.dart';
-import 'package:multiselect/multiselect.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/addrefskill/addrefskillreq/addrefskillreq.dart';
-import 'package:panipura/model/addskill/addskillresp/addskillresp.dart';
-import 'package:panipura/model/category/categorymdl.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/constants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/hooks/hook.dart';
-import '../../database/labourdb.dart';
-import '../../functions/laborfn.dart';
-import '../../model/addrefskill/addrefskilllist/addrefskilllist.dart';
-import '../../widgets/scrollabelwidget.dart';
 import 'dart:developer';
+
 class ScreenLabSkill extends StatefulWidget {
   final int? distId;
   final int? usrID;
@@ -50,7 +39,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
   String? message;
   String? token;
   late List<int> dropdownpanchayathId;
-  List<DropdownMenuItem<String>> catelist=[];
+  List<DropdownMenuItem<String>> catelist = [];
   List<String> catelist1 = [];
   List<String> loclbdslist = [];
   List<String> dropdownpanchayathval = [];
@@ -66,10 +55,10 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     catelist.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initializedata();
-      
+
       dropdownlocalbodies();
     });
-    
+
     dropdowncategory();
     super.initState();
   }
@@ -78,20 +67,21 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     final provider = Provider.of<LocaleProvider>(context, listen: false);
     localecode = provider.locale;
   }
-  
+
   DropdownMenuItem<String> getCategoryDropDownWidget(Map<String, dynamic> map) {
     if (localecode == Locale('ml')) {
       return DropdownMenuItem<String>(
         value: map['name_ml'],
         child: Text(
-          map['name_ml'],maxLines: 5,
+          map['name_ml'],
+          maxLines: 5,
           overflow: TextOverflow.ellipsis,
         ),
       );
     } else {
       return DropdownMenuItem<String>(
         value: map['name'],
-        child: Text(map['name'],maxLines: 5, overflow: TextOverflow.ellipsis),
+        child: Text(map['name'], maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     }
   }
@@ -100,7 +90,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     catelist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getOccupations(localecode).then((listMap) {
+        LabourDb.instance.getOccupations(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getCategoryDropDownWidget(map);
@@ -132,7 +122,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
         LabourDb.instance
-            .getLocalbodies(widget.distId, 2, localecode)
+            .getLocalbodies(widget.distId, 2, localecode, context)
             .then((listMap) {
           listMap.map((map) {
             log(map.toString());
@@ -156,6 +146,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     Navigator.push(context, Approutes().labhomeScreen);
     return true;
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
@@ -181,13 +172,13 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
         const Screensbackground(),
         PopScope(
           canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (!didPop) {
-            if (didPop) return;
-            await popscreen(context);
-          }
-          log('BackButton pressed!');
-        },
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
+          },
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: PreferredSize(
@@ -256,7 +247,8 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     final locale = provider.locale;
     return Form(
       key: _formkey4,
-      autovalidateMode: _showErrors?AutovalidateMode.always:AutovalidateMode.disabled,
+      autovalidateMode:
+          _showErrors ? AutovalidateMode.always : AutovalidateMode.disabled,
       child: Column(
         children: [
           /* category */
@@ -266,7 +258,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               padding:
                   const EdgeInsets.symmetric(vertical: 0.0, horizontal: 50.0),
               child: DropdownButtonFormField(
-              
                 isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
@@ -311,9 +302,10 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   setState(() {
                     dropdowncategoryvalue = newvalue;
                   });
+                    if (!context.mounted) return;
 
                   final categoryIdval = await LabourDb.instance
-                      .getOccupationsId(dropdowncategoryvalue, localecode);
+                      .getOccupationsId(dropdowncategoryvalue, localecode,context);
 
                   for (var map in categoryIdval) {
                     final catval = CategoryIdmodel.fromMap(map);
@@ -322,7 +314,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                       log('$categoryId');
                     });
                   }
-                 
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -388,12 +379,10 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 items: experiencelist.map((e) {
                   return DropdownMenuItem(value: e, child: Text(e));
                 }).toList(),
-
                 onChanged: (newvalue) {
                   setState(() {
                     dropdownexperiencevalue = newvalue;
                   });
-                  
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -416,7 +405,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               child: TextFormField(
                 controller: _remunerationcontroller,
                 keyboardType: TextInputType.number,
-                
                 style: const TextStyle(color: Colors.black),
                 onSaved: (newValue) => remuneraion = newValue,
                 decoration: InputDecoration(
@@ -459,14 +447,14 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                  // Here you can check your conditio
-                  _conditionMet = value.length <= 5; // Example condition
-                });
+                    // Here you can check your conditio
+                    _conditionMet = value.length <= 5; // Example condition
+                  });
                 },
                 validator: (value) {
-                  if (value==null || value.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return kremunerationNullError;
-                  }else if(!_conditionMet){
+                  } else if (!_conditionMet) {
                     return kremunerationValidError;
                   }
                   return null;
@@ -517,12 +505,10 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 items: perlist.map((e) {
                   return DropdownMenuItem(value: e, child: Text(e));
                 }).toList(),
-
                 onChanged: (newvalue) {
                   setState(() {
                     dropdownpervalue = newvalue;
                   });
-                  
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -586,7 +572,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               ),
             ),
           ),
-          
+
           /* willing to work around */
 
           SizedBox(
@@ -611,7 +597,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                     color: Color.fromARGB(255, 101, 47, 248),
                   ),
                   decoration: InputDecoration.collapsed(
-                    
                     hintText: AppLocalizations.of(context)!.panja,
                     hintStyle: const TextStyle(
                         color: Color.fromARGB(255, 101, 47, 248)),
@@ -629,8 +614,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
             ),
           ),
 
-          
-
           /* Reference Person1 */
           const SizedBox(
             height: 20,
@@ -643,7 +626,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               child: TextFormField(
                 controller: _referenceperson1controller,
                 keyboardType: TextInputType.text,
-                
                 style: const TextStyle(color: Colors.black),
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
@@ -696,15 +678,15 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 ],
                 onSaved: (newValue) => mobileno1 = newValue,
                 validator: (value) {
-                  if(_referenceperson1controller.text.isNotEmpty){
-                    if(value==null || value.isEmpty){
+                  if (_referenceperson1controller.text.isNotEmpty) {
+                    if (value == null || value.isEmpty) {
                       return kMobileNullError;
-                    }else if(_mobileno1controller.text.length < 10 || _mobileno1controller.text.length > 10){
-                        return kValidMobileError;
-                      }else if (value.contains(' ')) {
-                        showSnackBar(context,
-                        text: kSpaceMobileError);
-                  }
+                    } else if (_mobileno1controller.text.length < 10 ||
+                        _mobileno1controller.text.length > 10) {
+                      return kValidMobileError;
+                    } else if (value.contains(' ')) {
+                      showSnackBar(context, text: kSpaceMobileError);
+                    }
                   }
                   return null;
                 },
@@ -814,22 +796,22 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   FilteringTextInputFormatter.digitsOnly,
                 ],
                 onSaved: (newValue) => mobileno2 = newValue,
-                
+
                 validator: (value) {
-                  if(_referenceperson2controller.text.isNotEmpty){
-                    if(value==null || value.isEmpty){
+                  if (_referenceperson2controller.text.isNotEmpty) {
+                    if (value == null || value.isEmpty) {
                       return kMobileNullError;
-                    }else if(_mobileno2controller.text.length < 10 || _mobileno2controller.text.length > 10){
-                        return kValidMobileError;
-                      }else if (value.contains(' ')) {
-                        showSnackBar(context,
-                        text: kSpaceMobileError);
-                  }
+                    } else if (_mobileno2controller.text.length < 10 ||
+                        _mobileno2controller.text.length > 10) {
+                      return kValidMobileError;
+                    } else if (value.contains(' ')) {
+                      showSnackBar(context, text: kSpaceMobileError);
+                    }
                   }
 
                   return null;
                 },
-                
+
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 25),
                   fillColor: const Color.fromRGBO(255, 255, 255, 1),
@@ -881,11 +863,12 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
             child: ElevatedButton(
                 onPressed: () async {
                   setState(() {
-                  _showErrors = true; // Set to true to display errors on submit
-                });
+                    _showErrors =
+                        true; // Set to true to display errors on submit
+                  });
                   if (_formkey4.currentState!.validate()) {
                     //goto otp screen
-                    await buildlabourSkill();
+                    await buildlabourSkill(context);
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -916,7 +899,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
     );
   }
 
-  Future buildlabourSkill() async {
+  Future buildlabourSkill(BuildContext context) async {
     final wages = _remunerationcontroller.text;
     final otherdmnd = _otherdmndcontroller.text;
     final person1 = _referenceperson1controller.text;
@@ -962,15 +945,9 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
 
     log('$addskillrslt');
     if (addskillrslt == null) {
-      Fluttertoast.showToast(
-          msg: "something went wrong",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (addskillrslt.statusCode == 200) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (addskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(addskillrslt.data);
 
       final registerval =
@@ -979,16 +956,34 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
       if (status == true) {
         Labempfn.instance.refreshskillUI;
         message = registerval.message;
-        await showDialogsuccess(_scaffoldKey.currentContext, message);
+        if (!context.mounted) return;
+
+        await showDialogsuccess(context, message);
       } else {
         message = registerval.message;
-        await showDialogfail(_scaffoldKey.currentContext, message);
+        if (!context.mounted) return;
+
+        await showDialogfail(context, message);
       }
     } else if (addskillrslt.statusCode == 404) {
-      await showDialogError(_scaffoldKey.currentContext);
-    } else {
-      await showDialogError(_scaffoldKey.currentContext);
-    }
+        if (!context.mounted) return;
+
+      await showDialogError(context);
+    } else if (addskillrslt.statusCode == 500) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+
+        // showLoginerror(context, 3);
+      } else if (addskillrslt.statusCode == 408) {
+        if (!context.mounted) return ;
+        CommonFun.instance.showApierror(context, "Connection time out");
+
+        //showLoginerror(context, 4);
+      } else {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+        //showLoginerror(context, 5);
+      }
   }
 
   Future showDialogsuccess(BuildContext? context, String? message) async =>
@@ -1050,7 +1045,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
   Future showDialogError(BuildContext? context) async => showDialog(
       context: context!,
       builder: (context) => AlertDialog(
-              title: const Text('Server Not reached',
+              title: const Text('No Data Found',
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -1068,413 +1063,3 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                     child: const Center(child: Text('OK'))),
               ]));
 }
-/* Reference Person1 */
-// const  SizedBox(height: 20,),
-//    SizedBox(
-//     width:MediaQuery.of(context).size.width,
-//     child: Padding(
-//       padding: const EdgeInsets.symmetric(vertical:10.0,horizontal: 50.0),
-//       child: TextFormField(
-//                   controller:_referenceperson1controller,
-//                   keyboardType: TextInputType.text,
-//                   //style:kBodyText,
-
-//                   textCapitalization: TextCapitalization.characters,
-//                   decoration:const InputDecoration(
-//                     contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//                       fillColor: Colors.white,
-//                       focusedBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ) ,
-//                       enabledBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ),
-
-//                       labelText: "Reference Person1",
-//                       labelStyle: TextStyle(
-//                         color: Color.fromARGB(255, 101, 47, 248),
-//                       ),
-
-//                       ),
-//       ),
-//     ),
-//   ),
-
-//   /* **************************** */
-
-//       /* mobile number */
-//    SizedBox(
-//     width:MediaQuery.of(context).size.width,
-//     child: Padding(
-//       padding: const EdgeInsets.symmetric(vertical:0.0,horizontal: 50.0),
-//       child: TextFormField(
-//                   controller:_mobileno1controller,
-//                   keyboardType: TextInputType.phone,
-//                   //style:kBodyText,
-//                  inputFormatters: [
-//                       LengthLimitingTextInputFormatter(10),
-//                       FilteringTextInputFormatter.digitsOnly,
-//                     ],
-//                   onSaved: (newValue) =>mobileno1=newValue,
-//                   onChanged: (value) {
-//                     if(value.isNotEmpty){
-//                       removeError(error: kMobileNullError);
-//                     }else if(mobileno1!.length==10){
-//                       removeError(error: kValidMobileError);
-//                     }
-
-//                   },
-//                   // validator: (value){
-//                   //   if(value!.isEmpty){
-//                   //     addError(error: kMobileNullError);
-//                   //     return "";
-//                   //   }else if(value.length !=10){
-//                   //     addError(error: kValidMobileError);
-//                   //   }
-
-//                   // },
-//                   decoration:const InputDecoration(
-//                     contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//                       fillColor: Colors.white,
-//                       prefixIcon: Padding(
-//                         padding: EdgeInsets.symmetric(vertical: 14,horizontal: 15),
-//                         child: Text(" (+91)",
-//                         style: TextStyle(color: Color.fromARGB(255, 101, 47, 248),fontSize: 17 ),),
-//                         ),
-//                       focusedBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ) ,
-//                       enabledBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ),
-
-//                       labelText: "Mobile No",
-//                       labelStyle: TextStyle(color: Color.fromARGB(255, 101, 47, 248),),
-
-//                       ),
-//       ),
-//     ),
-//   ),
-//   /* Reference Person2 */
-//   const  SizedBox(height: 10,),
-//    SizedBox(
-//     width:MediaQuery.of(context).size.width,
-//     child: Padding(
-//       padding: const EdgeInsets.symmetric(vertical:10.0,horizontal: 50.0),
-//       child: TextFormField(
-//                   controller:_referenceperson1controller,
-//                   keyboardType: TextInputType.text,
-//                   //style:kBodyText,
-
-//                   textCapitalization: TextCapitalization.characters,
-//                   decoration:const InputDecoration(
-//                     contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//                       fillColor: Colors.white,
-//                       focusedBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ) ,
-//                       enabledBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ),
-
-//                       labelText: "Reference Person2",
-//                       labelStyle: TextStyle(
-//                         color: Color.fromARGB(255, 101, 47, 248),
-//                       ),
-
-//                       ),
-//       ),
-//     ),
-//   ),
-
-//   /* ********************** */
-
-//       /* mobile number */
-//    SizedBox(
-//     width:MediaQuery.of(context).size.width,
-//     child: Padding(
-//       padding: const EdgeInsets.symmetric(vertical:0.0,horizontal: 50.0),
-//       child: TextFormField(
-//                   controller:_mobileno2controller,
-//                   keyboardType: TextInputType.phone,
-//                   //style:kBodyText,
-//                  inputFormatters: [
-//                       LengthLimitingTextInputFormatter(10),
-//                       FilteringTextInputFormatter.digitsOnly,
-//                     ],
-//                   onSaved: (newValue) =>mobileno2=newValue,
-//                   onChanged: (value) {
-//                     if(value.isNotEmpty){
-//                       removeError(error: kMobileNullError);
-//                     }else if(mobileno2!.length==10){
-//                       removeError(error: kValidMobileError);
-//                     }
-
-//                   },
-//                   // validator: (value){
-//                   //   if(value!.isEmpty){
-//                   //     addError(error: kMobileNullError);
-//                   //     return "";
-//                   //   }else if(value.length !=10){
-//                   //     addError(error: kValidMobileError);
-//                   //   }
-
-//                   // },
-//                   decoration:const InputDecoration(
-//                     contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//                       fillColor: Colors.white,
-//                       prefixIcon: Padding(
-//                         padding: EdgeInsets.symmetric(vertical: 14,horizontal: 15),
-//                         child: Text(" (+91)",
-//                         style: TextStyle(color: Color.fromARGB(255, 101, 47, 248),fontSize: 17 ),),
-//                         ),
-//                       focusedBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ) ,
-//                       enabledBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                         ),
-//                       ),
-
-//                       labelText: "Mobile No",
-//                       labelStyle: TextStyle(color:Color.fromARGB(255, 101, 47, 248),),
-
-//                       ),
-//       ),
-//     ),
-//   ),
-/* ************************* */
-
-/* willing to work around */
-// SizedBox(
-//   width:MediaQuery.of(context).size.width,
-//   child: Padding(
-//     padding: const EdgeInsets.symmetric(vertical:10.0,horizontal: 50.0),
-//     child: DropdownButtonFormField(
-//       //onSaved: (newValue) =>sex=newValue,
-//        decoration:const InputDecoration(
-//         contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//         enabledBorder: OutlineInputBorder( //<-- SEE HERE
-//           borderRadius: BorderRadius.all(Radius.circular(25)),
-//                       borderSide: BorderSide(
-//                         color: Color.fromARGB(255, 158, 89, 248),
-//                       ),
-//         ),
-//         focusedBorder: OutlineInputBorder( //<-- SEE HERE
-//          borderRadius: BorderRadius.all(Radius.circular(25)),
-//                       borderSide: BorderSide(
-//                         color: Color.fromARGB(255, 158, 89, 248),
-//                       ),
-//         ),
-//         labelText:  "Willing to Work Around",
-//                     labelStyle: TextStyle(color: Color.fromARGB(255, 101, 47, 248)),
-
-//     ),
-//     items: distancelist.map((e){
-//       return DropdownMenuItem(
-//        value: e,
-//        child:Text(e));
-//     }).toList(),
-
-//     onChanged: (newvalue){
-//       setState(() {
-//         dropdowndistancevalue=newvalue;
-//       });
-//       if(newvalue !.isNotEmpty){
-//                     removeError(error: kworkingdistanceNullError);
-//                   }
-//                   return ;
-
-//     },
-//      validator: (value){
-//                   if(value==null){
-//                     addError(error: kworkingdistanceNullError);
-//                     return "";
-//                   }
-//                   return null;
-//                 },
-//     value:dropdowndistancevalue,
-//   ),
-// ),
-//  ),
-/* ***************************
-            
-             */
-
-/* ***************************** */
-
-/* category */
-// SizedBox(
-//     width:MediaQuery.of(context).size.width,
-//     child: Padding(
-//       padding: const EdgeInsets.symmetric(vertical:0.0,horizontal: 50.0),
-//       child: SearchField(
-//         //onSaved: (newValue) =>sex=newValue,
-//         // style:const TextStyle(color:Colors.black),
-//         // dropdownColor: Colors.white,
-//         //     icon:const Icon(
-//         //       Icons.arrow_drop_down,
-//         //       color: Color.fromARGB(255, 101, 47, 248),
-//         //     ),
-//          searchInputDecoration:const InputDecoration(
-//           contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//           focusedBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                           width:1,
-//                         ),
-//                       ) ,
-//                       border:OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                           borderSide: BorderSide(
-//                             color:Color.fromARGB(255, 158, 89, 248),
-//                             width:1,
-//                           )
-//                         ),
-//                       enabledBorder: OutlineInputBorder(
-//                         borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color: Color.fromARGB(255, 158, 89, 248),
-//                           width:1,
-//                         ),
-//                       ),
-//           labelText:  "Occupation",
-//                       labelStyle: TextStyle(color: Color.fromARGB(255, 101, 47, 248)),
-
-//       ),
-//       suggestions:catelist,
-//       //  categorylist.map((e){
-//       //   return DropdownMenuItem(
-//       //    value: e,
-//       //    child:Text(e));
-//       // }).toList(),
-
-//       onChanged: (newvalue)async{
-//         setState(() {
-//           dropdowncategoryvalue=newvalue;
-//         });
-
-//          final categoryIdval=await LabourDb.instance.getOccupationsId(dropdowncategoryvalue);
-
-//            for(var map in categoryIdval){
-//                       final catval=CategoryIdmodel.fromMap(map);
-//                       setState(() {
-//                         categoryId=catval.id;
-//                         print(categoryId);
-//                       });
-
-//            }
-//         if(newvalue!.isNotEmpty){
-//                       removeError(error: kcategoryNullError);
-//                     }
-//                     return ;
-
-//       },
-//        validator: (value){
-//                     if(value==null){
-//                       addError(error: kcategoryNullError);
-//                       return "";
-//                     }
-//                     return null;
-//                   },
-//       value:dropdowncategoryvalue,
-//     ),
-//   ),
-//    ),
-
-/* ***************************** */
-/* willing to work around */
-// SizedBox(
-//   width:MediaQuery.of(context).size.width,
-//   child: Padding(
-//     padding: const EdgeInsets.symmetric(vertical:20.0,horizontal: 50.0),
-//     child: DropdownButtonFormField(
-//       //onSaved: (newValue) =>sex=newValue,
-//       style:const TextStyle(color:Colors.black),
-//       dropdownColor: Colors.white,
-//           icon:const Icon(
-//             Icons.arrow_drop_down,
-//             color: Color.fromARGB(255, 101, 47, 248),
-//           ),
-//        decoration:const InputDecoration(
-//         contentPadding: EdgeInsets.symmetric(horizontal: 25),
-//         focusedBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.all(Radius.circular(25)),
-//                       borderSide: BorderSide(
-//                         color: Color.fromARGB(255, 158, 89, 248),
-//                         width:1,
-//                       ),
-//                     ) ,
-//                     border:OutlineInputBorder(
-//                       borderRadius: BorderRadius.all(Radius.circular(25)),
-//                         borderSide: BorderSide(
-//                           color:Color.fromARGB(255, 158, 89, 248),
-//                           width:1,
-//                         )
-//                       ),
-//                     enabledBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.all(Radius.circular(25)),
-//                       borderSide: BorderSide(
-//                         color: Color.fromARGB(255, 158, 89, 248),
-//                         width:1,
-//                       ),
-//                     ),
-//         labelText:  "Willing to Work Around",
-//                     labelStyle: TextStyle(color: Color.fromARGB(255, 101, 47, 248)),
-
-//     ),
-//     items: workaroundlist.map((e){
-//       return DropdownMenuItem(
-//        value: e,
-//        child:Text(e));
-//     }).toList(),
-
-//     onChanged: (newvalue){
-//       setState(() {
-//         dropdowndistancevalue=newvalue;
-//       });
-//       if(newvalue !.isNotEmpty){
-//                     removeError(error: kworkingdistanceNullError);
-//                   }
-//                   return ;
-
-//     },
-//      validator: (value){
-//                   if(value==null){
-//                     addError(error: kworkingdistanceNullError);
-//                     return "";
-//                   }
-//                   return null;
-//                 },
-//     value:dropdowndistancevalue,
-//   ),
-// ),
-//  ),
-
-/* *************************** */
-
-/* willing to work around */

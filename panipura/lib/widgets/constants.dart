@@ -2,8 +2,8 @@ const int lab = 1;
 const int emp = 2;
 const int hom = 3;
 
-const int otppending=1;
-const int otpvrfy=2;
+const int otppending = 1;
+const int otpvrfy = 2;
 
 const int propic = 1;
 const int wrkpic = 2;

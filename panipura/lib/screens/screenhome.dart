@@ -1,11 +1,8 @@
-import 'package:flutter/services.dart';
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/navbar.dart';
-import '../widgets/constants.dart';
 import 'dart:developer';
+
 class ScreenHome extends StatelessWidget {
   ScreenHome({super.key});
 
@@ -28,9 +25,9 @@ class ScreenHome extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 158, 89, 248),
                 ),
-                onPressed: () => 
-                // SystemNavigator.pop(),
-                Navigator.pop(context, true),
+                onPressed: () =>
+                    // SystemNavigator.pop(),
+                    Navigator.pop(context, true),
                 child: Text(AppLocalizations.of(context)!.yes,
                     style: const TextStyle(color: Colors.white)),
               ),
@@ -56,16 +53,16 @@ class ScreenHome extends StatelessWidget {
           canPop: false,
           onPopInvoked: (bool didPop) async {
             log('BackButton pressed!');
-            if (!didPop){
+            if (!didPop) {
               //final nav=Navigator.of(context);
               if (didPop) return;
-              final result= await showWarning(context);
+              final result = await showWarning(context);
               print(result);
               if (result != null && result) {
-              SystemNavigator.pop();  // This will properly exit the app
+                SystemNavigator.pop(); // This will properly exit the app
+              }
             }
-            } 
-            
+
             // if (shouldPop != null && shouldPop) {
             //   Navigator.of(_scaffoldKey.currentContext!).pop();
             // }
@@ -80,13 +77,11 @@ class ScreenHome extends StatelessWidget {
               title: Container(
                 padding: const EdgeInsets.only(right: 55),
                 child: Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.appname,
-                    style:const TextStyle(color:Colors.white)
-                  ),
+                  child: Text(AppLocalizations.of(context)!.appname,
+                      style: const TextStyle(color: Colors.white)),
                 ),
               ),
-              backgroundColor:Appcolors.labelclr,
+              backgroundColor: Appcolors.labelclr,
               // flexibleSpace: const Appbarimage(),
             ),
             //drawerScrimColor: Colors.blue,

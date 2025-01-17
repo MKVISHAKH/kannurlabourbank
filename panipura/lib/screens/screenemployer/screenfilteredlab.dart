@@ -1,11 +1,8 @@
+import 'dart:developer';
+
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/locale_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/screens/screenemployer/screenviewdetails.dart';
-import 'package:panipura/widgets/constants.dart';
-import '../../functions/laborfn.dart';
-import '../../model/searchlabour/searchlablist/searchlablist.dart';
 
 class ScreenFilteredLab extends StatefulWidget {
   const ScreenFilteredLab({super.key, required this.isSearchnull});
@@ -29,89 +26,107 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
     final provider = Provider.of<LocaleProvider>(context, listen: false);
     localecode = provider.locale;
   }
-
+ Future<bool?> popscreen(BuildContext context) async {
+  Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const ScreenEmployerHome(),
+                        ),
+                      );
+                    
+    return true;
+  }
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
     final locale = provider.locale;
     return Stack(children: [
       const Screensbackground(),
-      Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70),
-          child: AppBar(
-            leading: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const ScreenEmployerHome(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Appcolors.magenta,
-                  )),
+      PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
+          },
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(70),
+            child: AppBar(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const ScreenEmployerHome(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Appcolors.magenta,
+                    )),
+              ),
+              centerTitle: true,
+              title: Text(
+                AppLocalizations.of(context)!.filtlab,
+                style: L10n.getappbarSize(locale.languageCode),
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(50),
+                      bottomLeft: Radius.circular(50))),
             ),
-            centerTitle: true,
-            title: Text(
-              AppLocalizations.of(context)!.filtlab,
-              style: L10n.getappbarSize(locale.languageCode),
-              textAlign: TextAlign.center,
-            ),
-            backgroundColor: Colors.white,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(50),
-                    bottomLeft: Radius.circular(50))),
           ),
-        ),
-        extendBodyBehindAppBar: true,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(AppLocalizations.of(context)!.result,
-                    style: L10n.getappbarSize(locale.languageCode)),
-                const SizedBox(
-                  height: 16,
-                ),
-                const Divider(),
-                widget.isSearchnull == true
-                    ? Expanded(child: buildlabsearchlist())
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Container(
-                              width: double.infinity,
-                              height: 50,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.search,
-                                    color: Colors.grey,
-                                  ),
-                                  Text("No data Found ",
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
+          extendBodyBehindAppBar: true,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.result,
+                      style: L10n.getappbarSize(locale.languageCode)),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  const Divider(),
+                  widget.isSearchnull == true
+                      ? Expanded(child: buildlabsearchlist())
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                width: double.infinity,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      color: Colors.grey,
+                                    ),
+                                    Text("No data Found ",
+                                        style: TextStyle(color: Colors.grey)),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      )
-              ],
+                          ],
+                        )
+                ],
+              ),
             ),
           ),
         ),
@@ -126,7 +141,7 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
             shrinkWrap: true,
             // padding:const EdgeInsets.all(8.0),
             itemBuilder: (ctx, index) {
-              final val= newList[index];
+              final val = newList[index];
 
               final name = val.name!.toUpperCase();
 
@@ -219,9 +234,10 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
                                         return Text(
                                           "$ratingval ",
                                           style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,),
-                                              textAlign: TextAlign.center,
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         );
                                       }),
                                   //Text("4.4",style: TextStyle(color: Colors.white,fontSize: 14),),

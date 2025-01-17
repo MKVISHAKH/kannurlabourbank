@@ -1,15 +1,9 @@
-
 import 'package:intl/intl.dart';
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/database/labourdb.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/dropdownname/namemdl.dart';
-import 'package:panipura/provider/locale_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 import 'dart:developer';
 
-import 'package:panipura/widgets/constants.dart';
 
 class ScreenEmpProfile extends StatefulWidget {
   const ScreenEmpProfile({super.key});
@@ -38,11 +32,11 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      initializedata();      
+      initializedata();
     });
-    
+
     super.initState();
-    getUserdata();
+    getUserdata(context);
   }
 
   void initializedata() {
@@ -50,14 +44,14 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
     localecode = provider.locale;
   }
 
-  void getUserdata() async {
+  void getUserdata(BuildContext context) async {
     final value = await Sharedata.instance.getdata();
     final nam = value!.name;
     final plac = value.place;
     final mobi = value.mobile;
     final dbirth = value.dob;
-    empid=value.userid;
-    token=value.token;
+    empid = value.userid;
+    token = value.token;
     log('$dob');
     DateTime dobdt = DateFormat("yyyy-MM-dd").parse(dbirth!);
     DateFormat dateFormat1 = DateFormat.yMMMMd();
@@ -65,21 +59,22 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
     log(birthdt);
     //final gender = value.gender;
     String? genderName;
-      final genderNameval = await LabourDb.instance
-          .getGenderName(value.genderId, localecode);
+    if (!context.mounted) return;
+    final genderNameval = await LabourDb.instance
+        .getGenderName(value.genderId, localecode, context);
 
-      for (var map in genderNameval) {
-        final gender = Namemodel.fromMap(map);
-        setState(() {
-          if (localecode == Locale('ml')) {
-            genderName = gender.nameml;
-            log('$genderName');
-          } else {
-            genderName = gender.name;
-            log('$genderName');
-          }
-        });
-      }
+    for (var map in genderNameval) {
+      final gender = Namemodel.fromMap(map);
+      setState(() {
+        if (localecode == Locale('ml')) {
+          genderName = gender.nameml;
+          log('$genderName');
+        } else {
+          genderName = gender.name;
+          log('$genderName');
+        }
+      });
+    }
 
     setState(() {
       name = nam;
@@ -103,10 +98,14 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
     return Stack(
       children: [
         const Screensbackground(),
-        WillPopScope(
-          onWillPop: () async {
-            final shouldPop = await popscreen(context);
-            return shouldPop ?? false;
+        PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (!didPop) {
+              if (didPop) return;
+              await popscreen(context);
+            }
+            log('BackButton pressed!');
           },
           child: Scaffold(
             key: _scaffoldKey,
@@ -205,17 +204,21 @@ class _ScreenEmpProfileState extends State<ScreenEmpProfile> {
                       ),
                     ),
                     const Divider(),
-            ListTile(
-              title: Text(AppLocalizations.of(context)!.deleteac, style: kscreenText),
-              subtitle: const Text('Delete your Account'),
-              onTap: (){
-                  Navigator.of(_scaffoldKey.currentContext!).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => ScreenDeleteAccount(usrId: empid,token:token,category: emp,)
-                      ),
-                    );
-              },
-            ),
+                    ListTile(
+                      title: Text(AppLocalizations.of(context)!.deleteac,
+                          style: kscreenText),
+                      subtitle: const Text('Delete your Account'),
+                      onTap: () {
+                        Navigator.of(_scaffoldKey.currentContext!).push(
+                          MaterialPageRoute(
+                              builder: (ctx) => ScreenDeleteAccount(
+                                    usrId: empid,
+                                    token: token,
+                                    category: emp,
+                                  )),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/background/backgroundimage.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../core/hooks/hook.dart';
 import 'dart:developer';
@@ -24,7 +22,7 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
   @override
   void initState() {
     // checkUserLoggedIn();
-    dwnlddatabase();
+    dwnlddatabase(context);
     // getdistrict();
     // geteducation();
     // getlocalbdytype();
@@ -88,15 +86,17 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
     super.dispose();
   }
 
-  Future<void> gotoLogin() async {
+  Future<void> gotoLogin(BuildContext context) async {
     await Future.delayed(
       const Duration(seconds: 5),
     );
+        if (!context.mounted) return;
+
     Navigator.pushReplacement(
-        _scaffoldKey.currentContext!, Approutes().splashScreen3);
+        context, Approutes().splashScreen3);
   }
 
-  Future<void> dwnlddatabase() async {
+  Future<void> dwnlddatabase(BuildContext context) async {
     dbname = 'masters.db';
     try {
       final file = await Labourdata().dwonloaddb(dbname);
@@ -113,24 +113,29 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
       }
 
       await Sharedata.instance.setlocale(locale);
-      final provider = Provider.of<LocaleProvider>(_scaffoldKey.currentContext!,
+        if (!context.mounted) return;
+      final provider = Provider.of<LocaleProvider>(context,
           listen: false);
       provider.getlocale();
 
       /*****************************************/
 
       if (file == null) {
-        showSnackBar(_scaffoldKey.currentContext!,
+        if (!context.mounted) return;
+
+        showSnackBar(context,
             text: 'Something Went Wrong');
         Navigator.pushReplacement(
-            _scaffoldKey.currentContext!, Approutes().errorscreen);
+            context, Approutes().errorscreen);
       } else if (file.statusCode! > 200) {
-        showSnackBar(_scaffoldKey.currentContext!,
+        if (!context.mounted) return;
+
+        showSnackBar(context,
             text: 'Something Went Wrong');
         Navigator.pushReplacement(
-            _scaffoldKey.currentContext!, Approutes().errorscreen);
+            context, Approutes().errorscreen);
       } else {
-        gotoLogin();
+        gotoLogin(context);
         //Navigator.pushReplacement(_scaffoldKey.currentContext!,Approutes().errorscreen);
         final appStorage = await getDatabasesPath();
         final fileval = File('$appStorage/$dbname');
@@ -141,33 +146,12 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
         log(dbpath);
       }
     } catch (e) {
-      showSnackBar(_scaffoldKey.currentContext!, text: 'Connection Time Out');
+        if (!context.mounted) return;
+      showSnackBar(context, text: 'Connection Time Out');
       Navigator.pushReplacement(
-          _scaffoldKey.currentContext!, Approutes().errorscreen);
+          context, Approutes().errorscreen);
     }
   }
 
-  // Future<void> getdistrict() async {
-  //   await Labourdata().district();
-  // }
 
-  // Future<void> geteducation() async {
-  //   await Labourdata().education();
-  // }
-
-  // Future<void> getlocalbdytype() async {
-  //   await Labourdata().localbodytype();
-  // }
-
-  // Future<void> getgender() async {
-  //   await Labourdata().gender();
-  // }
-
-  // Future<void> getlocalbdy() async {
-  //   await Labourdata().localbodies();
-  // }
-
-  //  Future<void> getcategory() async {
-  //   await Labourdata().occupations();
-  // }
 }

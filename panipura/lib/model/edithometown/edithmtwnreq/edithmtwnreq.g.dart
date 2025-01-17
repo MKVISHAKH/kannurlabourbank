@@ -7,7 +7,7 @@ part of 'edithmtwnreq.dart';
 // **************************************************************************
 
 Edithmtwnreq _$EdithmtwnreqFromJson(Map<String, dynamic> json) => Edithmtwnreq(
-      userId: json['user_id'] as int?,
+      userId: (json['user_id'] as num?)?.toInt(),
       place: json['place'] as String?,
       token: json['token'] as String?,
     );

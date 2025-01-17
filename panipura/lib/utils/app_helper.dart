@@ -27,29 +27,28 @@ class AppHelper {
         //       ],
         uiSettings: [
           AndroidUiSettings(
-              toolbarColor:const Color(0xFF2564AF),
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false,
-              aspectRatioPresets: [
-                CropAspectRatioPreset.square,
-                CropAspectRatioPreset.ratio3x2,
-                CropAspectRatioPreset.original,
-                CropAspectRatioPreset.ratio4x3,
-                CropAspectRatioPreset.ratio16x9
-              ],
-              ),
-              IOSUiSettings(
+            toolbarColor: const Color(0xFF2564AF),
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9
+            ],
+          ),
+          IOSUiSettings(
             title: 'Cropper',
             aspectRatioPresets: [
-                CropAspectRatioPreset.original,
+              CropAspectRatioPreset.original,
               CropAspectRatioPreset.square,
               CropAspectRatioPreset.ratio4x3,
               // CropAspectRatioPresetCustom(),
-              ],
+            ],
           ),
         ]);
-        
 
     return croppedFile;
   }
@@ -64,25 +63,24 @@ class AppHelper {
   //   return path;
   // }
   static Future<File?> compress({
-    
     required File image,
     int quality = 80,
     int percentage = 30,
   }) async {
     File? imageval;
-    final imagepath=image.absolute.path;
+    final imagepath = image.absolute.path;
     final lastIndex = imagepath.lastIndexOf(RegExp(r'.jp'));
-  final splitted = imagepath.substring(0, (lastIndex));
-  final outPath = "${splitted}_out${imagepath.substring(lastIndex)}";
+    final splitted = imagepath.substring(0, (lastIndex));
+    final outPath = "${splitted}_out${imagepath.substring(lastIndex)}";
     var pathval = await FlutterImageCompress.compressAndGetFile(
-      image.absolute.path,outPath,     
-        quality: quality,
-       // rotate: 
-         );
-         if(pathval !=null){
-           imageval = File(pathval.path.toString());
-         }
-         
+      image.absolute.path, outPath,
+      quality: quality,
+      // rotate:
+    );
+    if (pathval != null) {
+      imageval = File(pathval.path.toString());
+    }
+
     return imageval;
   }
 }

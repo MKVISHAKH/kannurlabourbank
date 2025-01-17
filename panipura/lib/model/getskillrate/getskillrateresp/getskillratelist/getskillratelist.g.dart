@@ -8,11 +8,11 @@ part of 'getskillratelist.dart';
 
 Getskillratelist _$GetskillratelistFromJson(Map<String, dynamic> json) =>
     Getskillratelist(
-      ratingId: json['rating_id'] as int?,
-      userId: json['user_id'] as int?,
-      employerId: json['employer_id'] as int?,
-      skillId: json['skill_id'] as int?,
-      rating: json['rating'] as int?,
+      ratingId: (json['rating_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
+      employerId: (json['employer_id'] as num?)?.toInt(),
+      skillId: (json['skill_id'] as num?)?.toInt(),
+      rating: (json['rating'] as num?)?.toInt(),
       comments: json['comments'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,

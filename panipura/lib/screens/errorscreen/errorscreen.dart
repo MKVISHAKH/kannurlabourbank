@@ -1,5 +1,4 @@
 import '../../core/hooks/hook.dart';
-import '../../widgets/background/backgroundsplash.dart';
 
 class ScreenError extends StatefulWidget {
   const ScreenError({super.key});

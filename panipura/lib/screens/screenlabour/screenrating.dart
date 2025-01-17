@@ -1,13 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/screens/screenlabour/screenreviews.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:panipura/widgets/constants.dart';
-import '../../functions/laborfn.dart';
-import '../../model/get skill/skilllistmdlref/skillreflistmdl.dart';
-import '../../provider/profilepicprovider.dart';
 
 class ScreenViewrating extends StatefulWidget {
   final int? usrId;
@@ -31,7 +25,7 @@ class _ScreenViewratingState extends State<ScreenViewrating> {
   Locale? localecode;
   @override
   void initState() {
-    getSkills();
+    getSkills(context);
     //getskillrate();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initializedata();
@@ -48,7 +42,7 @@ class _ScreenViewratingState extends State<ScreenViewrating> {
     localecode = provider.locale;
   }
 
-  getSkills() async {
+  getSkills(BuildContext context) async {
     final value = await Sharedata.instance.getdata();
 
     usrId = value!.userid;
@@ -57,7 +51,9 @@ class _ScreenViewratingState extends State<ScreenViewrating> {
     } else {
       langcode = langeng;
     }
-    await Labempfn.instance.refreshskillUI(usrId, langcode);
+        if (!context.mounted) return;
+
+    await Labempfn.instance.refreshskillUI(usrId, langcode,context);
   }
   //  getskillrate() async{
   //   final getratereq=Getskillratereq.req(userId: widget.usrId, skillId: widget.skillid);

@@ -1,4 +1,3 @@
-
 class EduIdmodel {
   final int? id;
 

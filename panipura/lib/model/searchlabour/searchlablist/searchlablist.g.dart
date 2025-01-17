@@ -8,21 +8,21 @@ part of 'searchlablist.dart';
 
 Searchlablist _$SearchlablistFromJson(Map<String, dynamic> json) =>
     Searchlablist(
-      skillId: json['skill_id'] as int?,
-      userId: json['user_id'] as int?,
+      skillId: (json['skill_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
       name: json['name'] as String?,
       place: json['place'] as String?,
       dob: json['dob'] as String?,
       mobile: json['mobile'] as String?,
-      occupationId: json['occupation_id'] as int?,
+      occupationId: (json['occupation_id'] as num?)?.toInt(),
       occupationName: json['occupation_name'] as String?,
       experience: json['experience'] as String?,
-      wages: json['wages'] as int?,
+      wages: (json['wages'] as num?)?.toInt(),
       wPeriod: json['w_period'] as String?,
       additionalInfo: json['additional_info'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
-      rating: json['rating'].toString(),
+      rating: json['rating'] as String?,
     );
 
 Map<String, dynamic> _$SearchlablistToJson(Searchlablist instance) =>

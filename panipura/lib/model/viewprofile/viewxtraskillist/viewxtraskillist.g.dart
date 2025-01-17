@@ -8,11 +8,11 @@ part of 'viewxtraskillist.dart';
 
 Viewxtraskillist _$ViewxtraskillistFromJson(Map<String, dynamic> json) =>
     Viewxtraskillist(
-      skillId: json['skill_id'] as int?,
-      userId: json['user_id'] as int?,
-      occupationId: json['occupation_id'] as int?,
+      skillId: (json['skill_id'] as num?)?.toInt(),
+      userId: (json['user_id'] as num?)?.toInt(),
+      occupationId: (json['occupation_id'] as num?)?.toInt(),
       experience: json['experience'] as String?,
-      wages: json['wages'] as int?,
+      wages: (json['wages'] as num?)?.toInt(),
       wPeriod: json['w_period'] as String?,
       additionalInfo: json['additional_info'] as String?,
       createdAt: json['created_at'] == null

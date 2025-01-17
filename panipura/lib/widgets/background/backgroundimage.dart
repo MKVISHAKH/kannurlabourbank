@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+
+
+import '../../core/hooks/hook.dart';
 
 class BackgroundImage extends StatelessWidget {
   const BackgroundImage({

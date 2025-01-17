@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:panipura/widgets/calenderwidget/event_data_source.dart';
-import 'package:panipura/provider/eventprovider.dart';
-import 'package:panipura/widgets/calenderwidget/task_widget.dart';
-import 'package:provider/provider.dart';
+
+import 'package:panipura/core/hooks/hook.dart';
+
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class CalenderWidget extends StatelessWidget {

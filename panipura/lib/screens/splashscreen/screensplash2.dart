@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:panipura/core/routes/approutes.dart';
+
+import '../../core/hooks/hook.dart';
 
 class ScreensplashTwo extends StatefulWidget {
   const ScreensplashTwo({super.key});

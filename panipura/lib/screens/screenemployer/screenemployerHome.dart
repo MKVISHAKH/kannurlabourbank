@@ -1,16 +1,6 @@
-
 import 'package:panipura/core/hooks/hook.dart';
-import 'package:panipura/functions/laborfn.dart';
 import 'package:panipura/l10n/l10n.dart';
-import 'package:panipura/model/searchlabour/searchlabourmdl/searchlabourmdl.dart';
-import 'package:panipura/provider/locale_provider.dart';
-import 'package:panipura/widgets/navbar.dart';
-import '../../database/labourdb.dart';
-import '../../model/category/categorymdl.dart';
-import '../../model/dropdownId/districtIdmodel.dart';
-import '../../model/dropdownId/localbdyIdmodel.dart';
-import '../../model/dropdownId/localtypeIdmodel.dart';
-import '../../widgets/constants.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
 
@@ -194,12 +184,13 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     if (localecode == Locale('ml')) {
       return DropdownMenuItem<String>(
         value: map['name_ml'],
-        child: Text(map['name_ml'],maxLines: 5, overflow: TextOverflow.ellipsis),
+        child:
+            Text(map['name_ml'], maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     } else {
       return DropdownMenuItem<String>(
         value: map['name'],
-        child: Text(map['name'],maxLines: 5, overflow: TextOverflow.ellipsis),
+        child: Text(map['name'], maxLines: 5, overflow: TextOverflow.ellipsis),
       );
     }
   }
@@ -208,7 +199,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     catelist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getOccupations(localecode).then((listMap) {
+        LabourDb.instance.getOccupations(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getCategoryDropDownWidget(map);
@@ -225,7 +216,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     distlist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getDistrict(localecode).then((listMap) {
+        LabourDb.instance.getDistrict(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getDistDropDownWidget(map);
@@ -261,7 +252,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     locltypelist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getLocalbodyType(localecode).then((listMap) {
+        LabourDb.instance.getLocalbodyType(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getTypeDropDownWidget(map);
@@ -278,7 +269,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     genderlist = [];
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
-        LabourDb.instance.getGender(localecode).then((listMap) {
+        LabourDb.instance.getGender(localecode, context).then((listMap) {
           listMap.map((map) {
             log(map.toString());
             return getGenderDropDownWidget(map);
@@ -296,7 +287,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     LabourDb.instance.initializedatabase().then((status) {
       if (status) {
         LabourDb.instance
-            .getLocalbodies(districtId, localtypeId, localecode)
+            .getLocalbodies(districtId, localtypeId, localecode, context)
             .then((listMap) {
           listMap.map((map) {
             log(map.toString());
@@ -335,15 +326,14 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
       key: _scaffoldKey,
       children: [
         const Screensbackground(),
-        PopScope(        
+        PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
-            if (!didPop){
+            if (!didPop) {
               if (didPop) return;
-               await warningBox(context);
-            
-            } 
-             log('BackButton pressed!');
+              await warningBox(context);
+            }
+            log('BackButton pressed!');
           },
           child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -509,9 +499,9 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                     setState(() {
                       dropdowncategoryvalue = newvalue;
                     });
-
+                    if (!context.mounted) return;
                     final occupationIdval = await LabourDb.instance
-                        .getOccupationsId(dropdowncategoryvalue, localecode);
+                        .getOccupationsId(dropdowncategoryvalue, localecode,context);
 
                     for (var map in occupationIdval) {
                       final catval = CategoryIdmodel.fromMap(map);
@@ -595,7 +585,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                     });
 
                     final districtIdval = await LabourDb.instance
-                        .getDistrictId(dropdowndistvalue, localecode);
+                        .getDistrictId(dropdowndistvalue, localecode, context);
 
                     for (var map in districtIdval) {
                       final distval = DistricIdmodel.fromMap(map);
@@ -675,22 +665,22 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
 
                   onChanged: (newvalue) async {
                     if (dropdowndistvalue == null) {
-                    // Show SnackBar if district is not selected
-                    ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(
-                        content: Text('Please select district'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    //return;
+                      // Show SnackBar if district is not selected
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select district'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      //return;
                     }
                     setState(() {
                       dropdownblockvalue = newvalue;
                       dropdownlocalvalue = null;
                     });
 
-                    final typeIdval = await LabourDb.instance
-                        .getLocalbdytypeId(dropdownblockvalue, localecode);
+                    final typeIdval = await LabourDb.instance.getLocalbdytypeId(
+                        dropdownblockvalue, localecode, context);
 
                     for (var map in typeIdval) {
                       final typeval = LocaltypeIdmodel.fromMap(map);
@@ -786,7 +776,8 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                     });
 
                     final localbdyIdval = await LabourDb.instance
-                        .getLocalbodyId(dropdownlocalvalue, localecode);
+                        .getLocalbodyId(districtId, localtypeId,
+                            dropdownlocalvalue, localecode, context);
 
                     for (var map in localbdyIdval) {
                       final bdynameval = LocalbdyIdmodel.fromMap(map);
@@ -882,8 +873,6 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
               ),
             ),
 
-
-
             /* Signup Button */
             Padding(
               padding:
@@ -891,9 +880,8 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
               child: ElevatedButton(
                   onPressed: () async {
                     if (_formkey2.currentState!.validate()) {
-                      await buildlabsearch();
+                      await buildlabsearch(context);
                     }
-                    
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 158, 89, 248),
@@ -910,16 +898,18 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
         ));
   }
 
-  void signout(BuildContext ctx) async {
+  void signout(BuildContext context) async {
     // final sharedprefs = await SharedPreferences.getInstance();
     // await sharedprefs.clear();
     await Sharedata.instance.cleardata();
-    Navigator.of(_scaffoldKey.currentContext!).pushAndRemoveUntil(
+        if (!context.mounted) return ;
+
+    Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (ctx1) => const ScreenLogin(category: emp)),
         (route) => false);
   }
 
-  Future buildlabsearch() async {
+  Future buildlabsearch(BuildContext context) async {
     final occupationid = categoryId;
     final distId = districtId;
     if (distId == null) {
@@ -960,7 +950,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     );
 
     await Labempfn.instance
-        .getsearchdata(searchreq, _scaffoldKey.currentContext);
+        .getsearchdata(searchreq, context);
   }
 
   /* ************************************* */
