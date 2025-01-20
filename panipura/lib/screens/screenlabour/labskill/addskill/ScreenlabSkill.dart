@@ -1,6 +1,6 @@
 import 'package:panipura/l10n/l10n.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../core/hooks/hook.dart';
+import '../../../../core/hooks/hook.dart';
 import 'dart:developer';
 
 class ScreenLabSkill extends StatefulWidget {

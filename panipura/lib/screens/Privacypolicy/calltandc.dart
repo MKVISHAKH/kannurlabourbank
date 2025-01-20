@@ -161,7 +161,7 @@ class _ScreenCallPandPState extends State<ScreenCallPandP> {
                     style: L10n.getappbarSize(locale.languageCode),
                   ),
                   Text(
-                    "Last Updated:JAN 01,2024",
+                    "Last Updated:JAN 01,2025",
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: const Color.fromARGB(255, 47, 3, 100),

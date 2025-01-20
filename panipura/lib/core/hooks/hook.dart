@@ -76,7 +76,7 @@ export 'package:panipura/model/searchlabour/searchlablist/searchlablist.dart';
 //export 'package:panipura/model/searchlabour/searchlabourmdl/searchlabourmdl.dart';
 export 'package:panipura/model/searchlabour/searchlabresp/searchlab.dart';
 export 'package:panipura/model/viewprofile/viewprofileinfo/viewprofileinfo.dart';
-export 'package:panipura/screens/screenemployer/screenfilteredlab.dart';
+export 'package:panipura/screens/screenemployer/empLabfilter/screenfilteredlab.dart';
 export 'package:panipura/model/Eventmodel/event.dart';
 export 'package:panipura/model/ratingmdl/rateskillresp/rateskillresp.dart';
 export 'package:panipura/database/labourdb.dart';
@@ -103,33 +103,33 @@ export 'package:panipura/model/todolist/addtodolistresp/addtodoresp.dart';
 
 // screens
 export 'package:panipura/screens/Privacypolicy/pandp.dart';
-export 'package:panipura/screens/screenemployer/Screenemprprofile.dart';
+export 'package:panipura/screens/screenemployer/empprofile/Screenemprprofile.dart';
 export 'package:panipura/screens/Privacypolicy/registertandc.dart';
 export 'package:panipura/screens/splashscreen/screensplash2.dart';
 export 'package:animated_splash_screen/animated_splash_screen.dart';
 export 'package:panipura/screens/splashscreen/screensplash3.dart';
-export 'package:panipura/screens/screenlabour/ScreenlabSkill.dart';
+export 'package:panipura/screens/screenlabour/labskill/addskill/ScreenlabSkill.dart';
 export 'package:panipura/screens/Privacypolicy/commontandc.dart';
-export 'package:panipura/screens/screenhome.dart';
-export 'package:panipura/screens/screenlabour/screenlabprofile.dart';
-export 'package:panipura/screens/screenotpverify.dart';
-export 'package:panipura/screens/screenemployer/screenemployerHome.dart';
-export 'package:panipura/screens/screenlabour/screenlabhome.dart';
+export 'package:panipura/screens/home/screenhome.dart';
+export 'package:panipura/screens/screenlabour/labprofile/screenlabprofile.dart';
+export 'package:panipura/screens/otpscreen/screenotpverify.dart';
+export 'package:panipura/screens/screenemployer/emphome/screenemployerHome.dart';
+export 'package:panipura/screens/screenlabour/labhome/screenlabhome.dart';
 export 'package:panipura/screens/Privacypolicy/calltandc.dart';
 export 'package:panipura/screens/errorscreen/errorscreen.dart';
 export 'package:panipura/screens/splashscreen/screensplash1.dart';
-export 'package:panipura/screens/ScreenLogin.dart';
+export 'package:panipura/screens/login/ScreenLogin.dart';
 export 'package:panipura/screens/otpscreen/otptimer.dart';
-export 'package:panipura/screens/screenemployer/screenviewdetails.dart';
-export 'package:panipura/screens/screenlabour/Screenregister.dart';
+export 'package:panipura/screens/screenemployer/empLabdetails/screenviewdetails.dart';
+export 'package:panipura/screens/registration/Screenregister.dart';
 export 'package:panipura/screens/deleteaccount/deleteAccount.dart';
 export 'package:panipura/screens/ratingscreen/screenlabRatingpop.dart';
-export 'package:panipura/screens/screenlabour/screenreviews.dart';
-export 'package:panipura/screens/screenlabour/screeneditskill.dart';
+export 'package:panipura/screens/screenlabour/labreview/screenreviews.dart';
+export 'package:panipura/screens/screenlabour/labskill/editskill/screeneditskill.dart';
 export 'package:panipura/screens/otpscreen/screenotpvfy.dart';
-export 'package:panipura/screens/screenlabour/screenlabTodolist.dart';
+export 'package:panipura/screens/screenlabour/labtodolist/screenlabTodolist.dart';
 export 'package:panipura/main.dart';
-export 'package:panipura/screens/screenlabour/screenrating.dart';
+export 'package:panipura/screens/screenlabour/labrating/screenrating.dart';
 
 // ************************************************ /
 //widgets

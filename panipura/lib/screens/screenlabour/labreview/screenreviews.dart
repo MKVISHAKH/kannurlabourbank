@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:panipura/l10n/l10n.dart';
-import '../../core/hooks/hook.dart';
+import '../../../core/hooks/hook.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScreenReviews extends StatefulWidget {
