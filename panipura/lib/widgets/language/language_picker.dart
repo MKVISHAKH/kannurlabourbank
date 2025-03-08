@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 callalertbox(BuildContext context, int? catg) async => showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-          title: Center(child: Text(AppLocalizations.of(context)!.wordlang)),
+          title: Center(child: Text(AppLocalizations.of(context)!.wordlang,textScaler: TextScaler.noScaling,)),
           content: buildLang(context, catg),
         ));
 final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -35,7 +35,9 @@ Widget buildLang(BuildContext context, int? category) {
           style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w600,
-              fontSize: L10n.getFontSize(locale.languageCode)),
+              fontSize: L10n.getFontSize(locale.languageCode),
+              ),
+              textScaler: TextScaler.noScaling
         ),
         DropdownButtonHideUnderline(
             child: DropdownButton(
@@ -49,7 +51,8 @@ Widget buildLang(BuildContext context, int? category) {
                 child: Center(
                   child: Text(lang,
                       style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold)),
+                          fontSize: 14, fontWeight: FontWeight.bold),
+                          textScaler: TextScaler.noScaling),
                 ),
                 onTap: () async {
                   if (category == hom) {

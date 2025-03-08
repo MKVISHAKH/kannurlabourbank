@@ -51,7 +51,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
       // });
     });
 
-   super.initState();
+    super.initState();
     usrId = widget.usrId;
     token = widget.token;
     // getSkills();
@@ -76,11 +76,11 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
   void profilepicload() {
     final loadingProvider =
         Provider.of<LoadingProvider>(context, listen: false);
-    loadingProvider.toggelLoading();
+    loadingProvider.toggleLoading();
     final pro = Provider.of<ProfilepicProvider>(context, listen: false);
     // var po = context.read<ProfilepicProvider>();
     pro.updateProfilepic(usrId, token);
-    loadingProvider.toggelLoading();
+    loadingProvider.toggleLoading();
     setState(() {});
   }
 
@@ -93,9 +93,9 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
     } else {
       langcode = langeng;
     }
-        if (!context.mounted) return ;
+    if (!context.mounted) return;
 
-    await Labempfn.instance.refreshskillUI(usrId, langcode,context);
+    await Labempfn.instance.refreshskillUI(usrId, langcode, context,0);
   }
 
   Future getUserdata(BuildContext context) async {
@@ -262,6 +262,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                   child: Text(
                     AppLocalizations.of(context)!.pro,
                     style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+
                   ),
                 )),
           ],
@@ -327,6 +329,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                     fontSize: 20.0,
                     color: Color.fromARGB(255, 101, 47, 248),
                   ),
+                  textScaler: TextScaler.noScaling,
                 ),
                 const SizedBox(
                   height: 20,
@@ -363,9 +366,9 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
       final pickedFile = await picker.pickImage(source: source);
       //final provider = Provider.of<ProfilepicProvider>(_scaffoldKey.currentContext!);
       if (pickedFile == null) {
-        
-            if (!context.mounted) return;
-            CommonFun.instance.showApierror(context, "Camera permission denied. Please enable it in settings.");
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(
+            context, "Camera permission denied. Please enable it in settings.");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => ScreenLabProfile(usrId: usrId, token: token),
@@ -373,11 +376,10 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
         );
         return;
       } else {
-              if (!context.mounted) return;
-        final loadingProvider = Provider.of<LoadingProvider>(
-            context,
-            listen: false);
-        loadingProvider.toggelLoading();
+        if (!context.mounted) return;
+        final loadingProvider =
+            Provider.of<LoadingProvider>(context, listen: false);
+        loadingProvider.toggleLoading();
 
         var image = File(pickedFile.path.toString());
         final sizeInKbBefore = image.lengthSync() / 1024;
@@ -385,8 +387,11 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
         final imagepath = image.absolute.path;
         final mimeType = lookupMimeType(imagepath);
         if (mimeType == null) {
-              if (!context.mounted) return;
-                CommonFun.instance.showApierror(context,AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,);
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(
+            context,
+            AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,
+          );
           //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -409,11 +414,11 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
           });
           final imgresp =
               await Labourdata().uploadimg(fileImage, usrId, typeid);
-          loadingProvider.toggelLoading();
+          loadingProvider.toggleLoading();
           if (imgresp == null) {
             if (!context.mounted) return;
             CommonFun.instance.showApierror(context, "Something went wrong");
-        }else if (imgresp.statusCode == 200) {
+          } else if (imgresp.statusCode == 200) {
             final resultAsjson = jsonDecode(imgresp.data);
 
             final imgval =
@@ -422,9 +427,11 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             if (status == true) {
               provider.updateProfilepic(usrId, token);
 
-              
-                  if (!context.mounted) return;
-                CommonFun.instance.showApierror(context, AppLocalizations.of(context)!.uploadpic,);
+              if (!context.mounted) return;
+              CommonFun.instance.showApierror(
+                context,
+                AppLocalizations.of(context)!.uploadpic,
+              );
               //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
@@ -433,33 +440,35 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                 ),
               );
             } else {
-               if (!context.mounted) return;
+              if (!context.mounted) return;
 
-              showSnackBar(context,
-                  text: "something went wrong");
+              showSnackBar(context, text: "something went wrong");
             }
           } else if (imgresp.statusCode == 500) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+            if (!context.mounted) return;
+            CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (imgresp.statusCode == 408) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Connection time out");
+            // showLoginerror(context, 3);
+          } else if (imgresp.statusCode == 408) {
+            if (!context.mounted) return;
+            CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+            //showLoginerror(context, 4);
+          } else {
+            if (!context.mounted) return;
+            CommonFun.instance.showApierror(context, "Something went wrong");
+            //showLoginerror(context, 5);
+          }
           log('$imgresp');
 
           setState(() {});
         } else {
-           if (!context.mounted) return;
-                CommonFun.instance.showApierror(context,AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,);
-         
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(
+            context,
+            AppLocalizations.of(_scaffoldKey.currentContext!)!.errorpic,
+          );
+
           //showSnackBar(_scaffoldKey.currentContext!, text: "profile picture uploaded");
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -470,13 +479,14 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
         }
       }
     } catch (e) {
-           if (!context.mounted) return;
+      if (!context.mounted) return;
 
       showSnackBar(context, text: "something went wrong");
     }
- 
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Camera permission denied. Please enable it in settings.");
+
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(
+        context, "Camera permission denied. Please enable it in settings.");
 
     return;
   }
@@ -511,6 +521,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
               child: Text(
             '$name',
             style: kHeaderText,
+                  textScaler: TextScaler.noScaling,
+
           )),
           //  const SizedBox(height: 8,),
           // const Center(child:  Text('Carpenter',style:kHeaderlightText)),
@@ -535,7 +547,9 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(AppLocalizations.of(context)!.about,
-              style: L10n.getappbarSize(locale.languageCode)),
+              style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+              ),
           const SizedBox(
             height: 16,
           ),
@@ -544,7 +558,9 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
           /******Work*******/
 
           Text(AppLocalizations.of(context)!.skill,
-              style: L10n.getappbarSize(locale.languageCode)),
+              style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+              ),
           const SizedBox(
             height: 8,
           ),
@@ -564,7 +580,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                     //     log('$districtId');
                     //   });
                     // }
-                 if (!context.mounted) return;
+                    if (!context.mounted) return;
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (ctx) => ScreenLabSkill(
@@ -583,6 +599,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                 child: Text(
                   AppLocalizations.of(context)!.addskill,
                   style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+
                 ),
                 onPressed: () async {
                   //Navigator.push(context,Approutes().addSkillScreen);
@@ -597,7 +615,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                   //     log('$districtId');
                   //   });
                   // }
-           if (!context.mounted) return;
+                  if (!context.mounted) return;
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (ctx) => ScreenLabSkill(
@@ -635,14 +653,18 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             /******Home town *******/
 
             Text(AppLocalizations.of(context)!.hmtown,
-                style: L10n.getappbarSize(locale.languageCode)),
+                style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+                ),
             const SizedBox(
               height: 8,
             ),
             const Divider(),
             ListTile(
-              title: Text('$place ', style: kscreenText),
-              subtitle: const Text('Current Location'),
+              title: Text('$place ', style: kscreenText,
+                  textScaler: TextScaler.noScaling,
+              ),
+              subtitle: const Text('Current Location',textScaler: TextScaler.noScaling,),
               leading: const CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage('assets/background/homeimg.png'),
@@ -664,15 +686,18 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
 
             /******Contact info*******/
             Text(AppLocalizations.of(context)!.contact,
-                style: L10n.getappbarSize(locale.languageCode)),
+                style: L10n.getappbarSize(locale.languageCode),
+                textScaler: TextScaler.noScaling,),
             const SizedBox(
               height: 8,
             ),
 
             const Divider(),
             ListTile(
-              title: Text('$mob ', style: kscreenText),
-              subtitle: const Text('Mobile'),
+              title: Text('$mob ', style: kscreenText,
+              textScaler: TextScaler.noScaling,),
+              subtitle: const Text('Mobile',
+              textScaler: TextScaler.noScaling,),
               leading: const CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage('assets/background/4392964.png'),
@@ -686,14 +711,16 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
 
             /******Basic info*******/
             Text(AppLocalizations.of(context)!.bsinfo,
-                style: L10n.getappbarSize(locale.languageCode)),
+                style: L10n.getappbarSize(locale.languageCode),
+                textScaler: TextScaler.noScaling,),
             const SizedBox(
               height: 8,
             ),
 
             ListTile(
-              title: Text('$sex ', style: kscreenText),
-              subtitle: const Text('Gender'),
+              title: Text('$sex ', style: kscreenText,
+              textScaler: TextScaler.noScaling,),
+              subtitle: const Text('Gender',textScaler: TextScaler.noScaling,),
               leading: const CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage(
@@ -708,8 +735,9 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             const Divider(),
 
             ListTile(
-              title: Text('$dob', style: kscreenText),
-              subtitle: const Text('Date of Birth'),
+              title: Text('$dob', style: kscreenText,
+              textScaler: TextScaler.noScaling,),
+              subtitle: const Text('Date of Birth',textScaler: TextScaler.noScaling,),
               leading: const CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage(
@@ -722,7 +750,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             const Divider(),
 
             Text(AppLocalizations.of(context)!.educat,
-                style: L10n.getappbarSize(locale.languageCode)),
+                style: L10n.getappbarSize(locale.languageCode),
+                textScaler: TextScaler.noScaling,),
             const SizedBox(
               height: 8,
             ),
@@ -734,8 +763,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             // ],),
             const Divider(),
             ListTile(
-              title: Text('$edu', style: kscreenText),
-              subtitle: const Text('Qualification'),
+              title: Text('$edu', style: kscreenText,textScaler: TextScaler.noScaling,),
+              subtitle: const Text('Qualification',textScaler: TextScaler.noScaling,),
               leading: const CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage('assets/background/education.png'),
@@ -748,8 +777,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
             const Divider(),
             ListTile(
               title: Text(AppLocalizations.of(context)!.deleteac,
-                  style: kscreenText),
-              subtitle: const Text('Delete your Account'),
+                  style: kscreenText,textScaler: TextScaler.noScaling),
+              subtitle: const Text('Delete your Account',textScaler: TextScaler.noScaling,),
               onTap: () {
                 Navigator.of(_scaffoldKey.currentContext!).push(
                   MaterialPageRoute(
@@ -822,10 +851,10 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                       //     log('$districtId');
                       //   });
                       // }
-                    if (!context.mounted) return;
+                      if (!context.mounted) return;
 
                       final occupationId = await LabourDb.instance
-                          .getOccupationsId(wrkname, localecode,context);
+                          .getOccupationsId(wrkname, localecode, context);
 
                       for (var map in occupationId) {
                         final wrkval = WrkIdmodel.fromMap(map);
@@ -851,7 +880,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
                           'districtId': value!.distId
                         }
                       ];
-           if (!context.mounted) return;
+                      if (!context.mounted) return;
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ScreenEditSkill(
@@ -927,8 +956,8 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
 
     log('$deleteresp');
     if (deleteresp == null) {
-      if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
     } else if (deleteresp.statusCode == 200) {
       final resultAsjson = jsonDecode(deleteresp.data);
       final searchval =
@@ -936,11 +965,10 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
       final message = searchval.message;
       final status = searchval.success;
       if (status == true) {
-
-       if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
         Labempfn.instance.refreshskillUI;
-        
+
         //if (!context.mounted) return ;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -949,7 +977,7 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
           ),
         );
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -959,38 +987,35 @@ class _ScreenLabProfileState extends State<ScreenLabProfile> {
         );
       }
     } else if (deleteresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
-         Navigator.of(context).pushReplacement(
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
               ScreenLabProfile(usrId: widget.usrId, token: widget.token),
         ),
       );
-        // showLoginerror(context, 3);
-      } else if (deleteresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
-        Navigator.of(context).pushReplacement(
+      // showLoginerror(context, 3);
+    } else if (deleteresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
               ScreenLabProfile(usrId: widget.usrId, token: widget.token),
         ),
       );
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-        Navigator.of(context).pushReplacement(
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) =>
               ScreenLabProfile(usrId: widget.usrId, token: widget.token),
         ),
       );
-      }
+    }
   }
-
 }
-
-

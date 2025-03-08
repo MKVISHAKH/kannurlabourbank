@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:panipura/model/versionreq/versionreq.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../core/hooks/hook.dart';
 import 'dart:developer';
@@ -94,12 +95,19 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
 
     Navigator.pushReplacement(
         context, Approutes().splashScreen3);
+    
   }
 
   Future<void> dwnlddatabase(BuildContext context) async {
     dbname = 'masters.db';
     try {
-      final file = await Labourdata().dwonloaddb(dbname);
+      final appversion = await Appinfo.getappVersion();
+      log(appversion);
+      final packnam=appversion.split('+');
+      final version=packnam[0];
+      final buildno=packnam[1];
+      final versionreq=Versionreq(version: version,buildnumber: buildno);
+      final file = await Labourdata().dwonloaddb(dbname,versionreq);
       /***************language****************/
 
       final value = await Sharedata.instance.getlocale();
@@ -127,14 +135,7 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
             text: 'Something Went Wrong');
         Navigator.pushReplacement(
             context, Approutes().errorscreen);
-      } else if (file.statusCode! > 200) {
-        if (!context.mounted) return;
-
-        showSnackBar(context,
-            text: 'Something Went Wrong');
-        Navigator.pushReplacement(
-            context, Approutes().errorscreen);
-      } else {
+      }else if (file.statusCode== 200){
         gotoLogin(context);
         //Navigator.pushReplacement(_scaffoldKey.currentContext!,Approutes().errorscreen);
         final appStorage = await getDatabasesPath();
@@ -144,6 +145,42 @@ class _ScreensplashOneState extends State<ScreensplashOne> {
         await raf.close();
         String dbpath = fileval.path;
         log(dbpath);
+      } else if (file.statusCode == 408) {
+        if (!context.mounted) return;
+
+        showSnackBar(context,
+            text: 'Connection TimeOut');
+        Navigator.pushReplacement(
+            context, Approutes().errorscreen);
+      }else if (file.statusCode == 503) {
+        if (!context.mounted) return;
+
+        showSnackBar(context,
+            text: 'Server Under Maintenance');
+        Navigator.pushReplacement(
+            context, Approutes().errorscreen);
+      }
+      else if (file.statusCode == 401) {
+        if (!context.mounted) return;
+
+        showSnackBar(context,
+            text: 'Version Expired,Please update App');
+        Navigator.pushReplacement(
+            context, Approutes().errorscreen);
+      }else if (file.statusCode == 500) {
+        if (!context.mounted) return;
+
+        showSnackBar(context,
+            text: 'Server not reachable');
+        Navigator.pushReplacement(
+            context, Approutes().errorscreen);
+      } else{
+        if (!context.mounted) return;
+
+        showSnackBar(context,
+            text: 'Something went wrong');
+        Navigator.pushReplacement(
+            context, Approutes().errorscreen);
       }
     } catch (e) {
         if (!context.mounted) return;

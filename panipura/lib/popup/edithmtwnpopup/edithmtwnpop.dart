@@ -2,7 +2,6 @@ import 'package:panipura/core/hooks/hook.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:developer';
 
-
 final _scaffoldKey = GlobalKey<ScaffoldState>();
 final _formkey = GlobalKey<FormState>();
 Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
@@ -58,6 +57,20 @@ Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
                 ),
               ),
             ),
+            const SizedBox(height: 10),
+          Consumer<LoadingProvider>(
+          builder: (context, loadingProvider, child) {
+          return loadingProvider.isLoading
+                ? const Center(
+                child: CircularProgressIndicator(
+                valueColor:
+                AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 101, 47, 248),
+                ),
+                ),
+              )
+              : const SizedBox.shrink();
+              }),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Center(
@@ -105,12 +118,17 @@ Future showEditHometownpopup(BuildContext context, Getskillreq editval) async {
 }
 
 Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
+  final loadingProvider=context.read<LoadingProvider>();
+    loadingProvider.toggleLoading();
   final editresp = await Labourdata().edithometwn(val);
+    loadingProvider.toggleLoading();
+
   log('$editresp');
   if (editresp == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } if (editresp!.statusCode == 200) {
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, "Something went wrong");
+  }
+  if (editresp!.statusCode == 200) {
     final resultAsjson = jsonDecode(editresp.data);
     final searchval =
         Edithmtwnresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -164,11 +182,11 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
     final status = searchval.success;
 
     final message = searchval.message;
-    
-    if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, message);
+
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, message);
     if (status == true) {
-    if (!context.mounted) return ;
+      if (!context.mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => ScreenLabProfile(
@@ -179,8 +197,8 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
       );
     }
   } else if (editresp.statusCode == 404) {
-    if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "No Data Found");
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, "No Data Found");
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => ScreenLabProfile(
@@ -189,35 +207,35 @@ Future buildedithmtwn(BuildContext context, Edithmtwnreq val) async {
         ),
       ),
     );
-  }else if (editresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) =>
-                ScreenLabProfile(usrId: val.userId, token: val.token),
-          ),
-        );
-        // showLoginerror(context, 3);
-      } else if (editresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) =>
-                ScreenLabProfile(usrId: val.userId, token: val.token),
-          ),
-        );
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) =>
-                ScreenLabProfile(usrId: val.userId, token: val.token),
-          ),
-        );
-      } 
+  } else if (editresp.statusCode == 500) {
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, "Sever Not Reachable");
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            ScreenLabProfile(usrId: val.userId, token: val.token),
+      ),
+    );
+    // showLoginerror(context, 3);
+  } else if (editresp.statusCode == 408) {
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, "Connection time out");
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            ScreenLabProfile(usrId: val.userId, token: val.token),
+      ),
+    );
+    //showLoginerror(context, 4);
+  } else {
+    if (!context.mounted) return;
+    CommonFun.instance.showApierror(context, "Something went wrong");
+    //showLoginerror(context, 5);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            ScreenLabProfile(usrId: val.userId, token: val.token),
+      ),
+    );
+  }
 }

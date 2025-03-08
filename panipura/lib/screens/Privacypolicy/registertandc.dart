@@ -138,6 +138,8 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                   Text(
                     AppLocalizations.of(context)!.tandc,
                     style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+
                   ),
                   Text(
                     "Last Updated:JAN 01,2025",
@@ -145,6 +147,8 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                     style: TextStyle(
                         color: const Color.fromARGB(255, 47, 3, 100),
                         fontSize: size.height * 0.015),
+                  textScaler: TextScaler.noScaling,
+
                   ),
                 ],
               ),
@@ -210,6 +214,8 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                   AppLocalizations.of(context)!.decline,
                   style:
                       const TextStyle(color: Appcolors.labelclr, fontSize: 16),
+                  textScaler: TextScaler.noScaling,
+
                 )),
             ElevatedButton(
                 onPressed: () {
@@ -223,7 +229,9 @@ class _ScreenEmpTandCState extends State<ScreenEmpTandC> {
                         borderRadius: BorderRadius.circular(10))),
                 child: Text(AppLocalizations.of(context)!.accept,
                     style:
-                        const TextStyle(color: Appcolors.white, fontSize: 16))),
+                        const TextStyle(color: Appcolors.white, fontSize: 16),
+                  textScaler: TextScaler.noScaling,
+                        )),
           ],
         ));
   }

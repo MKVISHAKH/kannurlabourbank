@@ -3,9 +3,10 @@ import 'package:panipura/core/hooks/hook.dart';
 import 'dart:developer';
 
 abstract class Labourfn {
-  Future<List<Getrefskillresplist>> getskillfn( BuildContext context,int? userId, String? langcode);
+  Future<List<Getrefskillresplist>> getskillfn(
+      BuildContext context, int? userId, String? langcode,int? occupationId);
   Future getsearchdata(Searchlabourmdl value, BuildContext context);
-  Future viewprofile(int? value,BuildContext context);
+  Future viewprofile(int? value, BuildContext context);
 }
 
 class Labempfn implements Labourfn {
@@ -52,18 +53,26 @@ class Labempfn implements Labourfn {
   //   }
   // }
 
-  Future<void> refreshskillUI(int? userId, String? langcode, BuildContext context) async {
-    final list = await getskillfn(context,userId, langcode);
+  Future<void> refreshskillUI(
+      int? userId, String? langcode, BuildContext context,int? occupationId) async {
+    final list = await getskillfn(context, userId, langcode,occupationId);
     getSkillListNotifier.value.clear();
     log('$list');
-    list.sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
+    if(occupationId==0){
+      list.sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
     //getSkillListNotifier.value.clear();
     getSkillListNotifier.value.addAll(list);
     getSkillListNotifier.notifyListeners();
+    }else{
+      getSkillListNotifier.value.addAll(list);
+    getSkillListNotifier.notifyListeners();
+    }
+    
   }
 
-  Future<void> refreshRateUI(Getskillratereq value,BuildContext context) async {
-    final list = await getrateskill(value,context);
+  Future<void> refreshRateUI(
+      Getskillratereq value, BuildContext context) async {
+    final list = await getrateskill(value, context);
     getSkillrateListNotifier.value.clear();
     log('$list');
     list.sort((first, second) => second.updatedAt!.compareTo(first.createdAt!));
@@ -73,13 +82,13 @@ class Labempfn implements Labourfn {
 
   @override
   Future<List<Getrefskillresplist>> getskillfn(
-      BuildContext context,int? userId, String? langcode) async {
-    final skillslistreq = Getskillreq.req(userId: userId, locale: langcode);
+      BuildContext context, int? userId, String? langcode,int? occupationId) async {
+    final skillslistreq = Getskillreq.req(userId: userId, locale: langcode,occupationId: occupationId);
     final skillslistresp = await Labourdata().getskill(skillslistreq);
     if (skillslistresp == null) {
-        if (!context.mounted) return[];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } else if (skillslistresp.statusCode == 200) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (skillslistresp.statusCode == 200) {
       final resultAsjson = jsonDecode(skillslistresp.data);
 
       final skillsval = Skillsvw.fromJson(resultAsjson as Map<String, dynamic>);
@@ -134,20 +143,20 @@ class Labempfn implements Labourfn {
           textColor: Colors.white,
           fontSize: 16.0);
     } else if (skillslistresp.statusCode == 500) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (skillslistresp.statusCode == 408) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (skillslistresp.statusCode == 408) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
     return [];
     // isskillnull=!isskillnull;
     // return Future.value(isskillnull);
@@ -159,10 +168,9 @@ class Labempfn implements Labourfn {
     final createlabrespval = await Labourdata().searchlab(value);
     //print(createlabrespval);
     if (createlabrespval == null) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } 
-    else if (createlabrespval.statusCode == 200) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (createlabrespval.statusCode == 200) {
       final resultAsjson = jsonDecode(createlabrespval.data);
 
       final searchval =
@@ -206,33 +214,33 @@ class Labempfn implements Labourfn {
         ),
       );
     } else if (createlabrespval.statusCode == 500) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (createlabrespval.statusCode == 408) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (createlabrespval.statusCode == 408) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
     //return null;
   }
 
   @override
-  Future viewprofile(int? value,BuildContext context) async {
+  Future viewprofile(int? value, BuildContext context) async {
     final profilereq = Getskillreq.req(userId: value);
     final createlabrespval = await Labourdata().viewProfile(profilereq);
     //print(createlabrespval);
 
-   if (createlabrespval == null) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } else if (createlabrespval.statusCode == 200) {
+    if (createlabrespval == null) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (createlabrespval.statusCode == 200) {
       final resultAsjson = jsonDecode(createlabrespval.data);
       final searchval =
           Viewprofileresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -250,25 +258,26 @@ class Labempfn implements Labourfn {
       }
     } else if (createlabrespval.statusCode == 404) {
       if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "No Data Found");
+      CommonFun.instance.showApierror(context, "No Data Found");
     } else if (createlabrespval.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (createlabrespval.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (createlabrespval.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 
-  Future<List<Getskillratelist>> getrateskill(Getskillratereq value,BuildContext context) async {
+  Future<List<Getskillratelist>> getrateskill(
+      Getskillratereq value, BuildContext context) async {
     final rateskillrslt = await Labourdata().getrateskill(value);
     List<Getskillratelist>? data;
     if (rateskillrslt == null) {
@@ -315,31 +324,30 @@ class Labempfn implements Labourfn {
               backgroundColor: Colors.black,
               textColor: Colors.white,
               fontSize: 16.0);
-              gettotalrateListNotifier.value = '0';
+          gettotalrateListNotifier.value = '0';
           gettotalrateListNotifier.notifyListeners();
         }
       }
     } else if (rateskillrslt.statusCode == 404) {
       if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "No Data Found");
+      CommonFun.instance.showApierror(context, "No Data Found");
     } else if (rateskillrslt.statusCode == 500) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (rateskillrslt.statusCode == 408) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (rateskillrslt.statusCode == 408) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
-      gettotalrateListNotifier.value = '0';
-      gettotalrateListNotifier.notifyListeners();
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
+    gettotalrateListNotifier.value = '0';
+    gettotalrateListNotifier.notifyListeners();
     return [];
   }
-
 }

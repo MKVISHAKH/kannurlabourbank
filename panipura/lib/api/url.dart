@@ -19,7 +19,11 @@ class Url {
   String genderUrl = '/api/genders';
   String occupationUrl = '/api/occupations';
   String addskillUrl = '/api/skill/create';
+
   String getskillUrl = '/api/getskill';
+
+  String getskill2Url='/api/getskill2';
+  
   String searchlabUrl = '/api/searchdata';
   String viewProfileUrl = '/api/viewprofile';
   String skilldeleteUrl = '/api/skills';

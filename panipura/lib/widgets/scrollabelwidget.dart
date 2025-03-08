@@ -1,4 +1,3 @@
-
 import 'package:panipura/core/hooks/hook.dart';
 
 class Scrollablewidget extends StatelessWidget {

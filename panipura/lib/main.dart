@@ -40,20 +40,23 @@ class MyApp extends StatelessWidget {
             create: (context) => LocaleProvider(),
             builder: (context, child) {
               final provider = Provider.of<LocaleProvider>(context);
-              return MaterialApp(
-                title: 'LABOUR BANK',
-                themeMode: ThemeMode.system,
-                theme: MyTheme.lightTheme,
-                darkTheme: MyTheme.darkTheme,
-                locale: provider.locale,
-                supportedLocales: L10n.all,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                ],
-                home: const ScreensplashOne(),
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaler:TextScaler.noScaling),
+                child: MaterialApp(
+                  title: 'LABOUR BANK',
+                  themeMode: ThemeMode.system,
+                  theme: MyTheme.lightTheme,
+                  darkTheme: MyTheme.darkTheme,
+                  locale: provider.locale,
+                  supportedLocales: L10n.all,
+                  localizationsDelegates: const [
+                    AppLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                  ],
+                  home: const ScreensplashOne(),
+                ),
               );
             },
           ),

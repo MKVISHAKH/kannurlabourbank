@@ -87,8 +87,10 @@ class _NavbarState extends State<Navbar> {
             UserAccountsDrawerHeader(
               accountName: Text(
                 AppLocalizations.of(context)!.appname,
+                textScaler: TextScaler.noScaling,
               ),
-              accountEmail: Text('Version:$version'),
+              accountEmail: Text('Version:$version',
+                            textScaler: TextScaler.noScaling,),
               currentAccountPicture: CircleAvatar(
                 child: ClipOval(
                   child: Image.asset(
@@ -110,7 +112,7 @@ class _NavbarState extends State<Navbar> {
                     Icons.person_2_outlined,
                     color: Color.fromARGB(255, 101, 47, 248),
                   ),
-                  title: Text(AppLocalizations.of(context)!.pro),
+                  title: Text(AppLocalizations.of(context)!.pro,textScaler: TextScaler.noScaling,),
                   onTap: () {
                     Navigator.push(
                         _scaffoldKey.currentContext!, Approutes().empProscreen);
@@ -121,7 +123,8 @@ class _NavbarState extends State<Navbar> {
                   Icons.language_outlined,
                   color: Appcolors.labelclr,
                 ),
-                title: Text(AppLocalizations.of(context)!.wordlang),
+                title: Text(AppLocalizations.of(context)!.wordlang,
+                       textScaler: TextScaler.noScaling,),
                 // subtitle:locale ,
                 onTap: () {
                   //  final value = await Sharedata.instance.getlocale();
@@ -143,6 +146,7 @@ class _NavbarState extends State<Navbar> {
                 ),
                 title: Text(
                   AppLocalizations.of(context)!.tandc,
+                  textScaler: TextScaler.noScaling,
                 ),
                 onTap: () {
                   Navigator.push(context, Approutes().commontandc);
@@ -154,6 +158,7 @@ class _NavbarState extends State<Navbar> {
                 ),
                 title: Text(
                   AppLocalizations.of(context)!.pandp,
+                  textScaler: TextScaler.noScaling,
                 ),
                 onTap: () {
                   Navigator.push(context, Approutes().commonpandp);

@@ -30,7 +30,7 @@ class _ScreenReviewsState extends State<ScreenReviews> {
   getskillrate(BuildContext context) async {
     final getratereq =
         Getskillratereq.req(userId: widget.usrId, skillId: widget.skillId);
-    Labempfn.instance.refreshRateUI(getratereq,context);
+    Labempfn.instance.refreshRateUI(getratereq, context);
   }
 
   @override

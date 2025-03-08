@@ -1,11 +1,6 @@
-
 import 'package:panipura/core/hooks/hook.dart';
 
-
-
-
 class Approutes {
-
   PageTransition splashScreen1 = PageTransition(
     child: const ScreensplashOne(),
     type: PageTransitionType.fade,

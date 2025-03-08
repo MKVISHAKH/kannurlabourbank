@@ -105,7 +105,9 @@ class _EventEditingPageState extends State<EventEditingPage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextButton.icon(
-              onPressed:(){saveForm(context);} ,
+              onPressed: () {
+                saveForm(context);
+              },
               icon: const Icon(
                 Icons.done,
                 color: Color.fromARGB(255, 158, 89, 248),
@@ -346,7 +348,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
             toDt: todate,
             frmTime: fromtime,
             toTime: totime);
-        buildEdittodolist(todoreq, todoId,context);
+        buildEdittodolist(todoreq, todoId, context);
         provider.editEvent(event, widget.event!);
 
         Navigator.of(context).pop();
@@ -372,9 +374,9 @@ class _EventEditingPageState extends State<EventEditingPage> {
             toDt: todate,
             frmTime: fromtime,
             toTime: totime);
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
 
-        buildaddtodo(todoreq,context);
+        buildaddtodo(todoreq, context);
 
         provider.addEvent(event);
       }
@@ -383,11 +385,11 @@ class _EventEditingPageState extends State<EventEditingPage> {
     }
   }
 
-  Future buildaddtodo(Addtodolist addval,BuildContext context) async {
+  Future buildaddtodo(Addtodolist addval, BuildContext context) async {
     final addtodoresp = await Labourdata().addtodolist(addval);
     if (addtodoresp == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "something went wrong");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "something went wrong");
     } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
@@ -395,35 +397,36 @@ class _EventEditingPageState extends State<EventEditingPage> {
       status = registerval.success;
       if (status == true) {
         message = registerval.message;
-         if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else {
         message = registerval.message;
-            if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       }
     } else if (addtodoresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (addtodoresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (addtodoresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 
-  Future buildEdittodolist(Addtodolist editval, int? todoid,BuildContext context) async {
+  Future buildEdittodolist(
+      Addtodolist editval, int? todoid, BuildContext context) async {
     final addtodoresp = await Labourdata().edittodolist(editval, todoid);
     if (addtodoresp == null) {
-          if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "something went wrong");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "something went wrong");
     } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
@@ -431,27 +434,27 @@ class _EventEditingPageState extends State<EventEditingPage> {
       final status = registerval.success;
       if (status == true) {
         final message = registerval.message;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else {
         final message = registerval.message;
-            if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       }
     } else if (addtodoresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (addtodoresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (addtodoresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 }

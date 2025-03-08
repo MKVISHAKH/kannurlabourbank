@@ -100,7 +100,9 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                     ),
                     Center(
                       child: Text(AppLocalizations.of(context)!.otpvrfy,
-                          style: kScreenText),
+                          style: kScreenText,
+                  textScaler: TextScaler.noScaling,
+                          ),
                     ),
                     SizedBox(
                       height: size.height * 0.015,
@@ -114,6 +116,8 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                         fontSize: 14,
                         color: Colors.black,
                       ),
+                  textScaler: TextScaler.noScaling,
+
                     ),
                     Text(
                       "+91-${widget.mobileNo}",
@@ -125,6 +129,8 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                         fontWeight: FontWeight.w700,
                         color: Appcolors.magenta,
                       ),
+                  textScaler: TextScaler.noScaling,
+
                     ),
                     SizedBox(
                       height: size.height * 0.04,
@@ -146,7 +152,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                             });
                             final otpreq = Otprsndreq.req(
                                 mobile: widget.mobileNo, type: type);
-                            buildotpresend(otpreq,context);
+                            buildotpresend(otpreq, context);
                           }
                         },
                         child: Text(
@@ -156,6 +162,8 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                             fontSize: 18,
                             color: Appcolors.magenta,
                           ),
+                  textScaler: TextScaler.noScaling,
+
                         ),
                       ),
                     ),
@@ -180,7 +188,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                                   mobile: widget.mobileNo,
                                   otp: otppin,
                                   type: type);
-                              buildotpvrf(otpreq,context);
+                              buildotpvrf(otpreq, context);
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -192,6 +200,8 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                           child: Text(
                             AppLocalizations.of(context)!.vrfybtn,
                             style: L10n.getbuttonstyle(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
+
                           )),
                     ),
                   ],
@@ -200,38 +210,38 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
         ));
   }
 
-  Future buildotpresend(Otprsndreq value,BuildContext context) async {
+  Future buildotpresend(Otprsndreq value, BuildContext context) async {
     if (widget.category == 1) {
       /*labour resend otp */
 
       final otpreq = await Labourdata().otpresend(value);
 
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
-      }  else if (otpreq.statusCode == 200) {
+      } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -242,7 +252,7 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
 
       final otpreq = await Labourdata().empotpresend(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
@@ -250,23 +260,23 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -307,14 +317,14 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
     );
   }
 
-  Future buildotpvrf(Otpvrfyreq value,BuildContext context) async {
+  Future buildotpvrf(Otpvrfyreq value, BuildContext context) async {
     if (widget.category == 1) {
       /*----labour otp verify---- */
 
       final otpreq = await Labourdata().otpvrfy(value);
 
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
@@ -322,25 +332,25 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         final errorval = otpresp.error;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message ?? errorval!);
         await showDialogsuccess(context, widget.category);
         // buildcommonotpvrfy(_resultAsjson);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -350,33 +360,33 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
 
       final otpreq = await Labourdata().empotpvrfy(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
-      }else if (otpreq.statusCode == 200) {
+      } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         final error = otpresp.error;
-         if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message ?? error!);
         await showDialogsuccess(context, widget.category);
         // buildcommonotpvrfy(_resultAsjson);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -394,13 +404,17 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
             fontSize: 18,
             color: Appcolors.magenta,
             fontWeight: FontWeight.bold),
+                  textScaler: TextScaler.noScaling,
+
       ),
       Obx(() => Center(
             child: Text(time.value,
                 style: const TextStyle(
                   fontSize: 18,
                   color: Colors.red,
-                )),
+                ),
+                  textScaler: TextScaler.noScaling,
+                ),
           ))
     ]);
   }
@@ -430,7 +444,9 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                   title: const Text("Registration completed",
                       style: TextStyle(
                           color: Color.fromARGB(255, 2, 129, 6),
-                          fontFamily: 'RobotoSerif_28pt-Medium')),
+                          fontFamily: 'RobotoSerif_28pt-Medium'),
+                  textScaler: TextScaler.noScaling,
+                          ),
                   actions: [
                     ElevatedButton(
                         onPressed: () {
@@ -459,7 +475,8 @@ class _ScreenotpvfyState extends State<Screenotpvfy> {
                             }
                           }
                         },
-                        child: const Center(child: Text('OK'))),
+                        child: const Center(child: Text('OK',
+                  textScaler: TextScaler.noScaling,
+                        ))),
                   ]));
 }
-

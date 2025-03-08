@@ -75,6 +75,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                   AppLocalizations.of(context)!.deleteac,
                   style: L10n.getappbarSize(locale.languageCode),
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
                 ),
                 backgroundColor: Colors.white,
                 shape: const RoundedRectangleBorder(
@@ -101,6 +102,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                                 color: Colors.red,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 20),
+                                textScaler: TextScaler.noScaling,
                           ),
                         )
                       ],
@@ -119,6 +121,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                             text: AppLocalizations.of(context)!.cautionone,
                             style: const TextStyle(
                                 fontSize: 16, color: Colors.black),
+                                
                           ),
                         ],
                       ),
@@ -206,6 +209,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                         child: Text(
                           AppLocalizations.of(context)!.deleteac,
                           style: const TextStyle(color: Colors.white),
+                          textScaler: TextScaler.noScaling,
                         ),
                       ),
                     ),
@@ -234,7 +238,8 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Text(
                             "Are you sure You want to delete this Account?",
-                            style: TextStyle(color: Colors.red)),
+                            style: TextStyle(color: Colors.red),
+                            textScaler: TextScaler.noScaling,),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -266,6 +271,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                                 child: const Text(
                                   'No',
                                   style: TextStyle(color: Colors.white),
+                                  textScaler: TextScaler.noScaling,
                                 ),
                               ),
                             ),
@@ -296,6 +302,7 @@ class _ScreenDeleteAccountState extends State<ScreenDeleteAccount> {
                                 child: const Text(
                                   'yes',
                                   style: TextStyle(color: Colors.white),
+                                  textScaler: TextScaler.noScaling,
                                 ),
                               ),
                             ),

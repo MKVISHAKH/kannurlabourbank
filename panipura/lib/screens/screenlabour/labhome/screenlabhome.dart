@@ -90,6 +90,7 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
                 title: Text(
                   AppLocalizations.of(context)!.labdet,
                   style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling
                 ),
                 backgroundColor: Appcolors.white,
                 shape: const RoundedRectangleBorder(
@@ -125,7 +126,8 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
                                   padding: const EdgeInsets.all(25.0),
                                   child: Text(
                                       "${AppLocalizations.of(context)!.wel}, $name,",
-                                      style: kbodyfont),
+                                      style: kbodyfont,
+                                      textScaler: TextScaler.noScaling),
                                 )
                               ],
                             ),
@@ -162,7 +164,8 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
             title: Center(
                 child: Text(AppLocalizations.of(context)!.signout,
                     style: const TextStyle(
-                        color: Color.fromARGB(255, 101, 47, 248)))),
+                        color: Color.fromARGB(255, 101, 47, 248)),
+                        textScaler: TextScaler.noScaling)),
             actions: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -170,7 +173,8 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
                 ),
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(AppLocalizations.of(context)!.no,
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(color: Colors.white),
+                    textScaler: TextScaler.noScaling),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -178,7 +182,8 @@ class _ScreenlabhomeState extends State<Screenlabhome> {
                 ),
                 onPressed: () => signout(context),
                 child: Text(AppLocalizations.of(context)!.yes,
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(color: Colors.white),
+                    textScaler: TextScaler.noScaling),
               ),
             ],
           ));

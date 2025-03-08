@@ -1,4 +1,3 @@
-
 import 'package:intl/intl.dart';
 import 'package:panipura/core/hooks/hook.dart';
 import 'package:panipura/l10n/l10n.dart';
@@ -70,21 +69,22 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
 
     await Labempfn.instance.refreshRateUI(
-        getratereq,context); // Labempfn.instance.getrateskill(getratereq);
+        getratereq, context); // Labempfn.instance.getrateskill(getratereq);
   }
+
   Future<bool?> popscreen(BuildContext context) async {
-   Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => Screenviewprofile(
-                                isSearchnull: widget.isSearchnull,
-                                userid: widget.userid,
-                                name: widget.name,
-                                occupationid: widget.occupationid,
-                                mobile: widget.mobile,
-                                localecode: langcode,
-                              ),
-                            ),
-                          );
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => Screenviewprofile(
+          isSearchnull: widget.isSearchnull,
+          userid: widget.userid,
+          name: widget.name,
+          occupationid: widget.occupationid,
+          mobile: widget.mobile,
+          localecode: langcode,
+        ),
+      ),
+    );
     return true;
   }
 
@@ -95,7 +95,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
     return Stack(
       children: [
         const Screensbackground(),
-       PopScope(
+        PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
             if (!didPop) {
@@ -163,11 +163,10 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                       Container(
                           width: double.infinity,
                           //height: 180,
-                          
+
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +204,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                             255, 158, 89, 248),
                                         borderRadius: BorderRadius.circular(8)),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         ValueListenableBuilder(
                                             valueListenable: Labempfn.instance
@@ -213,7 +213,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                             builder: (BuildContext context,
                                                 String? value, _) {
                                               return Text(
-                                                value??'0',
+                                                value ?? '0',
                                                 style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14),
@@ -235,8 +235,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                     showratingpopup(context);
                                   },
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 158, 89, 248),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 158, 89, 248),
                                       fixedSize: const Size(160, 40),
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -506,9 +506,9 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
                                 rating: rating,
                                 skillId: widget.skillid,
                                 comments: comments);
-                          if (!context.mounted) return ;
+                            if (!context.mounted) return;
 
-                            buildrateskill(ratingreq,context);
+                            buildrateskill(ratingreq, context);
                             //Labempfn.instance.rateskill(ratingreq,isSearchnullval,nameval,occupationId,mobileno,wrkname,context);
                           },
                           child: Text(AppLocalizations.of(context)!.sub,
@@ -522,12 +522,12 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         });
   }
 
-  Future buildrateskill(Ratingreqmdl value,BuildContext context) async {
+  Future buildrateskill(Ratingreqmdl value, BuildContext context) async {
     final rateskillrslt = await Labourdata().rateskill(value);
     if (rateskillrslt == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      }else if (rateskillrslt.statusCode == 200) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (rateskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(rateskillrslt.data);
 
       final registerval =
@@ -538,11 +538,11 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         final message = registerval.message;
         final getratereq =
             Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
 
-        Labempfn.instance.refreshRateUI(getratereq,context);
-        
-        if (!context.mounted) return ;
+        Labempfn.instance.refreshRateUI(getratereq, context);
+
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
 
         Navigator.of(context).pushReplacement(
@@ -561,25 +561,25 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
         );
       } else {
         final message = registerval.message;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
 
         await showDialogError(context, message);
       }
-    }else if (rateskillrslt.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+    } else if (rateskillrslt.statusCode == 500) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (rateskillrslt.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (rateskillrslt.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 
   @override
@@ -598,7 +598,7 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
               actions: [
                 ElevatedButton(
                     onPressed: () {
-        if (!context.mounted) return ;
+                      if (!context.mounted) return;
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (ctx) => ScreenLabRating(
@@ -675,8 +675,8 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
 
     log('$deleteresp');
     if (deleteresp == null) {
-          if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
     } else if (deleteresp.statusCode == 200) {
       final resultAsjson = jsonDecode(deleteresp.data);
       final searchval =
@@ -684,15 +684,15 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
       final message = searchval.message;
       final status = searchval.success;
       if (status == true) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
         final getratereq =
             Getskillratereq.req(userId: widget.userid, skillId: widget.skillid);
-        await Labempfn.instance.refreshRateUI(getratereq,context);
-        if (!context.mounted) return ;
+        await Labempfn.instance.refreshRateUI(getratereq, context);
+        if (!context.mounted) return;
 
-        Labempfn.instance.refreshRateUI(getratereq,context);
-        if (!context.mounted) return ;
+        Labempfn.instance.refreshRateUI(getratereq, context);
+        if (!context.mounted) return;
 
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -709,8 +709,9 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           ),
         );
       } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, message ?? "something went wrong");
+        if (!context.mounted) return;
+        CommonFun.instance
+            .showApierror(context, message ?? "something went wrong");
 
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -727,11 +728,10 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           ),
         );
       }
-    } 
-    else if (deleteresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
-        Navigator.of(context).push(
+    } else if (deleteresp.statusCode == 500) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => ScreenLabRating(
             isSearchnull: isSearchnullval,
@@ -745,11 +745,11 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           ),
         ),
       );
-        // showLoginerror(context, 3);
-      } else if (deleteresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
-        Navigator.of(context).push(
+      // showLoginerror(context, 3);
+    } else if (deleteresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => ScreenLabRating(
             isSearchnull: isSearchnullval,
@@ -763,12 +763,12 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           ),
         ),
       );
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-        Navigator.of(context).push(
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => ScreenLabRating(
             isSearchnull: isSearchnullval,
@@ -782,6 +782,6 @@ class _ScreenLabRatingState extends State<ScreenLabRating> {
           ),
         ),
       );
-      }
+    }
   }
 }

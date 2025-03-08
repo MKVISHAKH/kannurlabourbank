@@ -1,4 +1,3 @@
-
 import '../../core/hooks/hook.dart';
 
 class ScreensplashTwo extends StatefulWidget {

@@ -1,5 +1,3 @@
-
-
 import '../../core/hooks/hook.dart';
 
 class BackgroundImage extends StatelessWidget {

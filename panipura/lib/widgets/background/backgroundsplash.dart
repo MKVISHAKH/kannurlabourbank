@@ -1,5 +1,3 @@
-
-
 import 'package:panipura/core/hooks/hook.dart';
 
 class Backgroundsplash extends StatelessWidget {

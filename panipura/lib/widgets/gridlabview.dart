@@ -4,7 +4,6 @@ import 'package:panipura/core/hooks/hook.dart';
 // import 'package:panipura/popup/edithmtwnpopup/edithmtwnpop.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class Gridlabview extends StatefulWidget {
   const Gridlabview({
     super.key,
@@ -95,6 +94,7 @@ class _GridlabviewState extends State<Gridlabview> {
                 Text(
                   AppLocalizations.of(context)!.viewpro,
                   style: kbodyfont,
+                  textScaler: TextScaler.noScaling,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -151,6 +151,8 @@ class _GridlabviewState extends State<Gridlabview> {
                   AppLocalizations.of(context)!.addskill,
                   style: kbodyfont,
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
+
                 ),
               ],
             ),
@@ -191,6 +193,8 @@ class _GridlabviewState extends State<Gridlabview> {
                   AppLocalizations.of(context)!.todolist,
                   style: kbodyfont,
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
+
                 ),
               ],
             ),
@@ -231,6 +235,8 @@ class _GridlabviewState extends State<Gridlabview> {
                   AppLocalizations.of(context)!.rate,
                   style: kbodyfont,
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
+
                 ),
               ],
             ),
@@ -245,9 +251,9 @@ class _GridlabviewState extends State<Gridlabview> {
     final usrId = value!.userid;
     final addtodoresp = await Labourdata().gettodolist(usrId);
     if (addtodoresp == null) {
-        if (!context.mounted) return [];
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } else if (addtodoresp.statusCode == 200) {
+      if (!context.mounted) return [];
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
           Addtodoresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -257,8 +263,8 @@ class _GridlabviewState extends State<Gridlabview> {
         message = registerval.message;
         final data = registerval.data;
         if (data == []) {
-              if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "No Events Found");
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(context, "No Events Found");
         } else {
           provider.removeallEvent();
           for (var model in data!) {
@@ -281,28 +287,27 @@ class _GridlabviewState extends State<Gridlabview> {
             provider.addEvent(event);
           }
         }
-            if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else {
         message = registerval.message;
-       if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       }
-    }else if (addtodoresp.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+    } else if (addtodoresp.statusCode == 500) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (addtodoresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (addtodoresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 }
-

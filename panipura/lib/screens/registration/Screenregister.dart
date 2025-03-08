@@ -3,9 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:panipura/l10n/l10n.dart';
 
-
 import '../../core/hooks/hook.dart';
-
 
 class ScreenRegister extends StatefulWidget {
   final int? category;
@@ -371,6 +369,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                           fontSize: L10n.getsignupFontSize(locale.languageCode),
                           color: const Color.fromARGB(255, 158, 89, 248),
                         ),
+                        textScaler: TextScaler.noScaling,
+
                       ),
                     ),
                   ),
@@ -385,6 +385,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                           fontSize: L10n.getbuttonFontSize(locale.languageCode),
                           color: const Color.fromARGB(255, 47, 3, 100),
                         ),
+                  textScaler: TextScaler.noScaling,
+
                       ),
                     ),
                   ),
@@ -709,6 +711,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               padding:
                   const EdgeInsets.symmetric(vertical: 0.0, horizontal: 50.0),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 //onSaved: (newValue) =>sex=newValue,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
@@ -787,6 +790,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
                 icon: const Icon(
@@ -959,6 +963,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               padding:
                   const EdgeInsets.symmetric(vertical: 0.0, horizontal: 50.0),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
                 icon: const Icon(
@@ -1044,6 +1049,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
                 icon: const Icon(
@@ -1133,7 +1139,12 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _dobcontroller,
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType
+                        .text, // Switch to "text" to allow "/" character
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[0-9/]')), // Allow numbers and "/"
+                    ],
                     style: const TextStyle(color: Colors.black),
 
                     onSaved: (newValue) => dob = newValue,
@@ -1317,6 +1328,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                       style: TextStyle(
                           color: Color.fromARGB(255, 101, 47, 248),
                           fontSize: 17),
+                  textScaler: TextScaler.noScaling,
+                          
                     ),
                   ),
                   focusedBorder: const OutlineInputBorder(
@@ -1508,6 +1521,21 @@ class _ScreenRegisterState extends State<ScreenRegister> {
 
           buildTandC(context),
 
+          const SizedBox(height: 10),
+
+          Consumer<LoadingProvider>(
+                        builder: (context, loadingProvider, child) {
+                        return loadingProvider.isLoading
+                              ? const Center(
+                              child: CircularProgressIndicator(
+                              valueColor:
+                              AlwaysStoppedAnimation<Color>(
+                              Color.fromARGB(255, 101, 47, 248),
+                              ),
+                              ),
+                            )
+                            : const SizedBox.shrink();
+                            }),
           /* Signup Button */
           Padding(
             padding:
@@ -1521,7 +1549,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                     if (value == true) {
                       await buildcreatelabour(context);
                     } else {
-                    if (!context.mounted) return;
+                      if (!context.mounted) return;
 
                       await showDialogcheckbox(context);
                     }
@@ -1545,6 +1573,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
+
                 )),
           ),
           /* ************* */
@@ -1559,6 +1589,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                   child: Text(
                     AppLocalizations.of(context)!.alreadyac,
                     style: kBodyText,
+                  textScaler: TextScaler.noScaling,
+
                   ),
                 ),
                 TextButton(
@@ -1569,6 +1601,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                       fontSize: 20,
                       color: Appcolors.labelclr,
                     ),
+                  textScaler: TextScaler.noScaling,
+
                   ),
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
@@ -1623,6 +1657,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
         child: DropdownButtonFormField(
+                isExpanded: true,
           style: const TextStyle(color: Colors.black),
           dropdownColor: Colors.white,
           icon: const Icon(
@@ -1711,6 +1746,12 @@ class _ScreenRegisterState extends State<ScreenRegister> {
         const Duration(days: 365 * 100),
       ),
       lastDate: DateTime.now(),
+      keyboardType:
+          TextInputType.text, // Switch to "text" to allow "/" character
+      fieldHintText: 'dd/mm/yyyy',
+      locale: localecode,
+
+      // locale: localecode==const Locale('en')?const Locale('en', 'GB'):const Locale('ml', 'GB'),
     );
     if (selectedfromdatepick == null) {
       return;
@@ -1718,10 +1759,14 @@ class _ScreenRegisterState extends State<ScreenRegister> {
       log(selectedfromdatepick.toString());
       setState(() {
         selectedDob = selectedfromdatepick;
-        var date =
-            "${selectedfromdatepick.toLocal().day}-${selectedfromdatepick.toLocal().month}-${selectedfromdatepick.toLocal().year}";
-        _dobcontroller.text = date;
-        log(date);
+        var formattedDate =
+            DateFormat('dd/MM/yyyy').format(selectedfromdatepick);
+
+        _dobcontroller.text = formattedDate;
+        // var date =
+        //     "${selectedfromdatepick.toLocal().day}-${selectedfromdatepick.toLocal().month}-${selectedfromdatepick.toLocal().year}";
+        // _dobcontroller.text = date;
+        log(formattedDate);
       });
     }
   }
@@ -1729,6 +1774,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
 
   /* register category function */
   Future buildcreatelabour(BuildContext context) async {
+    final loadingProvider=context.read<LoadingProvider>();
+    loadingProvider.toggleLoading();
     final name = _namecontroller.text;
     final address = _addresscontroller.text;
     final place = _placecontroller.text;
@@ -1740,7 +1787,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
     final password = _passwordcontroller.text;
     final cnfrmpswrd = _cnfrmpasswordcontroller.text;
 
-    DateTime dobdt = DateFormat("dd-MM-yyyy").parse(dob);
+    DateTime dobdt = DateFormat("dd/MM/yyyy").parse(dob);
     DateFormat dateFormat1 = DateFormat("yyyy-MM-dd");
     String birthdt = dateFormat1.format(dobdt);
     if (adhaarno.isEmpty) {
@@ -1769,19 +1816,20 @@ class _ScreenRegisterState extends State<ScreenRegister> {
 
     if (widget.category == 1) {
       final createlabrespval = await Labourdata().createlabour(createreq);
+    loadingProvider.toggleLoading();
+
       if (createlabrespval == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
-      } 
-      else if (createlabrespval.statusCode == 200) {
+      } else if (createlabrespval.statusCode == 200) {
         final resultAsjson = jsonDecode(createlabrespval.data);
-        if (!context.mounted) return ;
-        buildlabour(resultAsjson,context);
+        if (!context.mounted) return;
+        buildlabour(resultAsjson, context);
       } else if (createlabrespval.statusCode == 404) {
         if (!context.mounted) return;
 
         await showDialogError(context);
-      }else if (createlabrespval.statusCode == 500) {
+      } else if (createlabrespval.statusCode == 500) {
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
@@ -1791,27 +1839,28 @@ class _ScreenRegisterState extends State<ScreenRegister> {
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
-      }else {
+      } else {
         if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     } else {
       final createlabrespval = await Labourdata().createemp(createreq);
-      if (createlabrespval == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } 
-      else if (createlabrespval.statusCode == 200) {
-        final resultAsjson = jsonDecode(createlabrespval.data);
-        if (!context.mounted) return ;
+    loadingProvider.toggleLoading();
 
-        buildlabour(resultAsjson,context);
+      if (createlabrespval == null) {
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, "Something went wrong");
+      } else if (createlabrespval.statusCode == 200) {
+        final resultAsjson = jsonDecode(createlabrespval.data);
+        if (!context.mounted) return;
+
+        buildlabour(resultAsjson, context);
       } else if (createlabrespval.statusCode == 404) {
         if (!context.mounted) return;
 
         await showDialogError(context);
-      }else if (createlabrespval.statusCode == 500) {
+      } else if (createlabrespval.statusCode == 500) {
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
@@ -1821,18 +1870,17 @@ class _ScreenRegisterState extends State<ScreenRegister> {
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
-      }else {
+      } else {
         if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     }
-
   }
 
   /* ************************************* */
 
-  Future buildlabour(dynamic createusrvalue,BuildContext context) async {
+  Future buildlabour(dynamic createusrvalue, BuildContext context) async {
     final address = _addresscontroller.text;
     final place = _placecontroller.text;
     final post = _postcontroller.text;
@@ -1850,7 +1898,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
         Createlabresp.fromJson(createusrvalue as Map<String, dynamic>);
     status = registerval.success;
     message = registerval.message;
-    DateTime dobdt = DateFormat("dd-MM-yyyy").parse(dob);
+    DateTime dobdt = DateFormat("dd/MM/yyyy").parse(dob);
     DateFormat dateFormat1 = DateFormat("yyyy-MM-dd");
     String birthdt = dateFormat1.format(dobdt);
     if (status == true) {
@@ -1892,11 +1940,11 @@ class _ScreenRegisterState extends State<ScreenRegister> {
       /* ************* */
 
       message = registerval.message;
-        if (!context.mounted) return ;
+      if (!context.mounted) return;
 
       await showDialogsuccess(context, mobileNo, catval);
     } else {
-        if (!context.mounted) return ;
+      if (!context.mounted) return;
       await showDialogfail(context, message);
     }
   }
@@ -1910,7 +1958,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                   title: Text(AppLocalizations.of(context)!.vrfyotp,
                       style: const TextStyle(
                           color: Color.fromARGB(255, 2, 129, 6),
-                          fontFamily: 'RobotoSerif_28pt-Medium')),
+                          fontFamily: 'RobotoSerif_28pt-Medium'),
+                          textScaler: TextScaler.noScaling,),
                   actions: [
                     ElevatedButton(
                         onPressed: () {
@@ -1925,14 +1974,14 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                             ),
                           );
                         },
-                        child: const Center(child: Text('OK'))),
+                        child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
                   ]));
 
   Future showDialogfail(BuildContext? context, String? message) async => showDialog(
       barrierDismissible: false,
       context: context!,
       builder: (context) => AlertDialog(
-              title: Text(message!),
+              title: Text(message!,textScaler: TextScaler.noScaling,),
               // const Text(
               //   "Already Registered MobileNo \n Please Enter valid MobileNo",
               //   style:
@@ -1950,7 +1999,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                         //       ),
                         //     ),
                         Navigator.of(context).pop(),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 
   Future showDialogError(BuildContext? context) async => showDialog(
@@ -1960,7 +2009,9 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               title: const Text('No Data Found',
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
-                      fontFamily: 'RobotoSerif_28pt-Medium')),
+                      fontFamily: 'RobotoSerif_28pt-Medium'),
+                  textScaler: TextScaler.noScaling,
+                      ),
               actions: [
                 ElevatedButton(
                     onPressed: () =>
@@ -1972,7 +2023,7 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                         //       ),
                         //     ),
                         Navigator.of(context).pop(),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 
   Widget buildTandC(BuildContext context) {
@@ -2020,6 +2071,8 @@ class _ScreenRegisterState extends State<ScreenRegister> {
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600),
+                  textScaler: TextScaler.noScaling,
+
                 ))
               ],
             ),
@@ -2033,12 +2086,16 @@ class _ScreenRegisterState extends State<ScreenRegister> {
               title: Text(AppLocalizations.of(context)!.readtc,
                   style: const TextStyle(
                       color: Colors.blue,
-                      fontFamily: 'RobotoSerif_28pt-Medium')),
+                      fontFamily: 'RobotoSerif_28pt-Medium'),
+                  textScaler: TextScaler.noScaling,
+                      ),
               actions: [
                 ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',
+                  textScaler: TextScaler.noScaling,
+                    ))),
               ]));
 }

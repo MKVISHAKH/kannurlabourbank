@@ -105,19 +105,19 @@ class EventViewingPage extends StatelessWidget {
               final todoid = event.todolistId;
               final deletereq =
                   Deletetodoreq(userId: usrId, todolistId: todoid);
-        if (!context.mounted) return ;
-              builddeletetodo(deletereq,context);
+              if (!context.mounted) return;
+              builddeletetodo(deletereq, context);
               provider.deleteEvent(event);
               Navigator.of(scaffoldKeys.currentContext!).pop();
             })
       ];
 
-  Future builddeletetodo(Deletetodoreq deleteval,BuildContext context) async {
+  Future builddeletetodo(Deletetodoreq deleteval, BuildContext context) async {
     final addtodoresp = await Labourdata().deletetodolist(deleteval);
     if (addtodoresp == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      }  else if (addtodoresp.statusCode == 200) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (addtodoresp.statusCode == 200) {
       final resultAsjson = jsonDecode(addtodoresp.data);
       final registerval =
           Addtodoresp.fromJson(resultAsjson as Map<String, dynamic>);
@@ -125,28 +125,28 @@ class EventViewingPage extends StatelessWidget {
       if (status == true) {
         final message = registerval.message;
 
-            if (!context.mounted) return;
-        CommonFun.instance.showApierror(context,message);
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, message);
       } else {
         final message = registerval.message;
 
-            if (!context.mounted) return;
-        CommonFun.instance.showApierror(context,message);
+        if (!context.mounted) return;
+        CommonFun.instance.showApierror(context, message);
       }
     } else if (addtodoresp.statusCode == 500) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (addtodoresp.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (addtodoresp.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 }

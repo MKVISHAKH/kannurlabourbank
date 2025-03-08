@@ -114,6 +114,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                       ? AppLocalizations.of(context)!.buttonlabour
                       : AppLocalizations.of(context)!.buttonemployer,
                   style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
                 ),
                 backgroundColor: Appcolors.white,
                 shape: const RoundedRectangleBorder(
@@ -154,6 +155,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                         AppLocalizations.of(context)!.loginwith,
                         style: kBodyText,
                         textAlign: TextAlign.center,
+                        textScaler: TextScaler.noScaling,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -166,6 +168,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                           color: Colors.black,
                         ),
                         textAlign: TextAlign.center,
+                        textScaler: TextScaler.noScaling,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -197,7 +200,8 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                               style: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 101, 47, 248),
-                                                  fontWeight: FontWeight.bold)),
+                                                  fontWeight: FontWeight.bold),
+                                                  textScaler: TextScaler.noScaling,),
                                         ))),
                                 Flexible(
                                   flex: 5,
@@ -295,7 +299,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                   labelText:
                                       AppLocalizations.of(context)!.passwrd,
                                   labelStyle: const TextStyle(
-                                      color: Color.fromARGB(255, 101, 47, 248)),
+                                      color: Color.fromARGB(255, 101, 47, 248),),
                                   prefixIcon: const Padding(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 20),
@@ -352,6 +356,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                   fontSize: 16,
                                   color: Color.fromARGB(255, 101, 47, 248),
                                 ),
+                                textScaler: TextScaler.noScaling,
                               ),
                               onPressed: () {
                                 if (mobileNo == null) {
@@ -366,29 +371,69 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                 } else {
                                   final otpreq =
                                       Otprsndreq.req(mobile: mobileNo);
-                                  buildotp(otpreq,context);
-                                  
+                                  buildotp(otpreq, context);
                                 }
 
                                 //Navigator.push(context,Approutes().forgotpswrdScreen);
                               },
                             ),
                           ),
+                        const SizedBox(height: 10),
+                        Consumer<LoadingProvider>(
+                        builder: (context, loadingProvider, child) {
+                        return loadingProvider.isLoading
+                              ? const Center(
+                              child: CircularProgressIndicator(
+                              valueColor:
+                              AlwaysStoppedAnimation<Color>(
+                              Color.fromARGB(255, 101, 47, 248),
+                              ),
+                              ),
+                            )
+                            : const SizedBox.shrink();
+                            }),
                           const SizedBox(height: 10),
-                          Center(
-                              child: FormHelper.submitButton(
-                                  AppLocalizations.of(context)!.go, () async {
-                            if (_formkey1.currentState!.validate()) {
-                              //goto otp screen
-                              await buildloginUser(context);
-                            }
+                          // Center(
+                          //     child: FormHelper.submitButton(
+                          //         AppLocalizations.of(context)!.go, () async {
+                          //   if (_formkey1.currentState!.validate()) {
+                          //     //goto otp screen
+                          //     await buildloginUser(context);
+                          //   }
+                          // },
+                          //         borderColor:
+                          //             const Color.fromARGB(255, 158, 89, 248),
+                          //         btnColor:
+                          //             const Color.fromARGB(255, 158, 89, 248),
+                          //         txtColor: Colors.white,
+                          //         borderRadius: 20)),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () async{
+                           if (_formkey1.currentState!.validate()) {
+                                //goto otp screen
+                                await buildloginUser(context);
+                              }
                           },
-                                  borderColor:
-                                      const Color.fromARGB(255, 158, 89, 248),
-                                  btnColor:
-                                      const Color.fromARGB(255, 158, 89, 248),
-                                  txtColor: Colors.white,
-                                  borderRadius: 20)),
+                          style: ElevatedButton.styleFrom(
+                            // side: const BorderSide(
+                            //   width: 3.0,
+                            //   color: Appcolors.labelclr,
+                            // ),
+                            backgroundColor: Appcolors.magenta,
+                            fixedSize: const Size(150, 40),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                          ),
+                          child: Center(
+                              child: Text(
+                                  AppLocalizations.of(context)!.go,
+                                  textAlign: TextAlign.center,
+                                  style: kButtonText,
+                                  textScaler: TextScaler.noScaling,)),
+                        ),
+                      ),
+                     const SizedBox(height: 10,),
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: Column(
@@ -402,6 +447,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                       fontSize: 16,
                                       color: Color.fromARGB(255, 101, 47, 248),
                                     ),
+                                    textScaler: TextScaler.noScaling,
                                   ),
                                 ),
                                 TextButton(
@@ -412,6 +458,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                                       fontSize: 18,
                                       color: Color.fromARGB(255, 101, 47, 248),
                                     ),
+                                    textScaler: TextScaler.noScaling,
                                   ),
                                   onPressed: () {
                                     if (widget.category == lab) {
@@ -458,11 +505,14 @@ class _ScreenLoginState extends State<ScreenLogin> {
   }
 
   Future buildloginUser(BuildContext context) async {
+    final loadingProvider=context.read<LoadingProvider>();
+    loadingProvider.toggleLoading();
     final mobileNo = _mobilenocontroller.text;
     final passwrd = _passwordcontroller.text;
 
     final logreq = Loginreq.create(mobile: mobileNo, password: passwrd);
-
+    loadingProvider.toggleLoading();
+    
     if (widget.category == 1) {
       final logresp = await Labourdata().login(logreq);
       if (logresp == null) {
@@ -475,7 +525,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
       } else if (logresp.statusCode == 404) {
         await showLoginerror(_scaffoldKey.currentContext);
         // await showDialoglogin(_scaffoldKey.currentContext);
-      }else if (logresp.statusCode == 500) {
+      } else if (logresp.statusCode == 500) {
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
@@ -495,7 +545,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
       if (logresp == null) {
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, "Something went wrong");
-      }else if (logresp.statusCode == 200) {
+      } else if (logresp.statusCode == 200) {
         final resultAsjson = jsonDecode(logresp.data);
         if (!context.mounted) return;
         buildloginlab(resultAsjson, context);
@@ -539,7 +589,6 @@ class _ScreenLoginState extends State<ScreenLogin> {
     }
     status = loginval.success;
     if (status == true) {
-      
       final userId = widget.category == 1
           ? loginval.data!.userId
           : loginval.data!.employerId;
@@ -683,9 +732,8 @@ class _ScreenLoginState extends State<ScreenLogin> {
               builder: (ctx) => const Screenlabhome(),
             ),
           );
-          
-        CommonFun.instance.showApierror(context, message);
-              
+
+          CommonFun.instance.showApierror(context, message);
         } else {
           if (!context.mounted) return;
           Navigator.of(context).pushReplacement(
@@ -693,10 +741,9 @@ class _ScreenLoginState extends State<ScreenLogin> {
               builder: (ctx) => const ScreenEmployerHome(),
             ),
           );
-         
-              //if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, message);
-              
+
+          //if (!context.mounted) return ;
+          CommonFun.instance.showApierror(context, message);
         }
       } else {
         if (category == 1) {
@@ -716,9 +763,9 @@ class _ScreenLoginState extends State<ScreenLogin> {
       if (pendingreg == 'N') {
         await showOtppending(context, mobileNo, catval);
       } else if (error == 'Unauthorised') {
-        
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Username or Password incorrect");
+        if (!context.mounted) return;
+        CommonFun.instance
+            .showApierror(context, "Username or Password incorrect");
         // showSnackBar(context, text: "Username or Password incorrect");
       }
     }
@@ -732,7 +779,8 @@ class _ScreenLoginState extends State<ScreenLogin> {
                   title: const Text("Please verify OTP ",
                       style: TextStyle(
                           color: Color.fromARGB(255, 2, 129, 6),
-                          fontFamily: 'RobotoSerif_28pt-Medium')),
+                          fontFamily: 'RobotoSerif_28pt-Medium'),
+                          textScaler: TextScaler.noScaling,),
                   actions: [
                     ElevatedButton(
                         onPressed: () {
@@ -747,13 +795,13 @@ class _ScreenLoginState extends State<ScreenLogin> {
                             ),
                           );
                         },
-                        child: const Center(child: Text('OK'))),
+                        child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
                   ]));
 
   Future showLoginerror(BuildContext? context) async => showDialog(
       context: context!,
       builder: (context) => AlertDialog(
-              title: const Text('No Data Found',
+              title: const Text('No Data Found',textScaler: TextScaler.noScaling,
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -766,14 +814,14 @@ class _ScreenLoginState extends State<ScreenLogin> {
                             ),
                           ),
                         ),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 
   Future showDialoglabour(BuildContext? context) async => showDialog(
       context: context!,
       builder: (context) => AlertDialog(
               title: const Text(
-                  'Your Are Not Registered Labour.\n Please Register',
+                  'Your Are Not Registered Labour.\n Please Register',textScaler: TextScaler.noScaling,
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -786,14 +834,14 @@ class _ScreenLoginState extends State<ScreenLogin> {
                             ),
                           ),
                         ),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 
   Future showDialogemployer(BuildContext? context) async => showDialog(
       context: context!,
       builder: (context) => AlertDialog(
               title: const Text(
-                  'Your Are Not Registered Employer.\n Please Register',
+                  'Your Are Not Registered Employer.\n Please Register',textScaler: TextScaler.noScaling,
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
                       fontFamily: 'RobotoSerif_28pt-Medium')),
@@ -806,14 +854,14 @@ class _ScreenLoginState extends State<ScreenLogin> {
                             ),
                           ),
                         ),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 
-  Future buildotp(Otprsndreq value,BuildContext context) async {
+  Future buildotp(Otprsndreq value, BuildContext context) async {
     if (widget.category == 1) {
       final otpreq = await Labourdata().forgotpswrd(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
@@ -822,11 +870,11 @@ class _ScreenLoginState extends State<ScreenLogin> {
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
         if (message == null) {
-              if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
         } else {
-          if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, message);
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(context, message);
           //if (!context.mounted) return;
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -837,27 +885,27 @@ class _ScreenLoginState extends State<ScreenLogin> {
           );
         }
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     } else {
       final otpreq = await Labourdata().empforgotpswrd(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
@@ -867,11 +915,11 @@ class _ScreenLoginState extends State<ScreenLogin> {
         final message = otpresp.success;
         //final error = otpresp.error;
         if (message == null) {
-              if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(context, "Enter Valid Mobile Number");
         } else {
-          if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, message);
+          if (!context.mounted) return;
+          CommonFun.instance.showApierror(context, message);
           Navigator.of(context).push(
             MaterialPageRoute(
                 builder: (context) => ScreenForgotpswrd(
@@ -881,24 +929,23 @@ class _ScreenLoginState extends State<ScreenLogin> {
           );
         }
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     }
   }
 }
-

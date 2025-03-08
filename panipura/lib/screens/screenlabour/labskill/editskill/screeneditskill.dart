@@ -138,6 +138,7 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
           }).forEach((dropDownItem) {
             loclbdslist.add(dropDownItem.value!);
           });
+          loclbdslist.insert(0, AppLocalizations.of(context)!.everywhere,); 
           setState(() {});
         });
       }
@@ -564,8 +565,20 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
                   ),
                   options: loclbdslist,
                   onChanged: (newvalue) async {
+                    // setState(() {
+                    //   dropdownpanchayathval = newvalue;
+                    //   log('$dropdownpanchayathval');
+                    // });
                     setState(() {
-                      dropdownpanchayathval = newvalue;
+                      if (newvalue.contains(AppLocalizations.of(context)!.everywhere)) {
+                        // If "Everywhere" is selected, disable all other options
+                        dropdownpanchayathval = [AppLocalizations.of(context)!.everywhere];
+                      } else {
+                        // Ensure "Everywhere" is not selected if other values are chosen
+                        dropdownpanchayathval = newvalue.where(
+                          (element) => element != AppLocalizations.of(context)!.everywhere,
+                        ).toList();
+                      }
                       log('$dropdownpanchayathval');
                     });
                   },
@@ -800,7 +813,20 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
             ),
           ),
           /* ************************* */
-
+          const SizedBox(height: 10),
+          Consumer<LoadingProvider>(
+          builder: (context, loadingProvider, child) {
+          return loadingProvider.isLoading
+                ? const Center(
+                child: CircularProgressIndicator(
+                valueColor:
+                AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 101, 47, 248),
+                ),
+                ),
+              )
+              : const SizedBox.shrink();
+              }),
           const SizedBox(
             height: 20,
           ),
@@ -848,6 +874,8 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
   }
 
   Future editLabourSkill(BuildContext context) async {
+    final loadingProvider=context.read<LoadingProvider>();
+    loadingProvider.toggleLoading();
     final wages = _remunerationcontroller.text;
     final otherdmnd = _otherdmndcontroller.text;
     final person1 = _referenceperson1controller.text;
@@ -892,12 +920,13 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
     );
 
     final editskillrslt = await Labourdata().editskill(skillreq, langcode);
+    loadingProvider.toggleLoading();
 
     log('$editskillrslt');
     if (editskillrslt == null) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      }  else if (editskillrslt.statusCode == 200) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (editskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(editskillrslt.data);
 
       final registerval =
@@ -912,21 +941,21 @@ class _ScreenLabSkillState extends State<ScreenEditSkill> {
       }
     } else if (editskillrslt.statusCode == 404) {
       await showDialogError(_scaffoldKey.currentContext);
-    }else if (editskillrslt.statusCode == 500) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+    } else if (editskillrslt.statusCode == 500) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (editskillrslt.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (editskillrslt.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 
   Future showDialogsuccess(BuildContext? context, String? message) async =>

@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'package:dio/dio.dart'as dio;
+import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import 'package:panipura/core/hooks/hook.dart';
-
+import 'package:panipura/model/versionreq/versionreq.dart';
 
 abstract class Apicalls {
   Future<dio.Response<dynamic>?> createlabour(Createlabreq value);
@@ -27,7 +27,8 @@ abstract class Apicalls {
 
   Future<dio.Response<dynamic>?> addskill(Addrefskillreq value, String? locale);
 
-  Future<dio.Response<dynamic>?> editskill(Addrefskillreq value, String? locale);
+  Future<dio.Response<dynamic>?> editskill(
+      Addrefskillreq value, String? locale);
 
   Future<dio.Response<dynamic>?> getskill(Getskillreq value);
 
@@ -55,7 +56,7 @@ abstract class Apicalls {
 
   Future<dio.Response<dynamic>?> empforgotpswrdvrfy(Rstpswrdvrfy value);
 
-  Future<dio.Response?> dwonloaddb(String dbname);
+  Future<dio.Response?> dwonloaddb(String dbname,Versionreq verdet);
 
   Future<dio.Response?> uploadimg(File? img, int? usrid, int typeid);
 
@@ -135,7 +136,7 @@ class Labourdata extends Apicalls {
         data: value.toJson(),
       );
       return result;
-    }on dio.DioException catch (ex) {
+    } on dio.DioException catch (ex) {
       // Check for timeout or other errors
       if (ex.type == DioExceptionType.connectionTimeout) {
         // Return a custom response or throw an exception with more details
@@ -168,7 +169,7 @@ class Labourdata extends Apicalls {
         data: value.toJson(),
       );
       return result;
-    }on dio.DioException catch (ex) {
+    } on dio.DioException catch (ex) {
       // Check for timeout or other errors
       if (ex.type == DioExceptionType.connectionTimeout) {
         // Return a custom response or throw an exception with more details
@@ -201,7 +202,7 @@ class Labourdata extends Apicalls {
         data: value.toJson(),
       );
       return result;
-    }on dio.DioException catch (ex) {
+    } on dio.DioException catch (ex) {
       // Check for timeout or other errors
       if (ex.type == DioExceptionType.connectionTimeout) {
         // Return a custom response or throw an exception with more details
@@ -365,7 +366,7 @@ class Labourdata extends Apicalls {
         data: value.toJson(),
       );
       return result;
-    }on dio.DioException catch (ex) {
+    } on dio.DioException catch (ex) {
       // Check for timeout or other errors
       if (ex.type == DioExceptionType.connectionTimeout) {
         // Return a custom response or throw an exception with more details
@@ -505,10 +506,13 @@ class Labourdata extends Apicalls {
   Future<dio.Response<dynamic>?> getskill(Getskillreq value) async {
     final usrid = value.userId;
     final localecd = value.locale;
+    final occupationid=value.occupationId;
     final userval = await Sharedata.instance.getdata();
     final token = userval!.token;
     try {
-      final result = await dioclient.post('${url.getskillUrl}/$usrid/$localecd',
+      //final result = await dioclient.post('${url.getskillUrl}/$usrid/$localecd',
+      final result = await dioclient.post('${url.getskill2Url}/$usrid/$occupationid/$localecd',
+
           data: value.toJson(),
           options: Options(responseType: ResponseType.plain, headers: {
             "Authorization": "Bearer $token",
@@ -619,7 +623,8 @@ class Labourdata extends Apicalls {
     final userval = await Sharedata.instance.getdata();
     final token = userval!.token;
     try {
-      final result = await dioclient.delete('${url.skilldeleteUrl}/$usrid/$skillid',
+      final result = await dioclient.delete(
+          '${url.skilldeleteUrl}/$usrid/$skillid',
           data: value.toJson(),
           options: Options(responseType: ResponseType.plain, headers: {
             "Authorization": "Bearer $token",
@@ -959,9 +964,10 @@ class Labourdata extends Apicalls {
   }
 
   @override
-  Future<dio.Response?> dwonloaddb(String dbname) async {
+  Future<dio.Response?> dwonloaddb(String dbname,Versionreq verdet) async {
     try {
       dio.Response result = await Dio().get(url.baseUrl + url.downloaddbUrl,
+          data: verdet.toJson(),
           options: Options(
               responseType: ResponseType.bytes,
               followRedirects: false,
@@ -1003,7 +1009,8 @@ class Labourdata extends Apicalls {
       if (img != null) {
         String fileName = img.path.split('/').last;
         dio.FormData formdata = dio.FormData.fromMap({
-          "file": await dio.MultipartFile.fromFile(img.path, filename: fileName),
+          "file":
+              await dio.MultipartFile.fromFile(img.path, filename: fileName),
           "user_id": usrid,
           "type_id": typeid
         });

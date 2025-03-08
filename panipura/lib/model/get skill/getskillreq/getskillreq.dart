@@ -10,9 +10,11 @@ class Getskillreq {
   String? token;
   @JsonKey(name: 'locale')
   String? locale;
+  @JsonKey(name: 'occupation_id')
+  int? occupationId;
 
   Getskillreq({this.userId, this.token, this.locale});
-  Getskillreq.req({required this.userId, this.token, this.locale});
+  Getskillreq.req({required this.userId, this.token, this.locale,this.occupationId});
 
   factory Getskillreq.fromJson(Map<String, dynamic> json) {
     return _$GetskillreqFromJson(json);

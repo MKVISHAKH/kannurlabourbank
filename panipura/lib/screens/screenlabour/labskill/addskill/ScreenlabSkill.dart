@@ -130,6 +130,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
           }).forEach((dropDownItem) {
             loclbdslist.add(dropDownItem.value!);
           });
+          loclbdslist.insert(0, AppLocalizations.of(context)!.everywhere,); 
           setState(() {});
         });
       }
@@ -203,6 +204,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 title: Text(
                   AppLocalizations.of(context)!.skill,
                   style: L10n.getappbarSize(locale.languageCode),
+                  textScaler: TextScaler.noScaling,
                 ),
                 backgroundColor: Colors.white,
                 shape: const RoundedRectangleBorder(
@@ -224,6 +226,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                         child: Text(
                           AppLocalizations.of(context)!.skillset,
                           style: L10n.getappbarSize(locale.languageCode),
+                          textScaler: TextScaler.noScaling,
                         ),
                       ),
                     ),
@@ -241,7 +244,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
       ],
     );
   }
-
   Widget skillSetForm() {
     final provider = Provider.of<LocaleProvider>(context);
     final locale = provider.locale;
@@ -302,10 +304,11 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   setState(() {
                     dropdowncategoryvalue = newvalue;
                   });
-                    if (!context.mounted) return;
+                  if (!context.mounted) return;
 
                   final categoryIdval = await LabourDb.instance
-                      .getOccupationsId(dropdowncategoryvalue, localecode,context);
+                      .getOccupationsId(
+                          dropdowncategoryvalue, localecode, context);
 
                   for (var map in categoryIdval) {
                     final catval = CategoryIdmodel.fromMap(map);
@@ -334,6 +337,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
                 icon: const Icon(
@@ -470,6 +474,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 horizontal: 50.0,
               ),
               child: DropdownButtonFormField(
+                isExpanded: true,
                 style: const TextStyle(color: Colors.black),
                 dropdownColor: Colors.white,
                 icon: const Icon(
@@ -569,6 +574,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                 AppLocalizations.of(context)!.willingwrk,
                 style: L10n.getappbarSize(locale.languageCode),
                 textAlign: TextAlign.center,
+                textScaler: TextScaler.noScaling,
               ),
             ),
           ),
@@ -591,7 +597,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   ),
                   borderRadius: const BorderRadius.all(Radius.circular(25)),
                 ),
-                child: DropDownMultiSelect(
+                child:  DropDownMultiSelect(
                   icon: const Icon(
                     Icons.arrow_drop_down,
                     color: Color.fromARGB(255, 101, 47, 248),
@@ -603,11 +609,24 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   ),
                   options: loclbdslist,
                   onChanged: (newvalue) async {
+                    // setState(() {
+                    //   dropdownpanchayathval = newvalue;
+                    //   log('$dropdownpanchayathval');
+                    // });
                     setState(() {
-                      dropdownpanchayathval = newvalue;
+                      if (newvalue.contains(AppLocalizations.of(context)!.everywhere)) {
+                        // If "Everywhere" is selected, disable all other options
+                        dropdownpanchayathval = [AppLocalizations.of(context)!.everywhere];
+                      } else {
+                        // Ensure "Everywhere" is not selected if other values are chosen
+                        dropdownpanchayathval = newvalue.where(
+                          (element) => element != AppLocalizations.of(context)!.everywhere,
+                        ).toList();
+                      }
                       log('$dropdownpanchayathval');
                     });
                   },
+                 
                   selectedValues: dropdownpanchayathval,
                 ),
               ),
@@ -700,6 +719,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                       style: TextStyle(
                           color: Color.fromARGB(255, 101, 47, 248),
                           fontSize: 17),
+                          textScaler: TextScaler.noScaling,
                     ),
                   ),
                   focusedBorder: const OutlineInputBorder(
@@ -822,6 +842,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                       style: TextStyle(
                           color: Color.fromARGB(255, 101, 47, 248),
                           fontSize: 17),
+                          textScaler: TextScaler.noScaling,
                     ),
                   ),
                   focusedBorder: const OutlineInputBorder(
@@ -853,7 +874,20 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
             ),
           ),
           /* ************************* */
-
+          const SizedBox(height: 10),
+          Consumer<LoadingProvider>(
+          builder: (context, loadingProvider, child) {
+          return loadingProvider.isLoading
+                ? const Center(
+                child: CircularProgressIndicator(
+                valueColor:
+                AlwaysStoppedAnimation<Color>(
+                Color.fromARGB(255, 101, 47, 248),
+                ),
+                ),
+              )
+              : const SizedBox.shrink();
+              }),
           const SizedBox(
             height: 20,
           ),
@@ -880,6 +914,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   AppLocalizations.of(context)!.skilladd,
                   style: L10n.getbuttonstyle(locale.languageCode),
                   textAlign: TextAlign.center,
+                  textScaler: TextScaler.noScaling,
                 )),
           ),
           // Center(
@@ -900,6 +935,8 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
   }
 
   Future buildlabourSkill(BuildContext context) async {
+    final loadingProvider=context.read<LoadingProvider>();
+    loadingProvider.toggleLoading();
     final wages = _remunerationcontroller.text;
     final otherdmnd = _otherdmndcontroller.text;
     final person1 = _referenceperson1controller.text;
@@ -943,11 +980,13 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
 
     final addskillrslt = await Labourdata().addskill(skillreq, langcode);
 
+    loadingProvider.toggleLoading();
+
     log('$addskillrslt');
     if (addskillrslt == null) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-      } else if (addskillrslt.statusCode == 200) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+    } else if (addskillrslt.statusCode == 200) {
       final resultAsjson = jsonDecode(addskillrslt.data);
 
       final registerval =
@@ -966,24 +1005,24 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
         await showDialogfail(context, message);
       }
     } else if (addskillrslt.statusCode == 404) {
-        if (!context.mounted) return;
+      if (!context.mounted) return;
 
       await showDialogError(context);
     } else if (addskillrslt.statusCode == 500) {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Sever Not Reachable");
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
-        // showLoginerror(context, 3);
-      } else if (addskillrslt.statusCode == 408) {
-        if (!context.mounted) return ;
-        CommonFun.instance.showApierror(context, "Connection time out");
+      // showLoginerror(context, 3);
+    } else if (addskillrslt.statusCode == 408) {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Connection time out");
 
-        //showLoginerror(context, 4);
-      } else {
-        if (!context.mounted) return;
-        CommonFun.instance.showApierror(context, "Something went wrong");
-        //showLoginerror(context, 5);
-      }
+      //showLoginerror(context, 4);
+    } else {
+      if (!context.mounted) return;
+      CommonFun.instance.showApierror(context, "Something went wrong");
+      //showLoginerror(context, 5);
+    }
   }
 
   Future showDialogsuccess(BuildContext? context, String? message) async =>
@@ -993,7 +1032,8 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   title: Text(AppLocalizations.of(context)!.skilladdsuc,
                       style: const TextStyle(
                           color: Color.fromARGB(255, 2, 129, 6),
-                          fontFamily: 'RobotoSerif_28pt-Medium')),
+                          fontFamily: 'RobotoSerif_28pt-Medium'),
+                          textScaler: TextScaler.noScaling,),
                   actions: [
                     ElevatedButton(
                         onPressed: () => Navigator.of(context).pushReplacement(
@@ -1004,7 +1044,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                                 ),
                               ),
                             ),
-                        child: const Center(child: Text('OK'))),
+                        child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
                   ]));
 
   Future showDialogfail(BuildContext? context, String? message) async =>
@@ -1014,7 +1054,8 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                   title: Text(message ?? "something went wrong",
                       style: const TextStyle(
                           color: Color.fromARGB(255, 241, 26, 10),
-                          fontFamily: 'RobotoSerif_28pt-Medium')),
+                          fontFamily: 'RobotoSerif_28pt-Medium'),
+                          textScaler: TextScaler.noScaling,),
                   actions: [
                     ElevatedButton(
                         onPressed: () {
@@ -1039,7 +1080,7 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                             );
                           }
                         },
-                        child: const Center(child: Text('OK'))),
+                        child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
                   ]));
 
   Future showDialogError(BuildContext? context) async => showDialog(
@@ -1048,7 +1089,8 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
               title: const Text('No Data Found',
                   style: TextStyle(
                       color: Color.fromARGB(255, 241, 26, 10),
-                      fontFamily: 'RobotoSerif_28pt-Medium')),
+                      fontFamily: 'RobotoSerif_28pt-Medium'),
+                      textScaler: TextScaler.noScaling,),
               actions: [
                 ElevatedButton(
                     onPressed: () => Navigator.of(context).pushReplacement(
@@ -1060,6 +1102,6 @@ class _ScreenLabSkillState extends State<ScreenLabSkill> {
                             ),
                           ),
                         ),
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',textScaler: TextScaler.noScaling,))),
               ]));
 }

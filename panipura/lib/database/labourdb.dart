@@ -1431,7 +1431,8 @@ class LabourDb implements LabourDbFunction {
 
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, msg);
-      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+      } else if (message == 'Unauthenticated' ||
+          occupationval.statusCode == 401) {
         if (!context.mounted) return [];
 
         //CommonFun.instance.signout(context);
@@ -1484,7 +1485,7 @@ class LabourDb implements LabourDbFunction {
         final occupationlist = loginval.data;
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, msg);
-        
+
         final matchingOccupation = occupationlist!.firstWhere(
           (datum) => locale == Locale('ml')
               ? datum.nameMl == name // Match Malayalam name
@@ -1492,7 +1493,6 @@ class LabourDb implements LabourDbFunction {
           // orElse: () => [], // Return null if no match
         );
 
-        
         return [
           {'occupation_id': matchingOccupation.occupationId}
         ];
@@ -1501,7 +1501,8 @@ class LabourDb implements LabourDbFunction {
 
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, msg);
-      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+      } else if (message == 'Unauthenticated' ||
+          occupationval.statusCode == 401) {
         if (!context.mounted) return [];
 
         //CommonFun.instance.signout(context);
@@ -1521,15 +1522,15 @@ class LabourDb implements LabourDbFunction {
         //showLoginerror(context, 5);
       }
     }
-      return [];
-    }
-    // if (locale == Locale('ml')) {
-    //   return await _db.rawQuery(
-    //       "SELECT occupation_id FROM occupations WHERE name_ml='$name'");
-    // } else {
-    //   return await _db
-    //       .rawQuery("SELECT occupation_id FROM occupations WHERE name='$name'");
-    // }
+    return [];
+  }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT occupation_id FROM occupations WHERE name_ml='$name'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT occupation_id FROM occupations WHERE name='$name'");
+  // }
 
   @override
   Future<List<Map<String, Object?>>> getOccupationsName(
@@ -1555,14 +1556,14 @@ class LabourDb implements LabourDbFunction {
         final occupationlist = loginval.data;
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, msg);
-        
+
         final matchingOccupation = occupationlist!.firstWhere(
           (datum) => datum.occupationId == id,
           //orElse: () => null,
         );
 
         final column = locale == Locale('ml') ? 'name_ml' : 'name';
-         return [
+        return [
           {
             column: locale == Locale('ml')
                 ? matchingOccupation.nameMl
@@ -1574,7 +1575,8 @@ class LabourDb implements LabourDbFunction {
 
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, msg);
-      } else if (message == 'Unauthenticated' || occupationval.statusCode == 401) {
+      } else if (message == 'Unauthenticated' ||
+          occupationval.statusCode == 401) {
         if (!context.mounted) return [];
 
         //CommonFun.instance.signout(context);
@@ -1594,16 +1596,15 @@ class LabourDb implements LabourDbFunction {
         //showLoginerror(context, 5);
       }
     }
-      return [];
-    }
-    // if (locale == Locale('ml')) {
-    //   return await _db.rawQuery(
-    //       "SELECT name_ml FROM occupations WHERE occupation_id='$id'");
-    // } else {
-    //   return await _db
-    //       .rawQuery("SELECT name FROM occupations WHERE occupation_id='$id'");
-    // }
+    return [];
   }
+  // if (locale == Locale('ml')) {
+  //   return await _db.rawQuery(
+  //       "SELECT name_ml FROM occupations WHERE occupation_id='$id'");
+  // } else {
+  //   return await _db
+  //       .rawQuery("SELECT name FROM occupations WHERE occupation_id='$id'");
+  // }
+}
 
-  /* ********************************************* */
-
+/* ********************************************* */

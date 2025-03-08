@@ -78,7 +78,8 @@ class ScreenHome extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 55),
                 child: Center(
                   child: Text(AppLocalizations.of(context)!.appname,
-                      style: const TextStyle(color: Colors.white)),
+                      style: const TextStyle(color: Colors.white),
+                      textScaler: TextScaler.noScaling,),
                 ),
               ),
               backgroundColor: Appcolors.labelclr,
@@ -112,10 +113,11 @@ class ScreenHome extends StatelessWidget {
                         child: Text(AppLocalizations.of(context)!.homeheading1,
                             style: TextStyle(
                                 fontFamily: 'RobotoCondensed',
-                                fontSize:
-                                    L10n.getHeadFontSize(locale.languageCode),
+                                fontSize:L10n.getHeadFontSize(locale.languageCode),
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 252, 32, 32))),
+                                color: const Color.fromARGB(255, 252, 32, 32),
+                                ),
+                                textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     SizedBox(
@@ -128,7 +130,8 @@ class ScreenHome extends StatelessWidget {
                               fontSize:
                                   L10n.getHeadFontSize(locale.languageCode),
                               color: const Color.fromARGB(255, 47, 3, 100),
-                            )),
+                            ),
+                            textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     SizedBox(
@@ -141,7 +144,8 @@ class ScreenHome extends StatelessWidget {
                               fontSize:
                                   L10n.getHeadFontSize(locale.languageCode),
                               color: const Color.fromARGB(255, 47, 3, 100),
-                            )),
+                            ),
+                            textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     SizedBox(
@@ -154,7 +158,8 @@ class ScreenHome extends StatelessWidget {
                               fontSize:
                                   L10n.getHeadFontSize(locale.languageCode),
                               color: const Color.fromARGB(255, 47, 3, 100),
-                            )),
+                            ),
+                            textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     SizedBox(
@@ -167,7 +172,8 @@ class ScreenHome extends StatelessWidget {
                               fontSize:
                                   L10n.getHeadFontSize(locale.languageCode),
                               color: const Color.fromARGB(255, 47, 3, 100),
-                            )),
+                            ),
+                            textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     SizedBox(
@@ -180,7 +186,8 @@ class ScreenHome extends StatelessWidget {
                               fontSize:
                                   L10n.getHeadFontSize(locale.languageCode),
                               color: const Color.fromARGB(255, 47, 3, 100),
-                            )),
+                            ),
+                            textScaler: TextScaler.noScaling,),
                       ),
                     ),
                     const SizedBox(
@@ -192,6 +199,7 @@ class ScreenHome extends StatelessWidget {
                         child: Text(
                           AppLocalizations.of(context)!.subhead1,
                           style: kscreenText,
+                          textScaler: TextScaler.noScaling,
                         ),
                       ),
                     ),
@@ -221,7 +229,8 @@ class ScreenHome extends StatelessWidget {
                             child: Text(
                                 AppLocalizations.of(context)!.buttonlabour,
                                 textAlign: TextAlign.center,
-                                style: kButtonText)),
+                                style: kButtonText,
+                                textScaler: TextScaler.noScaling,)),
                       ),
                     ),
 
@@ -234,6 +243,7 @@ class ScreenHome extends StatelessWidget {
                         child: Text(
                           AppLocalizations.of(context)!.subhead2,
                           style: kscreenText,
+                          textScaler: TextScaler.noScaling,
                         ),
                       ),
                     ),
@@ -263,7 +273,8 @@ class ScreenHome extends StatelessWidget {
                             child: Text(
                                 AppLocalizations.of(context)!.buttonemployer,
                                 textAlign: TextAlign.center,
-                                style: kButtonText)),
+                                style: kButtonText,
+                                textScaler: TextScaler.noScaling,)),
                       ),
                     ),
                   ],

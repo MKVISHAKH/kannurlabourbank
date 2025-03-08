@@ -26,15 +26,17 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
     final provider = Provider.of<LocaleProvider>(context, listen: false);
     localecode = provider.locale;
   }
- Future<bool?> popscreen(BuildContext context) async {
-  Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const ScreenEmployerHome(),
-                        ),
-                      );
-                    
+
+  Future<bool?> popscreen(BuildContext context) async {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const ScreenEmployerHome(),
+      ),
+    );
+
     return true;
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
@@ -42,14 +44,14 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
     return Stack(children: [
       const Screensbackground(),
       PopScope(
-          canPop: false,
-          onPopInvoked: (bool didPop) async {
-            if (!didPop) {
-              if (didPop) return;
-              await popscreen(context);
-            }
-            log('BackButton pressed!');
-          },
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (!didPop) {
+            if (didPop) return;
+            await popscreen(context);
+          }
+          log('BackButton pressed!');
+        },
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: PreferredSize(
@@ -86,7 +88,8 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
           extendBodyBehindAppBar: true,
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 15, horizontal: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -150,6 +153,7 @@ class _ScreenFilteredLabState extends State<ScreenFilteredLab> {
               final userid = val.userId;
               final occupationid = val.occupationId;
               final ratingval = val.rating;
+              //final sklid=val.skillId;
               //final occupationid=_value.occupationId;
               // final wrkname=_value.occupationname;
 

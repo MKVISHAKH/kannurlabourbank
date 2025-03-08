@@ -1,12 +1,16 @@
-
 import 'package:panipura/core/hooks/hook.dart';
 
 class LoadingProvider with ChangeNotifier {
-  bool _isloading = false;
-  bool get isLoading => _isloading;
+  bool isloading = false;
+  bool get isLoading => isloading;
 
-  void toggelLoading() {
-    _isloading = !_isloading;
+  void toggleLoading() {
+    isloading = !isloading;
+    notifyListeners();
+  }
+
+  void reset() {
+    isloading = false;
     notifyListeners();
   }
 }

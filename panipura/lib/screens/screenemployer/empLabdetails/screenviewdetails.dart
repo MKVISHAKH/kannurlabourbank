@@ -52,8 +52,8 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
       po.reset();
     });
     labname = widget.name!.toUpperCase();
-    Labempfn.instance.refreshskillUI(widget.userid, widget.localecode,context);
-    Labempfn.instance.viewprofile(widget.userid,context);
+    Labempfn.instance.refreshskillUI(widget.userid, widget.localecode, context,widget.occupationid);
+    Labempfn.instance.viewprofile(widget.userid, context);
   }
 
   Future callalertbox(BuildContext context) async => showDialog<bool>(
@@ -111,15 +111,16 @@ class _ScreenviewprofileState extends State<Screenviewprofile> {
             ],
           ));
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-Future<bool?> popscreen(BuildContext context) async {
-  Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => ScreenFilteredLab(
-                                isSearchnull: widget.isSearchnull),
-                          ),
-                        );
+  Future<bool?> popscreen(BuildContext context) async {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            ScreenFilteredLab(isSearchnull: widget.isSearchnull),
+      ),
+    );
     return true;
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<LocaleProvider>(context);
@@ -169,7 +170,7 @@ Future<bool?> popscreen(BuildContext context) async {
                           onTap: () {
                             var po = context.read<CallProvider>();
                             po.reset();
-          
+
                             callalertbox(context);
                           },
                           child: const Icon(Icons.call,
@@ -209,7 +210,7 @@ Future<bool?> popscreen(BuildContext context) async {
                             onPressed: () async {
                               var po = context.read<CallProvider>();
                               po.reset();
-          
+
                               callalertbox(context);
                             },
                             style: ElevatedButton.styleFrom(
@@ -222,8 +223,8 @@ Future<bool?> popscreen(BuildContext context) async {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(AppLocalizations.of(context)!.makecall,
-                                    style:
-                                        L10n.getbuttonstyle(locale.languageCode)),
+                                    style: L10n.getbuttonstyle(
+                                        locale.languageCode)),
                                 const Icon(Icons.call)
                               ],
                             )),

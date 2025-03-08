@@ -1,7 +1,4 @@
-
 import 'package:panipura/core/hooks/hook.dart';
-
-
 
 class EventProvider extends ChangeNotifier {
   final List<Event> _events = [];

@@ -501,7 +501,8 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
                     });
                     if (!context.mounted) return;
                     final occupationIdval = await LabourDb.instance
-                        .getOccupationsId(dropdowncategoryvalue, localecode,context);
+                        .getOccupationsId(
+                            dropdowncategoryvalue, localecode, context);
 
                     for (var map in occupationIdval) {
                       final catval = CategoryIdmodel.fromMap(map);
@@ -902,7 +903,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
     // final sharedprefs = await SharedPreferences.getInstance();
     // await sharedprefs.clear();
     await Sharedata.instance.cleardata();
-        if (!context.mounted) return ;
+    if (!context.mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (ctx1) => const ScreenLogin(category: emp)),
@@ -949,8 +950,7 @@ class _ScreenEmployerHomeState extends State<ScreenEmployerHome> {
       //token:token
     );
 
-    await Labempfn.instance
-        .getsearchdata(searchreq, context);
+    await Labempfn.instance.getsearchdata(searchreq, context);
   }
 
   /* ************************************* */

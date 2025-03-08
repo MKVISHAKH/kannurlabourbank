@@ -123,6 +123,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                               fontSize: size.height * 0.025,
                               color: Appcolors.magenta,
                               fontWeight: FontWeight.w700),
+                              textScaler: TextScaler.noScaling,
                         ),
                         SizedBox(
                           height: size.height * 0.02,
@@ -169,6 +170,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                   fontWeight: FontWeight.w700,
                                   color: Appcolors.magenta,
                                 ),
+                                textScaler: TextScaler.noScaling,
                               ),
                               Text(
                                 "+91-${widget.mobile}",
@@ -180,6 +182,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                   fontWeight: FontWeight.w700,
                                   color: Appcolors.magenta,
                                 ),
+                                textScaler: TextScaler.noScaling,
                               ),
                               SizedBox(
                                 height: size.height * 0.025,
@@ -198,7 +201,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                     });
                                     final otpreq = Otprsndreq.req(
                                         mobile: widget.mobile, type: type);
-                                    buildotpresend(otpreq,context);
+                                    buildotpresend(otpreq, context);
                                   }
                                 },
                                 child: Text(
@@ -208,6 +211,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                     fontSize: 18,
                                     color: Appcolors.magenta,
                                   ),
+                                  textScaler: TextScaler.noScaling,
                                 ),
                               ),
                               ElevatedButton(
@@ -251,7 +255,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                           password:
                                               inputPro.cnfrmController.text,
                                           otp: otppin);
-                                      buildotpvrf(otpreq,context);
+                                      buildotpvrf(otpreq, context);
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -270,6 +274,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
+                                    textScaler: TextScaler.noScaling,
                                   )),
                             ],
                           ),
@@ -288,8 +293,8 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
     return OTPTextField(
       controller: otpController,
       length: 6,
-      width: size.width - 34,
-      fieldWidth: 55,
+      width: size.width - 32,
+      fieldWidth: 50,
       otpFieldStyle: OtpFieldStyle(
         backgroundColor: Colors.white,
         borderColor: Appcolors.magenta,
@@ -300,6 +305,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
         fontSize: 17,
         color: Colors.black,
       ),
+      
       textFieldAlignment: MainAxisAlignment.spaceAround,
       fieldStyle: FieldStyle.box,
       // onCompleted: (pin) {
@@ -319,7 +325,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
     );
   }
 
-  Future buildotpresend(Otprsndreq value,BuildContext context) async {
+  Future buildotpresend(Otprsndreq value, BuildContext context) async {
     if (widget.category == 1) {
       /*labour resend otp */
 
@@ -328,29 +334,29 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
       if (otpreq == null) {
         if (!context.mounted) return [];
         CommonFun.instance.showApierror(context, "Something went wrong");
-      }  else if (otpreq.statusCode == 200) {
+      } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
 
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -369,23 +375,23 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
       } else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
@@ -394,71 +400,70 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
     }
   }
 
-  Future buildotpvrf(Rstpswrdvrfy value,BuildContext context) async {
+  Future buildotpvrf(Rstpswrdvrfy value, BuildContext context) async {
     if (widget.category == 1) {
       final otpreq = await Labourdata().forgotpswrdvrfy(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
         await showDialogsuccess(context);
-      }else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+      } else if (otpreq.statusCode == 404) {
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     } else {
       final otpreq = await Labourdata().empforgotpswrdvrfy(value);
       if (otpreq == null) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
       } else if (otpreq.statusCode == 200) {
         final resultAsjson = jsonDecode(otpreq.data);
         final otpresp =
             Otpreqresp.fromJson(resultAsjson as Map<String, dynamic>);
         final message = otpresp.success;
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, message);
         await showDialogsuccess(context);
-      }else if (otpreq.statusCode == 404) {
-        if (!context.mounted) return ;
+      } else if (otpreq.statusCode == 404) {
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "No Data Found");
       } else if (otpreq.statusCode == 500) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Sever Not Reachable");
 
         // showLoginerror(context, 3);
       } else if (otpreq.statusCode == 408) {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Connection time out");
 
         //showLoginerror(context, 4);
       } else {
-        if (!context.mounted) return ;
+        if (!context.mounted) return;
         CommonFun.instance.showApierror(context, "Something went wrong");
         //showLoginerror(context, 5);
       }
     }
-
   }
 
   Widget buildtimer() {
@@ -470,13 +475,15 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
             fontSize: 18,
             color: Appcolors.magenta,
             fontWeight: FontWeight.bold),
+            textScaler: TextScaler.noScaling,
       ),
       Obx(() => Center(
             child: Text(time.value,
                 style: const TextStyle(
                   fontSize: 18,
                   color: Colors.red,
-                )),
+                ),
+                textScaler: TextScaler.noScaling,),
           ))
     ]);
   }
@@ -505,7 +512,8 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
               title: Text(AppLocalizations.of(context)!.pswrdchange,
                   style: const TextStyle(
                       color: Color.fromARGB(255, 2, 129, 6),
-                      fontFamily: 'RobotoSerif_28pt-Medium')),
+                      fontFamily: 'RobotoSerif_28pt-Medium'),
+                      textScaler: TextScaler.noScaling,),
               actions: [
                 ElevatedButton(
                     onPressed: () {
@@ -517,6 +525,7 @@ class _ScreenForgotpswrdState extends State<ScreenForgotpswrd> {
                         ),
                       );
                     },
-                    child: const Center(child: Text('OK'))),
+                    child: const Center(child: Text('OK',
+                    textScaler: TextScaler.noScaling,))),
               ]));
 }
